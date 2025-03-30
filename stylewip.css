@@ -1,0 +1,77 @@
+body {
+    background-color: #4da9cb;
+    color: black;
+    font-family: "Verdana", sans-serif;
+}
+main {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.center {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+img.center {
+    display: block;
+}
+
+.flex {
+    display: flex;
+    flex-flow: row wrap;
+}
+#mainpage .flex > * {
+    flex: 1 0 auto;
+    color: white;
+    background-color: #3041ad;
+    text-decoration: none;
+    font-size: 1.5em;
+    padding: 0.4em 0.9em;
+    margin: 0.1em;
+    text-align: center;
+}
+#mainpage .flex > a:hover {
+    background-color: #315dad;
+}
+#mainpage .flex img {
+    height: 1.35em;
+    vertical-align: -0.25em;
+}
+#artists a,
+#artists a:visited {
+    color: #ffe06d;
+    text-decoration: underline !important;
+}
+#artists a:hover,
+#artists a:active {
+    color: #ffb76b;
+}
+
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.25em;
+    text-align: center;
+}
+nav a {
+    color: white !important;
+    text-decoration: none;
+    display: inline-block;
+    flex: 0 0 auto;
+    background-color: #3041ad;
+    padding: 0.4em 0.9em;
+}
+nav a:hover {
+    background-color: #315dad;
+}
+
+a,
+a:visited {
+    color: #250075;
+}
+a:hover,
+a:active {
+    color: #3c0f9d;
+}
