@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AAC Image Library</title>
   <!-- The style.css file allows you to change the look of your web pages.
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AAC Image Library</title>
+  <!-- The style.css file allows you to change the look of your web pages.
          If you include the next line in all your web pages, they will all share the same look.
          This makes it easier to make new pages for your site. -->
   <link href="/style.css" rel="stylesheet" type="text/css" media="all">
@@ -17,8 +23,23 @@
       }
     }
 
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all"><style>
+    /* Responsive layout - when the screen is less than 600px wide, make the three columns stack on top of each other instead of next to each other */
+    @media screen and (max-width: 600px) {
+      .column {
+        width: 100%;
+      }
+    }
+
     .row {
       display: flex;
+    }
+
+    display: flex;
+    }
+
+    .column {
+      flex: 33%;
     }
 
     .column {
@@ -55,6 +76,14 @@
           <figcaption>
             <span class="caption">fruit</span>
             <span class="credit"> | By StellarSymbols.</span>
+          </figcaption>
+        </figure>
+
+        <figure>
+          <img src="/Objects/food/fruit/apple slices dusty.png" height="300" alt="two apple slices with red skin">
+          <figcaption>
+            <span class="caption">apple slices</span>
+            <span class="credit"> | By Dusty.</span>
           </figcaption>
         </figure>
 
@@ -99,7 +128,7 @@
         </figure>
 
         <figure>
-          <img src="/Objects/food/orange.png" height="300" alt="An orange">
+          <img src="/Objects/food/orange gleepglorpian.png" height="300" alt="An orange">
           <figcaption>
             <span class="caption">orange</span>
             <span class="credit"> | By Gleepglorpian.</span>
@@ -277,6 +306,8 @@
         </figure>
 
       </div>
+    </div>
+    </div>
     </div>
 
 
