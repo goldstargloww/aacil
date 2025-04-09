@@ -1,6 +1,7 @@
 import sqlite3, re, os
 import dominate
 from dominate.tags import *
+from alive_progress import alive_bar
 
 
 pages = {
@@ -143,53 +144,61 @@ conn = sqlite3.connect("symbols.db")
 cursor = conn.cursor()
 
 
-for page_path in pages.keys():
-    page_name = pages[page_path]
+with alive_bar(len[pages]) as bar:
+    for page_path in pages.keys():
+        page_name = pages[page_path]
 
-    cursor.execute(f"SELECT * from symbols WHERE pages Like ?", [f"%'{page_path}'%"])
-
-    results = cursor.fetchall()
-
-    symbols = []
-    for result in results:
-        symbols.append(
-            {
-                "file": "/assets/symbols/" + result[0].split("/")[-1],
-                # "pages": result[1],
-                "label": result[2],
-                "alt": result[3],
-                "artists": eval(result[4]),
-                "credit": result[5],
-            }
+        cursor.execute(
+            f"SELECT * from symbols WHERE pages Like ?", [f"%'{page_path}'%"]
         )
 
-    doc = dominate.document(title=f"{page_name} | AAC Image Library")
+        results = cursor.fetchall()
 
-    with doc.head:
-        meta(charset="UTF-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        link(rel="icon", type="image/png", href="/favicon.png")
-        link(rel="stylesheet", href="style.css")
+        symbols = []
+        for result in results:
+            symbols.append(
+                {
+                    "file": "/assets/symbols/" + result[0].split("/")[-1],
+                    # "pages": result[1],
+                    "label": result[2],
+                    "alt": result[3],
+                    "artists": eval(result[4]),
+                    "credit": result[5],
+                }
+            )
 
-    with doc:
-        for symbol in symbols:
-            fig = figure()
-            fig.add(img(src=symbol["file"], width=300, alt=symbol["alt"]))
+        doc = dominate.document(title=f"{page_name} | AAC Image Library")
 
-            cap = fig.add(figcaption())
-            cap.add(span(symbol["label"], className="caption"))
+        with doc.head:
+            meta(charset="UTF-8")
+            meta(name="viewport", content="width=device-width, initial-scale=1.0")
+            link(rel="icon", type="image/png", href="/assets/favicon.png")
+            link(rel="stylesheet", href="/style.css")
 
-            if symbol["credit"] == "edit":
-                artists = "by {}, edited by {}".format(*symbol["artists"])
-            elif len(symbol["artists"]) == 3:
-                artists = "by {}, {}, and {}".format(*symbol["artists"])
-            elif len(symbol["artists"]) == 2:
-                artists = "by {} and {}".format(*symbol["artists"])
-            else:
-                artists = "by {}".format(*symbol["artists"])
+        with doc:
+            with div(className="symbol-container"):
+                for symbol in symbols:
+                    fig = figure()
+                    fig.add(img(src=symbol["file"], alt=symbol["alt"]))
 
-            cap.add(span(artists, className="credit"))
+                    cap = fig.add(figcaption())
+                    cap.add(span(symbol["label"], className="caption"))
 
-    os.makedirs(f"generated-site/{page_path}", exist_ok=True)
-    with open(f"generated-site/{page_path}/index.html", "w", encoding="utf-8") as file:
-        file.write(doc.render())
+                    if symbol["credit"] == "edit":
+                        artists = "by {}, edited by {}".format(*symbol["artists"])
+                    elif len(symbol["artists"]) == 3:
+                        artists = "by {}, {}, and {}".format(*symbol["artists"])
+                    elif len(symbol["artists"]) == 2:
+                        artists = "by {} and {}".format(*symbol["artists"])
+                    else:
+                        artists = "by {}".format(*symbol["artists"])
+
+                    cap.add(span(artists, className="credit"))
+
+        os.makedirs(f"generated-site/{page_path}", exist_ok=True)
+        with open(
+            f"generated-site/{page_path}/index.html", "w", encoding="utf-8"
+        ) as file:
+            file.write(doc.render())
+
+        bar()

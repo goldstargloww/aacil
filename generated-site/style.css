@@ -1,0 +1,56 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: white;
+    color: black;
+    font-family: Verdana;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.box {
+    width: 500px;
+    border: 1px solid grey;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 33%;
+}
+
+@media screen and (max-width: 600px) {
+    .column {
+        width: 100%;
+    }
+}
+
+.symbol-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: auto;
+}
+
+figure {
+    border: 1px #cccccc solid;
+    padding: 4px;
+    margin: auto;
+    height: 100%;
+}
+
+figure img {
+    width: 100%;
+    object-fit: contain;
+    aspect-ratio: 1/1;
+}
+
+figcaption {
+    background-color: black;
+    color: white;
+    padding: 2px;
+    text-align: center;
+}
