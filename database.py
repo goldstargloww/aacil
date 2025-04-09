@@ -73,13 +73,16 @@ pages = [
     ("site/Linguistics/glyphs/greek/greek.html", "linguistics/scripts/greek"),
     (
         "site/Linguistics/glyphs/latin lc/latinlowercase.html",
-        "linguistics/script/latin/lowercase",
+        "linguistics/scripts/latin/lowercase",
     ),
     (
         "site/Linguistics/glyphs/latin uc/latinuppercase.html",
-        "linguistics/latin/uppercase",
+        "linguistics/scripts/latin/uppercase",
     ),
-    ("site/Linguistics/glyphs/sitelen pona/sitelen.html", "linguistics/sitelen-pona"),
+    (
+        "site/Linguistics/glyphs/sitelen pona/sitelen.html",
+        "linguistics/scripts/sitelen-pona",
+    ),
     ("site/Media/media.html", "media"),
     ("site/Media/Animal Crossing/ac.html", "media/animal-crossing"),
     ("site/Media/Minecraft/Minecraft.html", "media/minecraft"),
@@ -127,7 +130,7 @@ pages = [
     ),
     (
         "site/Objects/religious head coverings/headcoverings.html",
-        "objects/religious-head-coverings/head-coverings",
+        "objects/religious-head-coverings",
     ),
     ("site/Objects/soft toys/softtoys.html", "objects/soft-toys"),
     ("site/Objects/substances/substances.html", "objects/substances"),
@@ -171,6 +174,7 @@ pages = [
     ("site/Trauma-abuse/trauma-abuse.html", "trauma-and-abuse"),
 ]
 
+by_pattern = re.compile(r"^\s*\|\s*(By )?(.+)", re.I)
 and_pattern = re.compile(r"\[['\"](.+) (&|and) (.+)['\"]\]", re.I)
 collab_pattern = re.compile(r"\['Collaboration by (.+), (.+)', '(.+)'\]", re.I)
 adapted_by_pattern = re.compile(r"\[['\"](.+), adapted by (.+)['\"]\]", re.I)
@@ -215,7 +219,7 @@ with alive_bar(len(pages)) as bar:
 
             try:
                 artist = re.sub(
-                    re.compile(r"^\s+?\|\s+(By )?(.+)", re.I),
+                    by_pattern,
                     r"['\2']",
                     figure.find(
                         "span", attrs={"class": re.compile("^credit$", re.I)}
