@@ -177,7 +177,7 @@ pages = [
 by_pattern = re.compile(r"^\s*\|\s*(By )?(.+)", re.I)
 and_pattern = re.compile(r"\[['\"](.+) (&|and) (.+)['\"]\]", re.I)
 collab_pattern = re.compile(r"\['Collaboration by (.+), (.+)', '(.+)'\]", re.I)
-adapted_by_pattern = re.compile(r"\[['\"](.+), adapted by (.+)['\"]\]", re.I)
+adapted_by_pattern = re.compile(r"\[['\"](.+), (adapted|modified) by (.+)['\"]\]", re.I)
 adapted_from_pattern = re.compile(r"\[['\"](.+), adapted from (.+)['\"]\]", re.I)
 adapted_from_pattern2 = re.compile(r"\[['\"](.+) \(adapted from (.+)\)['\"]\]", re.I)
 
@@ -235,7 +235,7 @@ with alive_bar(len(pages)) as bar:
 
                 # check for edit
                 if re.search(adapted_by_pattern, artist):
-                    artist = re.sub(adapted_by_pattern, r"['\1', '\2']", artist)
+                    artist = re.sub(adapted_by_pattern, r"['\1', '\3']", artist)
                     edit = True
                 elif re.search(adapted_from_pattern, artist):
                     artist = re.sub(adapted_from_pattern, r"['\2', '\1']", artist)

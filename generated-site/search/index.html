@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Search | AAC Image Library</title>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="/assets/favicon.png" rel="icon" type="image/png">
+    <link href="/style.css" rel="stylesheet">
+    <script src="/sql-wasm.js"></script>
+</head>
+
+
+
+
+<body>
+
+    <input type="text" id="searchbox" placeholder="Search symbols...">
+    <button type="button" onclick="performSearch();">Search</button>
+
+    <div id="results" class="symbol-container"></div>
+
+    <div id="output"></div>
+
+    <script src="search.js"></script>
+</body>
+
+</html>
