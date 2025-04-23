@@ -1,109 +1,77 @@
-/*
-var searchbox = document.getElementById("searchbox");
-var resultsList = document.getElementById("searchUL");
+let symbols = [];
 
+const labelSearch = document.getElementById("labelSearch");
+const artistSearch = document.getElementById("artistSearch");
 
-let searchterm = "";
-function filterLines(lines) {
-    searchterm = searchbox.value;
-    filteredLines = lines.filter(x => x[1].toLowerCase().includes(searchterm.toLowerCase()));
-    return filteredLines
-}
+fetch("/symbols.json")
+    .then((response) => response.json())
+    .then((data) => {
+        symbols = data;
 
-searchbox.onkeyup = function() {
-    let filteredLines = filterLines(allLines);
-    modifyResultsList(filteredLines);
-    if (filteredLines.length == 0 && !resultsList.classList.contains("hidden")) {
-        toggleElementVisibility(resultsList)
-    }
-}
-    */
-
-let db;
-
-initSqlJs({
-    locateFile: (file) => `/${file}`,
-}).then((SQL) => {
-    const output = document.getElementById("output");
-
-    fetch("symbols.db")
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error("Failed to load database file");
-            }
-            return response.arrayBuffer();
-        })
-        .then((arrayBuffer) => {
-            const uInt8Array = new Uint8Array(arrayBuffer);
-            db = new SQL.Database(uInt8Array);
-            console.log("got database");
-        })
-        .catch((error) => {
-            output.textContent = `Error: ${error.message}`;
-        });
-});
-
-var searchbox = document.getElementById("searchbox");
-var resultsArea = document.getElementById("results");
-
-function performSearch() {
-    const searchterm = searchbox.value.trim();
-    if (!db) {
-        resultsArea.textContent = "database not loaded yet";
-        return;
-    }
-
-    resultsArea.innerHTML = "";
-
-    if (searchterm === "") {
-        return;
-    }
-    try {
-        const query = `
-            SELECT * 
-            FROM symbols
-            WHERE label LIKE '%${searchterm}%';
-        `;
-        const result = db.exec(query);
-
-        // Display the results
-        if (result.length > 0) {
-            // resultsArea.textContent = JSON.stringify(result, null, 2);
-            const symbols = result[0]["values"];
-            symbols.forEach((symbol) => {
-                figure = document.createElement("figure");
-                image = document.createElement("img");
-                caption = document.createElement("figcaption");
-                label = document.createElement("span");
-                credit = document.createElement("span");
-
-                image.src = "/assets/symbols/" + symbol[0].split("/").slice(-1);
-                image.alt = symbol[3];
-                label.textContent = symbol[2];
-
-                artist_list = eval(symbol[4]);
-                console.log(artist_list);
-                console.log(artist_list.length);
-                if (symbol[5] == "edit") {
-                    credit.textContent = ` by ${artist_list[0]}, edited by ${artist_list[1]}`;
-                } else if (artist_list.length == 3) {
-                    credit.textContent = ` by ${artist_list[0]}, ${artist_list[1]}, and ${artist_list[2]}`;
-                } else if (artist_list.length == 2) {
-                    credit.textContent = ` by ${artist_list[0]} and ${artist_list[1]}`;
-                } else {
-                    credit.textContent = ` by ${artist_list[0]}`;
-                }
-
-                caption.appendChild(label);
-                caption.appendChild(credit);
-                figure.append(image);
-                figure.append(caption);
-                resultsArea.append(figure);
-            });
-        } else {
-            resultsArea.textContent = "No results found.";
+        if (
+            labelSearch.value.trim() !== "" ||
+            artistSearch.value.trim() !== ""
+        ) {
+            searchSymbols();
         }
-    } catch (error) {
-        resultsArea.textContent = `error: ${error.message}`;
-    }
+    });
+
+function debounce(func, delay) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    };
 }
+
+function removeDiacritics(text) {
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function searchSymbols() {
+    const labelQuery = removeDiacritics(labelSearch.value.trim().toLowerCase());
+    const artistQuery = removeDiacritics(
+        artistSearch.value.trim().toLowerCase()
+    );
+
+    if (labelQuery === "" && artistQuery === "") {
+        const resultsList = document.getElementById("results");
+        resultsList.innerHTML = "";
+        return;
+    }
+
+    const results = symbols.filter((symbol) => {
+        const labelMatch =
+            labelQuery === "" ||
+            removeDiacritics(symbol.label.toLowerCase()).includes(labelQuery);
+        const artistMatch =
+            artistQuery === "" ||
+            symbol.artists.some((artist) =>
+                removeDiacritics(artist.toLowerCase()).includes(artistQuery)
+            );
+        return labelMatch && artistMatch;
+    });
+
+    const resultsList = document.getElementById("results");
+    resultsList.innerHTML = results
+        .map(
+            (symbol) => `
+            <figure>
+                <img alt="${symbol.alt}" src="/assets/symbols/${symbol.file
+                .split("/")
+                .slice(-1)}">
+                <figcaption>
+                    <div>
+                        <span class="caption">${symbol.label}</span>
+                        <span class="credit">${symbol.artist_string}</span>
+                    </div>
+                </figcaption>
+            </figure>
+        `
+        )
+        .join("");
+}
+
+const debouncedSearch = debounce(searchSymbols, 300); // milliseconds
+labelSearch.addEventListener("input", debouncedSearch);
+artistSearch.addEventListener("input", debouncedSearch);

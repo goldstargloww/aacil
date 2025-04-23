@@ -36,6 +36,8 @@ body {
 }
 
 figure {
+    display: flex;
+    flex-direction: column;
     border: 1px #cccccc solid;
     padding: 4px;
     margin: auto;
@@ -51,6 +53,22 @@ figure img {
 figcaption {
     background-color: black;
     color: white;
-    padding: 2px;
+    padding: 4px;
+    flex-grow: 1;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#searchbox {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+}
+#labelSearch {
+    width: 50%;
+}
+#artistSearch {
+    width: 50%;
 }

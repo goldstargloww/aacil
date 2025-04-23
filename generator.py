@@ -144,7 +144,7 @@ conn = sqlite3.connect("symbols.db")
 cursor = conn.cursor()
 
 
-with alive_bar(len[pages]) as bar:
+with alive_bar(len(pages)) as bar:
     for page_path in pages.keys():
         page_name = pages[page_path]
 
@@ -178,22 +178,26 @@ with alive_bar(len[pages]) as bar:
         with doc:
             with div(className="symbol-container"):
                 for symbol in symbols:
-                    fig = figure()
-                    fig.add(img(src=symbol["file"], alt=symbol["alt"]))
+                    with figure():
+                        img(src=symbol["file"], alt=symbol["alt"])
+                        with figcaption():
+                            with div():
+                                span(symbol["label"], className="caption")
 
-                    cap = fig.add(figcaption())
-                    cap.add(span(symbol["label"], className="caption"))
+                                if symbol["credit"] == "edit":
+                                    artists = "by {}, edited by {}".format(
+                                        *symbol["artists"]
+                                    )
+                                elif len(symbol["artists"]) == 3:
+                                    artists = "by {}, {}, and {}".format(
+                                        *symbol["artists"]
+                                    )
+                                elif len(symbol["artists"]) == 2:
+                                    artists = "by {} and {}".format(*symbol["artists"])
+                                else:
+                                    artists = "by {}".format(*symbol["artists"])
 
-                    if symbol["credit"] == "edit":
-                        artists = "by {}, edited by {}".format(*symbol["artists"])
-                    elif len(symbol["artists"]) == 3:
-                        artists = "by {}, {}, and {}".format(*symbol["artists"])
-                    elif len(symbol["artists"]) == 2:
-                        artists = "by {} and {}".format(*symbol["artists"])
-                    else:
-                        artists = "by {}".format(*symbol["artists"])
-
-                    cap.add(span(artists, className="credit"))
+                                span(artists, className="credit")
 
         os.makedirs(f"generated-site/{page_path}", exist_ok=True)
         with open(
