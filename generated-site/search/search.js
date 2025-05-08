@@ -8,6 +8,8 @@ fetch("/symbols.json")
     .then((data) => {
         symbols = data;
 
+        // search if either of the search boxes were already filled
+        // (eg. on reload)
         if (
             labelSearch.value.trim() !== "" ||
             artistSearch.value.trim() !== ""
@@ -17,6 +19,7 @@ fetch("/symbols.json")
     });
 
 function debounce(func, delay) {
+    // delay for a little after calling the function so it doesn't do it every keystroke
     let timeout;
     return function (...args) {
         clearTimeout(timeout);

@@ -312,7 +312,10 @@ def update_artists():
 
     artists.sort()
 
-    print(artists)
+    cursor.execute("DELETE FROM artists")
+    for artist in artists:
+        cursor.execute("INSERT INTO artists VALUES (?, ?)", (artist, None))
+    conn.commit()
 
 
 clear_database()
