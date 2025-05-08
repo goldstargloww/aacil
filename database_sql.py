@@ -175,104 +175,146 @@ pages = [
 ]
 
 by_pattern = re.compile(r"^\s*\|\s*(By )?(.+)", re.I)
-and_pattern = re.compile(r"\[['\"](.+) (&|and) (.+)['\"]\]", re.I)
-collab_pattern = re.compile(r"\['Collaboration by (.+), (.+)', '(.+)'\]", re.I)
+and_pattern = re.compile(r"\[['\"](.+) (&|and),? (.+)['\"]\]", re.I)
+collab_pattern = re.compile(r"\['Collaboration by (.+), (.+)',? '(.+)'\]", re.I)
 adapted_by_pattern = re.compile(r"\[['\"](.+), (adapted|modified) by (.+)['\"]\]", re.I)
 adapted_from_pattern = re.compile(r"\[['\"](.+), adapted from (.+)['\"]\]", re.I)
 adapted_from_pattern2 = re.compile(r"\[['\"](.+) \(adapted from (.+)\)['\"]\]", re.I)
 
-with alive_bar(len(pages)) as bar:
+
+def clear_database():
+    conn = sqlite3.connect("symbols.db")
+    conn.cursor().execute("DELETE FROM symbols")
+    conn.commit()
+
+
+def update_symbols():
+    with alive_bar(len(pages)) as bar:
+        conn = sqlite3.connect("symbols.db")
+        cursor = conn.cursor()
+
+        for page_path, page_name in pages:
+
+            with open(page_path, "r", encoding="utf-8") as f:
+                soup = BeautifulSoup(f.read(), "html5lib")
+
+            figures = soup.find_all("figure")
+
+            for figure in figures:
+
+                edit = False
+
+                try:
+                    file = (
+                        # figure.find("img")["src"].split("/")[-1].replace("%20", " ").strip()
+                        figure.find("img")["src"]
+                        .replace("%20", " ")
+                        .strip()
+                    )
+                except AttributeError:
+                    print("file failed")
+                    print(figure)
+                    exit()
+
+                try:
+                    label = figure.find(
+                        "span", attrs={"class": re.compile("^caption$", re.I)}
+                    ).text.strip()
+                except AttributeError:
+                    print(f"label failed, page {page_path}")
+                    print(figure)
+                    exit()
+
+                try:
+                    artist = re.sub(
+                        by_pattern,
+                        r"['\2']",
+                        figure.find(
+                            "span", attrs={"class": re.compile("^credit$", re.I)}
+                        ).text.replace("'", "\\'"),
+                    ).replace(".", "")
+
+                    # check for collab
+                    if re.search(and_pattern, artist):
+                        artist = re.sub(and_pattern, r"['\1', '\3']", artist)
+                    if re.search(collab_pattern, artist):
+                        artist = re.sub(collab_pattern, r"['\1', '\2', '\3']", artist)
+                        artist = re.sub(r"[()]", "", artist)
+
+                    # check for edit
+                    if re.search(adapted_by_pattern, artist):
+                        artist = re.sub(adapted_by_pattern, r"['\1', '\3']", artist)
+                        edit = True
+                    elif re.search(adapted_from_pattern, artist):
+                        artist = re.sub(adapted_from_pattern, r"['\2', '\1']", artist)
+                        edit = True
+                    elif re.search(adapted_from_pattern2, artist):
+                        artist = re.sub(adapted_from_pattern2, r"['\2', '\1']", artist)
+                        edit = True
+
+                except AttributeError:
+                    print(f"artist failed, page {page_path}")
+                    print(figure)
+                    exit()
+
+                symbol = {
+                    "file": file,
+                    "pages": f"['{page_name}']",
+                    "label": label,
+                    "alt": figure.find("img")["alt"].strip(),
+                    "artist": artist,
+                    "credit": "by" if not edit else "edit",
+                }
+
+                try:
+                    cursor.execute(
+                        "INSERT INTO symbols VALUES (:file, :pages, :label, :alt, :artist, :credit)",
+                        symbol,
+                    )
+                except sqlite3.IntegrityError:
+                    cursor.execute("SELECT * FROM symbols WHERE file = :file", symbol)
+                    result = eval(cursor.fetchall()[0][1])
+                    if not page_name in result:
+                        result.append(page_name)
+                        symbol["pages"] = str(result)
+                        cursor.execute(
+                            "UPDATE symbols SET pages = :pages WHERE file = :file",
+                            symbol,
+                        )
+
+            bar()
+
+        conn.commit()
+
+
+def update_artists():
     conn = sqlite3.connect("symbols.db")
     cursor = conn.cursor()
+    old_artists = []
+    cursor.execute("SELECT * FROM symbols")
+    symbols = cursor.fetchall()
+    for symbol in symbols:
+        try:
+            artist = eval(symbol[4])
+        except:
+            print("artist failed: ", symbol[4])
+            exit()
+        old_artists += artist
 
-    for page_path, page_name in pages:
+    artists = []
 
-        with open(page_path, "r", encoding="utf-8") as f:
-            soup = BeautifulSoup(f.read(), "html5lib")
+    marker = set()
+    for item in old_artists:
+        itemlower = item.lower().strip()
+        if itemlower not in marker:
+            marker.add(itemlower)
+            artists.append(item)
 
-        figures = soup.find_all("figure")
+    artists.sort()
 
-        for figure in figures:
+    print(artists)
 
-            edit = False
 
-            try:
-                file = (
-                    # figure.find("img")["src"].split("/")[-1].replace("%20", " ").strip()
-                    figure.find("img")["src"]
-                    .replace("%20", " ")
-                    .strip()
-                )
-            except AttributeError:
-                print("file failed")
-                print(figure)
-                exit()
-
-            try:
-                label = figure.find(
-                    "span", attrs={"class": re.compile("^caption$", re.I)}
-                ).text.strip()
-            except AttributeError:
-                print("label failed")
-                print(figure)
-                exit()
-
-            try:
-                artist = re.sub(
-                    by_pattern,
-                    r"['\2']",
-                    figure.find(
-                        "span", attrs={"class": re.compile("^credit$", re.I)}
-                    ).text,
-                ).replace(".", "")
-
-                # check for collab
-                if re.search(and_pattern, artist):
-                    artist = re.sub(and_pattern, r"['\1', '\3']", artist)
-                if re.search(collab_pattern, artist):
-                    artist = re.sub(collab_pattern, r"['\1', '\2', '\3']", artist)
-                    artist = re.sub(r"[()]", "", artist)
-
-                # check for edit
-                if re.search(adapted_by_pattern, artist):
-                    artist = re.sub(adapted_by_pattern, r"['\1', '\3']", artist)
-                    edit = True
-                elif re.search(adapted_from_pattern, artist):
-                    artist = re.sub(adapted_from_pattern, r"['\2', '\1']", artist)
-                    edit = True
-                elif re.search(adapted_from_pattern2, artist):
-                    artist = re.sub(adapted_from_pattern2, r"['\2', '\1']", artist)
-                    edit = True
-
-            except AttributeError:
-                print("artist failed")
-                print(figure)
-                exit()
-
-            symbol = {
-                "file": file,
-                "pages": f"['{page_name}']",
-                "label": label,
-                "alt": figure.find("img")["alt"].strip(),
-                "artist": artist,
-                "credit": "by" if not edit else "edit",
-            }
-
-            try:
-                cursor.execute(
-                    "INSERT INTO symbols VALUES (:file, :pages, :label, :alt, :artist, :credit)",
-                    symbol,
-                )
-            except sqlite3.IntegrityError:
-                cursor.execute("SELECT * FROM symbols WHERE file = :file", symbol)
-                result = eval(cursor.fetchall()[0][1])
-                if not page_name in result:
-                    result.append(page_name)
-                    symbol["pages"] = str(result)
-                    cursor.execute(
-                        "UPDATE symbols SET pages = :pages WHERE file = :file", symbol
-                    )
-
-        bar()
-
-    conn.commit()
+clear_database()
+update_symbols()
+update_artists()
