@@ -290,18 +290,18 @@ def update_symbols():
 def update_artists():
     conn = sqlite3.connect("symbols.db")
     cursor = conn.cursor()
-    old_artists = []
+    old_artists: list[str] = []
     cursor.execute("SELECT * FROM symbols")
     symbols = cursor.fetchall()
     for symbol in symbols:
         try:
-            artist = eval(symbol[4])
+            artist: list[str] = eval(symbol[4])
         except:
             print("artist failed: ", symbol[4])
             exit()
         old_artists += artist
 
-    artists = []
+    artists: list[str] = []
 
     marker = set()
     for item in old_artists:
