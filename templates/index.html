@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AAC Image Library</title>
+
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    </head>
+    <body>
+        <div class="center">
+            <h1>AAC Image Library</h1>
+            <img src="/AAC/aacil.png" height="100" alt="A drawing of a simplified person wearing a harness that has a talker on it. The talker is turned on with various multicoloured buttons. on one side black letters say 'AAC'. on the other black letters say 'IL'">
+            <h2><i>by us, for us</i></h2>
+            <h3>
+                <a href="https://globalsymbols.com/symbolsets/aac-image-library?locale=en">search AACIL symbols</a>
+                | <a href="/map.html">symbol pages map</a>
+                | <a href="/more.html">about AACIL</a>
+                | <a href="/aboutaac_images.html">What is AAC?</a>
+                | <a href="/otherresources.html">other resources</a>
+                | <a href="/copyright.html">copyright information & disclaimer</a>
+                | <a href="/faq.html">frequently asked questions</a>
+            </h3>
+            <p>11,100+ symbols and counting. 1.7 million+ pageviews and counting. 95+ Disabled artists and counting.</p>
+            <!-- inc. stellar: 145+-->
+
+            <h2 class="space_above">Topics:</h2>
+
+            <ul class="figlist">
+            {% for item in categories %}
+                <li><a href="{{ item.url }}">{{ item.desc }}</a></li>
+            {% endfor %}
+            </ul>
+            
+            <p class="space_above" xmlns:cc="http://creativecommons.org/ns#">The works on this website are licensed under <a href="http://creativecommons.org/licenses/by-nc/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC 4.0. <img src="https://aacil.neocities.org/cc%20by%20nc.png" height=30px></a></p>
+
+            <p class="space_above"><small><b>Image artists:</b> Aerron; Alena Semi; Alex W.; The Andromeda Collective; Ani; aok-aac; Astro; Bauwex; Bear; Blackholemojis; blackrocklabs; Blur The Colors (Max Dearing); Boonanas; bunnsemojis; C; CC; Coastal; comet; creature; Creature's creations; Crows; cytochrome-sea; damsii; DoctorZero; dtcd; Dragon; Dusty; Eldritch-Emojis; envi; Esrah; Estrelle; Evan; The Five (+) Guys Collective; Fractals; Forget Us All; Frogverbal; froggygolem; Fukurō; gillipop; Gleepglorpian; goldstargloww; Harlow; InsertNameHere*; Jasper; K9Emote; Katt; Kay; Koda; Kip; Kirby; Kit; Krow; Lady; Leaf; legless rat; Levi; Loveelikeadog; M (M. Scharnke); MATRIX; Méabh; Melody; meowing-emojis; Midi; Mikey; Millie; Moony; Neon; NonspeakingKiku; Nubs; Ottertime; pandora's box; Pepsi**; Petri; Pheonix; Phoenix (QueeringAAC); Pi; Plum; Proxy; Rae; Rayin; Rory; Rover; Ry; Samuel; Smolmoss; SpeakUpSymbols; StellarSymbols (Colin Mcnamee); TalkSense (Tony Jones); TCC-mojis; Teddy; TinyTyra; Tonto (Freddy); Vincent; vinter; Vixen; yanas_emotes; Wolf; Zaza-art. <b>Almost all of us are AAC users as well as artists, and all of us are Disabled</b>. If you want to contribute AAC symbols or otherwise contact us, email: <u>aacschar@gmail.com</u>. Website founded and managed by M Scharnke.</p>
+        </div>
+
+        <div class="space_above"></div>
+        <p>*Not a placeholder; the preferred online handle of the anonymised contributor.</p>
+        <p>**Individual artist, not brand; AACIL is unaffiliated with PepsiCo.</p>
+    </body>
+</html>

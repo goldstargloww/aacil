@@ -334,6 +334,12 @@ CW_CATEGORY = {
     '/Swearing': '/Swearing/swear_warning.html',
 }
 
+MAIN_PAGE_EXTRA_CATEGORIES = [
+    ('/Objects/food', "food"),
+    ('/Objects/religion', "religion & folklore"),
+    ('/Objects/substances', "substances"),
+]
+
 
 def find_all_csv_files():
     return glob.glob(f'{REPO_ROOT}/site/**/*.csv', recursive=True)
@@ -531,6 +537,23 @@ def main():
     sitemap_template = jinja_env.get_template("map.html")
     with open(f'{REPO_ROOT}/site/map.html', 'w') as f:
         rendered = sitemap_template.render(sitemap_data=sitemap_data)
+        f.write(rendered)
+
+    # Generate main page
+    mainpage_categories = [{
+        "url": x["url"],
+        "desc": x["desc"],
+    } for x in sitemap_data]
+    for x in MAIN_PAGE_EXTRA_CATEGORIES:
+        mainpage_categories.append({
+            "url": x[0],
+            "desc": x[1],
+        })
+    mainpage_categories.sort(key=lambda x: x["desc"].upper())
+
+    mainpage_template = jinja_env.get_template("index.html")
+    with open(f'{REPO_ROOT}/site/index.html', 'w') as f:
+        rendered = mainpage_template.render(categories=mainpage_categories)
         f.write(rendered)
 
 

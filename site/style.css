@@ -30,6 +30,10 @@ border: 1px solid grey;
 }
 
 /* New code, TODO clean up old code */
+.space_above {
+  margin-top: 2lh;
+}
+
 .cw {
   margin: 2lh;
   text-align: center;
@@ -42,6 +46,14 @@ border: 1px solid grey;
 .figlist {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+}
+
+/* This is specifically used on the main page */
+ul.figlist {
+  list-style: none;
+}
+ul.figlist li {
+  margin: 1lh;
 }
 
 figure {
