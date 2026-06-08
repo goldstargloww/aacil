@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AAC Image Library</title>
+
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    </head>
+    <body>
+        <p><a href="..">click here to go back.</a></p>
+
+        <!-- TODO: Sub-categories -->
+
+        <div class="figlist">
+        {% for fig in figs %}
+            <figure>
+                <div class="imgcontain"><img src="{{ fig["Image URL"] }}" alt="{{ fig["Alt text"] }}"></div>
+                <figcaption>
+                    <span class="caption">{{ fig["Caption"] }}</span>
+                    <span class="credit"> | By {{ fig["Credit"] }}.</span>
+                </figcaption>
+            </figure>
+        {% endfor %}
+        </div>
+    </body>
+</html>

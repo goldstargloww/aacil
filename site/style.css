@@ -29,11 +29,36 @@ border: 1px solid grey;
   flex: 33%;
 }
 
+/* New code, TODO clean up old code */
+.figlist {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
 
 figure {
   border: 1px #cccccc solid;
   padding: 4px;
-  margin: auto;
+  margin: 0;
+
+  box-sizing: border-box;
+  max-height: 300px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+figure .imgcontain {
+  flex: 1;
+  /* Override the minimum size, so that the size which is _left over_ is stretched by flexbox. */
+  min-height: 0;
+}
+
+/* Make the image shrink down and not overlap or push other things out */
+img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 figcaption {
@@ -41,5 +66,25 @@ figcaption {
   color: white;
   padding: 2px;
   text-align: center;
+  width: 100%;
 }
 
+/* Automatic dark theme */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111;
+    color: white;
+  }
+  figcaption {
+    background-color: white;
+    color: black;
+  }
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .figlist {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

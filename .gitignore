@@ -1,1 +1,4 @@
 desktop.ini
+# Do not track .html files, only in subdirectories
+# (These are the auto-generated ones)
+site/*/**/index.html
