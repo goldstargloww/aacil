@@ -502,6 +502,7 @@ def main():
     # Generate "all symbols" report, only for the admins to look at
     all_img_urls = set()
     for (url, caption) in all_syms_flattened:
+        url = os.path.normpath(url)
         all_img_urls.add(url)
     all_img_urls = sorted(all_img_urls)
     with open('all_images.txt', 'w') as f:
