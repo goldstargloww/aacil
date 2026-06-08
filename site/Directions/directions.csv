@@ -73,7 +73,7 @@ middle rayin.png,Rayin,middle,3 yellow squares lined up vertically with darker o
 east pheonix.png,Pheonix,East,a grey compass rose with the east direction red with an arrow at the end. Beside that direction is a yellow sun above the horizon line and a blue arrow pointing up.
 far matrix.png,MATRIX,far,two light pink circles with a long dark pink arrow between them
 next rayin.png,AyiEmojis,Next,"ID: a pink square with a darker pink outline on the left, and another pink square next to it on the right but slightly lower. there’s a teal arrow with a darker teal outline going from the left square to the right square"
-/description/external neon.png,Neon,external,A yellow ball above a big red square with a dark red arrow pointing to it.
+external neon.png,Neon,external,A yellow ball above a big red square with a dark red arrow pointing to it.
 from stellar.png,StellarSymbols,from,an orange arrow pointing down from a location marker
 next_to_circle.png,Petri,next to,A drawing of a large pink circle next to a small blue square.
 far pheonix.png,Pheonix,far,"two small purple cubes sit away from each other, a double sided arrow points to them."
@@ -91,7 +91,7 @@ out dusty.png,Dusty,out,A gray square with an arcing arrow going out.
 in fg.png,froggygolem,in,red arrow points to a small brown blob inside a partial brown circle.
 left 2 stellar.png,StellarSymbols,left,"A yellow hand making an 'l' shape, with a small blaack arrow pointing to the left."
 right 2 stellar.png,StellarSymbols,right,"A yellow hand making a backwards 'l' shape, with a small blaack arrow pointing to the right."
-/description/internal neon.png,Neon,internal,"A big red square with a yellow ball inside it, there is a dark red arrow pointing towards the yellow ball."
+internal neon.png,Neon,internal,"A big red square with a yellow ball inside it, there is a dark red arrow pointing towards the yellow ball."
 near matrix.png,MATRIX,near,two light pink circles with a short dark pink arrow between them
 right cc.png,CC,right,a magenta arrow pointing to the right
 left pheonix.png,Pheonix,left,"a blue circle sits at the left side of the screen, 2 small blue arrows point to it from above and below. Inside the circle is a green triangle pointing left. This triangle makes up the end of an arrow that starts off of the circle on the right side of the screen."

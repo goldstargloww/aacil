@@ -18,7 +18,7 @@ camera talksense.png,TalkSense,camera,a DSLR-type camera.
 bmp file format gold.png,goldstargloww,BMP file format (Bitmap),blue file with a stylized generic image on it and the label 'BMP'
 apple phone iphone zaza.png,Zaza-art,Apple phone / iPhone,Phone shape in shades of red with an apple logo
 cctv.png,M,CCTV,a CCTV camera.
-/Objects/casette.png,Blackholemojis,casette,a cassette tape. It has light and dark purple stripes in the middle part.
+casette.png,Blackholemojis,casette,a cassette tape. It has light and dark purple stripes in the middle part.
 bait post petri.png,Petri,bait post,A drawing of a blue box containing a large white speech bubble pointing upwards at a small round profile picture of a plain emoji yellow person. Inside the speech bubble is a large silver fishhook.
 charge pheonix 1.png,Pheonix,charge,A yellow lightning bolt has 3 green streaks trailing behind it with dots at the end of each streak. The image has dark line art.
 charge pheonix 2.png,Pheonix,charge,A brown lightning bolt outlined in yellow has 3 green streaks trailing behind it with dots at the end of each streak. The image has light line art.
@@ -73,10 +73,10 @@ how much power leo.png,Vincent,how much power?,a battery with different lines on
 face buttons 4 plum.png,Plum,face buttons,"A drawing of a video game controller, with red arrows pointing to its “A,” “B”,” and (presumably) “Start” and “Select” face buttons. The controller doesn’t look like any specific existing brand, but generally looks closer to a “classic” style, or pre-fourth console generation controller. It is mostly a slightly dark purple, with lavender and teal accents. It has an analog stick on the left, a logo of a plum and two small, semi-circle shaped buttons in the middle, and circular “A” and “B” buttons on the right, as well as two visible shoulder buttons, one on each side. The controller has short “thighs” or handles for ergonomics on either side."
 micro usb gp 1.png,Gillipop,micro USB,a male micro USB plug with a gray body and short section of gray cord visible.
 ipad zaza.png,Zaza-art,iPad,iPad tablet shape in shades of pink with an apple logo
-/Objects/fan.png,Rae,fan,a fan with a pinkish base.
+fan.png,Rae,fan,a fan with a pinkish base.
 multiplayer game.png,StellarSymbols,multiplayer game,"Two video game controllers, one black and one white"
 jpg gold.png,goldstargloww,JPG file format (Joint Photographic Experts Group),a blue file with a stylized generic image on it and the label 'JPG'
-/Objects/food processor.png,M,food processor,a stand mixer food processor.
+food processor.png,M,food processor,a stand mixer food processor.
 pc computer stellar.png,StellarSymbols,PC computer,"A grey monitor with a white screen, a grey keyboard, and a grey mouse"
 laptop computer stellar.png,StellarSymbols,laptop computer,A grey laptop with a white screen
 lightning cable gp 1.png,Gillipop,lightning cable,a male lightning charger with a gray body and a short section of gray cord visible.
@@ -172,7 +172,7 @@ usb c gp 3.png,Gillipop,USB-C,a male USB-A plug with a light blue body and short
 usb stick m.png,M,USB stick,a dark blue USB stick.
 usb a gp 2.png,Gillipop,USB-A,a male USB-A plug with a red body and short section of red cord visible.
 usb c charger aerron.png,Aerron,USB-C charger,A minimally shaded USB-C cable with a dark blue-gray cable base. It has the lightning bolt symbol to indicate a fast device charger.
-/Objects/walkie talkie.png,Ani,walkie talkie,Two green walkie talkies. They have a white screen in the front of them as well as a black button on the bottom of the screen and a large black antenna
+walkie talkie.png,Ani,walkie talkie,Two green walkie talkies. They have a white screen in the front of them as well as a black button on the bottom of the screen and a large black antenna
 usb a gp 3.png,Gillipop,USB-A,a male USB-A plug with a red body and short section of red cord visible. next to it is a red letter 'A'
 vacuum crows.png,Crows,vacuum,A simplified warm-toned drawing of a canister type vacuum cleaner.
 watch video on laptop stellar.png,StellarSymbols,watch video on laptop,A grey laptop displaying a red 'play' icon on a white screen
@@ -180,7 +180,7 @@ video game controller plum.png,Plum,video game controller,"A drawing of a video 
 video game controller 2 plum.png,Plum,video game controller,"A drawing of a video game controller. It doesn’t look like any specific existing brand, but generally looks closer to a “classic” style, or pre-fourth console generation controller. It is mostly a dark grey, with lighter grey accents. It has an analog stick on the left, a logo of a plum and two small, semi-circle shaped buttons in the middle, and circular “A” and “B” buttons on the right, as well as two visible shoulder buttons, one on each side. The controller has short “thighs” or handles for ergonomics on either side."
 watch video on pc stellar.png,StellarSymbols,watch video on PC,"A grey monitor displaying a red 'play' icon on a white screen, a grey keyboard, and a grey mouse"
 watch video on phone stellar.png,StellarSymbols,watch video on phone,A grey cellphone displaying a red 'play' icon
-/Objects/vinyl player.png,Blackholemoji,vinyl player,"a vinyl player viewed from above. It’s square shaped and made of brown wood, and has a clear lid. In it is a vinyl record with a yellow middle with lighter lines."
+vinyl player.png,Blackholemoji,vinyl player,"a vinyl player viewed from above. It’s square shaped and made of brown wood, and has a clear lid. In it is a vinyl record with a yellow middle with lighter lines."
 webp gold.png,goldstargloww,WEBP file format (Web Picture),a blue file with a stylized generic image on it and the label 'WEBP'
 work email bauwex.png,Bauwex,work email,The image has a beige mail symbol. On the left bottom there's a gear.
 y button koda.png,Koda,Y button,a white circle with a grey outline and a grey Y in the center

@@ -9,16 +9,16 @@ leaf base.png,froggygolem,base,the bottom half of green leaf with arrow pointing
 aloe bh.png,Blackholemojis,aloe,an aloe plant
 black rose rc.png,Bear,black rose,a black rose on a green stem
 blue rose rc.png,Bear,blue rose,a blue rose on a green stem
-/Nature/apex.png,froggygolem,apex,"the top half of a pointed, veined green leaf with a black arrow pointing to the tip or apex of the leaf."
+apex.png,froggygolem,apex,"the top half of a pointed, veined green leaf with a black arrow pointing to the tip or apex of the leaf."
 black tulip rc.png,Bear,black tulip,a black tulip on a green stem
 bonsai m.png,M,bonsai,a bonsai tree in a pot.
 branch rc.png,Bear,branch,a brown stick with a single green leaf
-/Nature/blade.png,froggygolem,blade,a green leaf with a bracket designating the blade section and an arrow pointing to that.
+blade.png,froggygolem,blade,a green leaf with a bracket designating the blade section and an arrow pointing to that.
 borage m.png,M,borage,a borage flower.
 bermuda cedar m.png,M,bermuda cedar / Juniperus bermudiana,"a simplistic drawing of a Juniperus bermudiana tree (common name Bermuda cedar), with thick black lineart."
 chicory flower m.png,M,chicory (flower),"an above-ground chicory plant, showing blue flowers, leaves, and long stems."
 buttercup.png,M,buttercup,a shaded drawing of a buttercup with brown lines
-/Nature/bush.png,Blackholemojis,bush,two groups of green leaves coming from a brown stem
+bush.png,Blackholemojis,bush,two groups of green leaves coming from a brown stem
 cordate leaf shape.png,M,cordate (leaf shape),a cordate leaf
 dahlia m.png,M,dahlia,a pink dahlia flower
 bush shrub dusty.png,Dusty,bush / shrub,a plant with a short dark brown stem or trunk and bushy light green leaves
@@ -32,14 +32,14 @@ eucalyptus.png,M,eucalyptus,"a group of five eucalyptus leaves, with a bunch of 
 downy  birch comet.png,Comet,downy birch,a green downy birch tree leaf
 holly tcc.png,TCC,holly,a sprig of holly.
 flowers koda.png,Koda,flowers,"3 flowers, from left to right: a white daisy, a pink tulip, and a red poppy"
-/Nature/endosperm.png,froggygolem,endosperm,at top is a small light brown seed then an arrow from a food icon above a larger seed with a line connecting it to the large middle section of the seed.
+endosperm.png,froggygolem,endosperm,at top is a small light brown seed then an arrow from a food icon above a larger seed with a line connecting it to the large middle section of the seed.
 lavender vixen.png,Vixen,lavender,a purple lavender flower with a green stem and 3 leaves.
-/Nature/grass.png,Blackholemojis,grass,strands of long cool green grass growing together
+grass.png,Blackholemojis,grass,strands of long cool green grass growing together
 fir tree fractals.png,Fractals,fir tree,A green tree in a triangular shape with a brown trunk
 lilypad m.png,M,lilypad,a green lilypad.
 honeysuckle m.png,M,honeysuckle,honeysuckle flower
 four leaf clover m.png,M,four-leaf clover,"the four leaves of a four-leaf clover, viewed from the top. they are dark green, with a pale ring, somewhat like a circle, running through them."
-/Nature/Marcescence.png,froggygolem,marcescence,a brown branch with a brown leaf hanging down and a light blue snowflake in the upper corner.
+Marcescence.png,froggygolem,marcescence,a brown branch with a brown leaf hanging down and a light blue snowflake in the upper corner.
 lilac bh m.png,"Blackholemojis, adapted by M",lilac,a sprig of lilac.
 grass bh 2.png,Blackholemojis,grass,a cluster of grass
 moss ball.png,Esrah,moss ball,a ball of green moss with small air bubbles on it.
@@ -56,20 +56,20 @@ petiolate.png,froggygolem,petiolate,a gray leaf with arrow to green petiole and 
 marigold m.png,M,marigold,an orange marigold flower
 ovate leaf shape.png,M,ovate (leaf shape),a ovate leaf.
 pnk rose rc.png,Bear,pink rose,a pink rose on a green stem
-/Nature/oakleaf.png,M,oakleaf,an oakleaf.
+oakleaf.png,M,oakleaf,an oakleaf.
 pansy.png,M,pansy,a purple and white pansy.
 pink tulip rc.png,Bear,pink tulip,a pink tulip on a green stem
 lanceolate leaf shape m.png,M,lanceolate (leaf shape),a lanceolate leaf.
 peltate leaf shape m.png,M,peltate (leaf shape),a peltate leaf.
 pollen bh.png,Blackholemojis,pollen,pollen particles and small leaves
-/Nature/leaf.png,froggygolem,leaf,a green leaf
+leaf.png,froggygolem,leaf,a green leaf
 pinecone bh.png,Blackholemojis,pinecone,a pinecone.
 sessile.png,froggygolem,sessile,a gray leaf with arrow to green petiole and a red x in a light red circle next to it.
 lily of the valley m.png,M,lily of the valley,a stem with several lily of the valley flowers.
 pinnatifid compound leaf shape m.png,M,pinnatifid (compound leaf shape),a pinnatifid compound leaf.
 snowdrop m 2.png,M,snowdrop,a snowdrop and stem. the colors are realistic.
 palmate compound leaf shape m.png,M,palmate (compound leaf shape),a palmate compound leaf.
-/Nature/plant cell.png,Ani,plant cell,a drawing of a multicolored and brightly colored plant cell. The organelles are all drawn in different colors
+plant cell.png,Ani,plant cell,a drawing of a multicolored and brightly colored plant cell. The organelles are all drawn in different colors
 sunflower smolmoss.png,Smolmoss,sunflower,a sunflower.
 petiole.png,froggygolem,petiole,"a green leaf with an arrow to a bracket indicating the petiole, or leaf stem."
 poppy koda.png,Koda,poppy,3 wide red petals with a dark red center and a smaller yellow spot in the middle with a green stem
@@ -83,15 +83,15 @@ trifoliolate compound leaf shape m.png,M,trifoliolate (compound leaf shape),a tr
 red tulip rc.png,Bear,red tulip,a red tulip on a green stem
 reniform leaf shape.png,M,reniform (leaf shape),a reniform leaf
 tulip koda.png,Koda,tulip,"a pink almost tear drop shaped flower, two petals over lap a third petal near the center with a green stem and two tall leaves"
-/Nature/seed.png,froggygolem,seed,a light brown seed.
+seed.png,froggygolem,seed,a light brown seed.
 snowdrop m 1.png,M,snowdrop,a snowdrop and stem. the colors are crisp and cool.
 white rose rc.png,Bear,white rose,a white rose on a green stem
 spatulae leaf shape.png,M,spatulae (leaf shape),a spatulae leaf
 stick m.png,M,stick,a stick.
 windflower anemone m.png,M,windflower / anemone,"an eight-petaled white windflower, or anemone, flower"
 thorn rc.png,Bear,thorn,a brown thorn protruding out from a green stem
-/Nature/stipule.png,froggygolem,stipule,brown branch with green leaf that has two green stipules sprouting from where the leaf and branch meet.
-/Nature/yellow fatu.png,Ani,yellow fatu,A simple drawing of a yellow fatu. The flower is a light yellow with small green leaves around where the stem connects. The center of the flower is orange.
+stipule.png,froggygolem,stipule,brown branch with green leaf that has two green stipules sprouting from where the leaf and branch meet.
+yellow fatu.png,Ani,yellow fatu,A simple drawing of a yellow fatu. The flower is a light yellow with small green leaves around where the stem connects. The center of the flower is orange.
 trunk m.png,M,trunk,"a close view of the trunk of a tall oak tree, with a purple arrow pointing to it from either side."
 stump m.png,M,stump,a brown tree stump with some roots and a lighter brown interior
 yellow rose rc.png,Bear,yellow rose,a yellow rose on a green stem
