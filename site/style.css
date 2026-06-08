@@ -78,6 +78,16 @@ figcaption {
     background-color: white;
     color: black;
   }
+
+  a:link {
+    color: rgb(60, 139, 165);
+  }
+  a:visited {
+    color: mediumpurple;
+  }
+  a:active {
+    color: #f33;
+  }
 }
 
 /* Responsive layout - when the screen is less than 600px wide, make the three columns stack on top of each other instead of next to each other */
