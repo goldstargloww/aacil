@@ -37,7 +37,45 @@ EXTRA_SUBCATEGORIES = {
 
 # Anything listed here is renamed when displaying
 # (Anything _not_ listed will display the folder name)
-SUBCATEGORY_FRIENDLY_NAMES = {
+CATEGORY_FRIENDLY_NAMES = {
+    ('', 'AAC Org'): "AAC organisation",
+    ('', 'Actions'): "actions",
+    ('', 'Artscrafts'): "arts & crafts",
+    ('', 'Body'): "body",
+    ('', 'Colours'): "colours",
+    ('', 'Concepts'): "concepts",
+    ('', 'Directions'): "directions",
+    ('', 'Disability'): "disability",
+    ('', 'Education'): "education",
+    ('', 'Feelings'): "feelings",
+    ('', 'History'): "history",
+    ('', 'HR INR'): "human rights & international relations",
+    ('', 'Inflections'): "inflections & tone",
+    ('', 'Law'): "law & politics",
+    ('', 'LBGT_'): "LBGTQIA+",
+    ('', 'Linguistics'): "linguistics",
+    ('', 'Media'): "media",
+    ('', 'Medical'): "medical",
+    ('', 'MH'): "mental health crisis & death",
+    ('', 'Money'): "money",
+    ('', 'Natural Disaster'): "natural disaster & emergency",
+    ('', 'Nature'): "nature & animals",
+    ('', 'Objects'): "objects",
+    ('', 'Pain'): "pain",
+    ('', 'People'): "people",
+    ('', 'Phrases'): "phrases & social",
+    ('', 'Places'): "places",
+    ('', 'Punctuation'): "punctuation",
+    ('', 'Self-Advocacy'): "self-advocacy",
+    ('', 'Sex'): "sex",
+    ('', 'Small-Core words'): "small / core words",
+    ('', 'Sports-Games'): "sports & games",
+    ('', 'Supports'): "supports",
+    ('', 'Swearing'): "swearing",
+    ('', 'Tech'): "technology",
+    ('', 'Time'): "time",
+    ('', 'Trauma-abuse'): "trauma & abuse",
+
     ('/AAC Org', 'bodymedical'): "body & medical folders",
     ('/AAC Org', 'conceptsfolders'): "concepts folders",
     ('/AAC Org', 'disabilityfolders'): "disability folders",
@@ -150,6 +188,12 @@ CW_TEXT = {
     '/Small-Core words': "high contrast symbols below",
 }
 
+CW_CATEGORY = {
+    '/MH': '/warning.html',
+    '/Sex': '/Sex/warning.html',
+    '/Swearing': '/Swearing/swear_warning.html',
+}
+
 
 def find_all_csv_files():
     return glob.glob(f'{REPO_ROOT}/site/**/*.csv', recursive=True)
@@ -198,8 +242,8 @@ def generate_one_page(all_syms, csv_filename, category_tree, template):
     # Get the human-friendly subcategory names
     subcat_names = []
     for subcat in subcategories:
-        if (this_cat, subcat) in SUBCATEGORY_FRIENDLY_NAMES:
-            subcat_names.append(SUBCATEGORY_FRIENDLY_NAMES[this_cat, subcat])
+        if (this_cat, subcat) in CATEGORY_FRIENDLY_NAMES:
+            subcat_names.append(CATEGORY_FRIENDLY_NAMES[this_cat, subcat])
         else:
             subcat_names.append(subcat)
 
@@ -307,6 +351,37 @@ def main():
             sym_first_letters=all_sym_first_letters,
             syms_by_letter=all_syms_by_letter,
         )
+        f.write(rendered)
+
+    # Generate category map page
+    def reformat_sitemap_subtree(category_node, path_so_far='/'):
+        ret = []
+        for (subcat, subcat_node) in category_node.items():
+            node = {
+                "url": f'{path_so_far}{subcat}/'
+            }
+            # SPECIAL: Categories that have a blanket CW
+            if node["url"][:-1] in CW_CATEGORY:
+                node["url"] = CW_CATEGORY[node["url"][:-1]]
+            # Loop up the nice name
+            assert path_so_far.endswith('/')
+            if (path_so_far[:-1], subcat) in CATEGORY_FRIENDLY_NAMES:
+                node["desc"] = CATEGORY_FRIENDLY_NAMES[(path_so_far[:-1], subcat)]
+            else:
+                node["desc"] = subcat
+            # Do recursion
+            if subcat_node:
+                node["children"] = reformat_sitemap_subtree(subcat_node, node["url"])
+            ret.append(node)
+        ret.sort(key=lambda x: x["desc"].upper())
+        return ret
+    sitemap_data = reformat_sitemap_subtree(category_tree)
+    for x in sitemap_data:
+        print(x["url"])
+
+    sitemap_template = jinja_env.get_template("map.html")
+    with open(f'{REPO_ROOT}/site/map2.html', 'w') as f:
+        rendered = sitemap_template.render(sitemap_data=sitemap_data)
         f.write(rendered)
 
 

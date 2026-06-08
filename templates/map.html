@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AAC Image Library</title>
+
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+
+        <style>
+            li {
+                font-size: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <p><a href="..">click here to go back.</a></p>
+
+        <h1>symbol pages map</h1>
+
+        <ul>
+        {% for item in sitemap_data recursive %}
+            <li>
+                <a href="{{ item.url }}">{{ item.desc }}{% if item.icon %} <img src="{{ item.icon }}" height="80">{% endif %}</a>
+                {% if item.children %}
+                <ul>{{ loop(item.children) }}</ul>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+
+        <p class="center"><a href="..">click here to go back.</a></p>
+    </body>
+</html>
