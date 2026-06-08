@@ -32,7 +32,8 @@ EXTRA_SUBCATEGORIES = {
 
     '/Objects/clothes': [('/Objects/religious head coverings/', 'religious head coverings/')],
     '/Objects/food/dq': [('/Medical/allergy/', 'allergies')],
-    '/Objects/religion': [('/Objects/religious head coverings/', 'religious head coverings/')],
+
+    '/Religion': [('/Objects/religious head coverings/', 'religious head coverings/')],
 }
 
 # Anything listed here is renamed when displaying
@@ -66,6 +67,7 @@ CATEGORY_FRIENDLY_NAMES = {
     ('', 'Phrases'): "phrases & social",
     ('', 'Places'): "places",
     ('', 'Punctuation'): "punctuation",
+    ('', 'Religion'): "religion & folklore",
     ('', 'Self-Advocacy'): "self-advocacy",
     ('', 'Sex'): "sex",
     ('', 'Small-Core words'): "small / core words",
@@ -132,12 +134,6 @@ CATEGORY_FRIENDLY_NAMES = {
 
     ('/Objects', 'religion'): "religion & folklore",
     ('/Objects/food', 'dq'): "dietary requirements",
-    ('/Objects/religion', 'paganism'): "paganism & neopaganism",
-    ('/Objects/religion', 'i'): "Islam",
-    ('/Objects/religion', 'folklore'): "Folklore",
-    ('/Objects/religion', 'buddhism'): "Buddhism",
-    ('/Objects/religion', 'j'): "Judaism",
-    ('/Objects/religion', 'c'): "Christianity",
 
     ('/Pain', 'charts levels'): "pain charts & pain levels",
     ('/Pain', 'parts'): "pain in specific body parts",
@@ -146,6 +142,13 @@ CATEGORY_FRIENDLY_NAMES = {
     ('/People', 'nonspecific'): "nonspecific people / generic faces",
 
     ('/Places', 'regions'): "countries & regions",
+
+    ('/Religion', 'paganism'): "paganism & neopaganism",
+    ('/Religion', 'i'): "Islam",
+    ('/Religion', 'folklore'): "Folklore",
+    ('/Religion', 'buddhism'): "Buddhism",
+    ('/Religion', 'j'): "Judaism",
+    ('/Religion', 'c'): "Christianity",
 
     ('/Self-Advocacy', 'disability'): "disability self-advocacy",
 
@@ -285,14 +288,16 @@ CATEGORY_ICONS = {
     '/Places/regions': "bahamas midi.png",
     '/Places/mountains': "Mount_Lebanon_2.png",
     '/Punctuation': "percent.png",
-    '/Objects/religion': "deity petri.png",
-    '/Objects/religion/buddhism': "merit chan.png",
-    '/Objects/religion/c': "gg cross.png",
-    '/Objects/religion/i': "islam green.png",
-    '/Objects/religion/j': "Judaism.png",
-    '/Objects/religion/folklore': "green man.png",
-    '/Objects/religion/paganism': "pagan ee.png",
-    '/Objects/religion/folklore/tarot': "cups koda.png",
+
+    '/Religion': "deity petri.png",
+    '/Religion/buddhism': "merit chan.png",
+    '/Religion/c': "gg cross.png",
+    '/Religion/i': "islam green.png",
+    '/Religion/j': "Judaism.png",
+    '/Religion/folklore': "green man.png",
+    '/Religion/paganism': "pagan ee.png",
+    '/Religion/folklore/tarot': "cups koda.png",
+
     '/Self-Advocacy': "you're not listening to me.png",
     '/Self-Advocacy/bigotry': "fatphobia.png",
     '/Self-Advocacy/disability': "disabled people need plastic straws tonto.png",
@@ -336,7 +341,6 @@ CW_CATEGORY = {
 
 MAIN_PAGE_EXTRA_CATEGORIES = [
     ('/Objects/food', "food"),
-    ('/Objects/religion', "religion & folklore"),
     ('/Objects/substances', "substances"),
 ]
 
