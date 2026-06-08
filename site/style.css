@@ -30,6 +30,11 @@ border: 1px solid grey;
 }
 
 /* New code, TODO clean up old code */
+.cw {
+  margin: 2lh;
+  text-align: center;
+}
+
 .center {
   text-align: center;
 }

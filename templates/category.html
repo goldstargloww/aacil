@@ -31,6 +31,22 @@
         {% endfor %}
         </div>
 
+        {% if figs_with_cw %}
+        <h2 class="cw">{{ cw_text }}</h2>
+
+        <div class="figlist">
+        {% for fig in figs_with_cw %}
+            <figure>
+                <div class="imgcontain"><img src="{{ fig["Image URL"] }}" alt="{{ fig["Alt text"] }}"></div>
+                <figcaption>
+                    <span class="caption">{{ fig["Caption"] }}</span>
+                    <span class="credit"> | By {{ fig["Credit"] }}.</span>
+                </figcaption>
+            </figure>
+        {% endfor %}
+        </div>
+        {% endif %}
+
         <p class="center"><a href="..">click here to go back.</a></p>
     </body>
 </html>

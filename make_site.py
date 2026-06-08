@@ -139,6 +139,16 @@ MEDIA_PAGE_SPECIAL_ICONS = {
     'Animal Crossing': "gyroid.png",
 }
 
+CW_TEXT = {
+    '/Body/menstruation': "Below are symbols with blood:",
+    '/Disability/plurality_system': "the following symbols represent opinions and may be upsetting",
+    '/LBGT_': "high-contrast symbols below",
+    '/LBGT_/intersex': "Warning: the symbols below depict intersexism and IGM",
+    '/Medical': "pictures with needles below",
+    '/Objects/substances': "pictures with needles below",
+    '/Small-Core words': "high contrast symbols below",
+}
+
 
 def find_all_csv_files():
     return glob.glob(f'{REPO_ROOT}/site/**/*.csv', recursive=True)
@@ -204,9 +214,17 @@ def generate_one_page(csv_filename, all_subcategories, template):
             subcat_names.append(extra_cat_text)
 
     # Load CSV
+    figs = []
+    figs_with_cw = []
+    current_figs = figs
     with open(csv_filename, 'r', newline='') as f:
         reader = csv.DictReader(f)
-        figs = list(reader)
+        for row in reader:
+            # This marks the separation with CWed items
+            if row["Image URL"] == '----------':
+                current_figs = figs_with_cw
+                continue
+            current_figs.append(row)
 
     # .csv -> index.html
     html_filename = os.path.dirname(csv_filename) + '/index.html'
@@ -224,9 +242,20 @@ def generate_one_page(csv_filename, all_subcategories, template):
             "text": subcat_names[i],
         } for i in range(len(subcategories))]
 
+    # SPECIAL: Handle CWs
+    if figs_with_cw:
+        cw_text = CW_TEXT[this_cat]
+    else:
+        cw_text = ""
+
     # Actually make the output
     subcats = sorted(data_for_page, key=lambda x: x["text"])
-    rendered = template.render(figs=figs, subcats=subcats)
+    rendered = template.render(
+        figs=figs,
+        figs_with_cw=figs_with_cw,
+        subcats=subcats,
+        cw_text=cw_text,
+    )
     with open(html_filename, 'w') as f:
         f.write(rendered)
 
