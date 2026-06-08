@@ -163,6 +163,78 @@ CATEGORY_FRIENDLY_NAMES = {
 }
 
 CATEGORY_ICONS = {
+    '/AAC': "aac device with keyguard.png",
+    '/AAC/verbality': "hyper verbal rae.png",
+    '/AAC Org': "aac folder t.png",
+    '/AAC Org/bodymedical': "../medical folder neon 2.png",
+    '/AAC Org/conceptsfolders': "../concepts folder crows 1.png",
+    '/AAC Org/disabilityfolders': "../disability folder t.png",
+    '/AAC Org/letter folders': "Alphabet - A Black Thick.png",
+    '/AAC Org/naturefolders': "../flowers folder crows 3.png",
+    '/AAC Org/people folders': "../people folder petri 8.png",
+    '/AAC Org/religionfolders': "../religion folder t.png",
+    '/AAC Org/templates': "cube.png",
+    '/Actions': "start to finish tt.png",
+    '/Actions/cognitive': "i'm thinking.png",
+    '/Actions/talking': "talk m.png",
+    '/Actions/mobility': "walk with cane.png",
+    '/Actions/sensing': "see tonto.png",
+    '/Actions/social': "../meet ts.png",
+    '/Actions/stimming': "fidget 2.png",
+    '/Actions/ADLs': "feeding.png",
+    '/Actions/ADLs/conditioning hair': "ch ls black.png",
+    '/Artscrafts': "Arts And Crafts.png",
+    '/Body': "leg 2.png",
+    '/Body/chest': "chest 1ab.png",
+    '/Body/facialfeatures': "../nose/nose ee.png",
+    '/Body/hair': "../braids esrah.png",
+    '/Body/menstruation': "pad.png",
+    '/Colours': "colors cc.png",
+    '/Concepts': "concept.png",
+    '/Concepts/alterhumanity': "therian five guys.png",
+    '/Concepts/anthropology sociology': "inquisitive observation.png",
+    '/Concepts/astrology': "taurus.png",
+    '/Concepts/physics': "atomic.png",
+    '/description': "squishy neon.png",
+    '/description/quantity': "../several pheonix.png",
+    '/description/sensory': "../hot levi.png",
+    '/Directions': "here.png",
+    '/Disability': "disability stellar.png",
+    '/Disability/delusion_hallucination': "hallucinating bh 2.png",
+    '/Disability/pd': "../personality disorder vixen.png",
+    '/Disability/plurality_system': "system sc.png",
+    '/Disability/specific_disabilities': "../s/amputee 1.png",
+    '/Disability/specific_disabilities/autism': "../../autism gold.png",
+    '/Disability/specific_disabilities/paraphilia': "../../s/paraphilia/paraphilia chrome.png",
+    '/Disability/specific_disabilities/phobias': "../../s/phobias/phobia m.png",
+    '/Disability/specific_disabilities/scoliosis': "../../s/scoliosis.png",
+    '/Education': "degree.png",
+    '/Education/sci': "experimental group.png",
+    '/Education/math': "pi.png",
+    '/Feelings': "Excited stellar.png",
+    '/Feelings/attraction': "../romantic attraction bh.png",
+    '/Feelings/empathy': "empathy petri.png",
+    '/Objects/food': "banana bread.png",
+    '/Objects/food/dq': "../gluten free.png",
+    '/Objects/food/drink': "../ice water.png",
+    '/Objects/food/fruit': "../orange slice.png",
+    '/Objects/food/seasoning': "spices.png",
+    '/History': "../Concepts/history.png",
+    '/HR INR': "united nations.png",
+    '/HR INR/IP': "palestinian flag tonto.png",
+    '/Law': "civil law.png",
+    '/Law/laws': "ryan's rule.png",
+    '/LBGT_': "/LBGT+/progress pride.png",
+    '/LBGT_/intersex': "/LBGT+/intersex ani.png",
+    '/Linguistics': "hungarian.png",
+    '/Linguistics/glyphs/latin lc': "a_lc red 1.png",
+    '/Linguistics/glyphs/latin uc': "a red 1.png",
+    '/Linguistics/glyphs/aurebesh': "aurek.png",
+    '/Linguistics/glyphs/furthark': "algiz 1.png",
+    '/Linguistics/glyphs/ender': "ender a.png",
+    '/Linguistics/glyphs/greek': "theta.png",
+    '/Linguistics/glyphs/sitelen pona': "a sp.png",
+    '/Media': "comic book.png",
     '/Media/My Little Pony': "earth pony.png",
     '/Media/Pokemon': "pokeball.png",
     '/Media/Sega': "classic sonic the hedgehog.png",
@@ -176,6 +248,74 @@ CATEGORY_ICONS = {
     '/Media/Bluey': "bluey crows.png",
     '/Media/Minecraft': "blocks/grass block neon.png",
     '/Media/Animal Crossing': "gyroid.png",
+    '/Medical': "emergency medical.png",
+    '/Medical/allergy': "../serious latex allergy bh.png",
+    '/Medical/medications': "../medicine crows.png",
+    '/Medical/tumor': "benign tumor 2.png",
+    '/MH': "suicidal neu.png",
+    '/Money': "refund pheonix.png",
+    '/Natural Disaster': "emergency stellar.png",
+    '/Nature': "altitude.png",
+    '/Nature/animals': "cat1.png",
+    '/Nature/animals/parts': "face 5 guys.png",
+    '/Nature/animals/birds': "../evening grosbeak.png",
+    '/Nature/animals/cats': "../brown tabby cat budget.png",
+    '/Nature/animals/bugs': "../snail petri.png",
+    '/Nature/astro': "../constellation.png",
+    '/Nature/elements': "1 hydrogen.png",
+    '/Nature/genetics': "dna.png",
+    '/Nature/plants': "../bush.png",
+    '/Nature/weather': "../weather stellar.png",
+    '/Objects': "folded towel blue.png",
+    '/Objects/accessories': "Baseball cap.png",
+    '/Objects/clothes': "tshirt talksense.png",
+    '/Objects/furniture': "Bed stellar.png",
+    '/Objects/religious head coverings': "niqab1.png",
+    '/Objects/soft toys': "../teddy bear.png",
+    '/Pain': "Pain-froggygolem.png",
+    '/Pain/parts': "../back pain blackhole.png",
+    '/Pain/charts levels': "Pain-chart-pastel-froggygolem.png",
+    '/People': "people2.png",
+    '/People/endearment': "sweetheart.png",
+    '/People/nonspecific': "person m 2.png",
+    '/People/r': "../my children tonto.png",
+    '/People/specific people': "LLPSS.png",
+    '/Phrases': "explain it like i'm 5 plum.png",
+    '/Places': "parent's house.png",
+    '/Places/regions': "../bahamas midi.png",
+    '/Places/mountains': "../Mount_Lebanon_2.png",
+    '/Punctuation': "percent.png",
+    '/Objects/religion': "deity petri.png",
+    '/Objects/religion/buddhism': "merit chan.png",
+    '/Objects/religion/c': "gg cross.png",
+    '/Objects/religion/i': "../islam green.png",
+    '/Objects/religion/j': "../Judaism.png",
+    '/Objects/religion/folklore': "green man.png",
+    '/Objects/religion/paganism': "../folklore/pagan ee.png",
+    '/Objects/religion/folklore/tarot': "cups koda.png",
+    '/Self-Advocacy': "you're not listening to me.png",
+    '/Self-Advocacy/bigotry': "fatphobia.png",
+    '/Self-Advocacy/disability': "../disabled people need plastic straws tonto.png",
+    '/Sex': "condom chrome.png",
+    '/Small-Core words': "yes m.png",
+    '/Small-Core words/pronouns': "They.png",
+    '/Small-Core words/pronouns/neos': "../star 2.png",
+    '/Sports-Games': "Soccer Ball.png",
+    '/Sports-Games/MTG': "mtg card.png",
+    '/Sports-Games/Ski': "ski pole legless rat.png",
+    '/Sports-Games/ttrpg': "/Objects/dice.png",
+    '/Objects/substances': "scheduled_substance.png",
+    '/Supports': "carer.png",
+    '/Supports/braces': "../afo brace 3.png",
+    '/Supports/mobility': "../active_wheelchair_1.png",
+    '/Swearing': "bullshit vixen 4.png",
+    '/Tech': "laptop computer stellar.png",
+    '/Time': "running early vixen.png",
+    '/Time/holidays': "indigenous peoples day koda.png",
+    '/Time/holidays/christmas': "/Objects/religion/santa claus tonto.png",
+    '/Time/holidays/halloween': "../trick or treating bh.png",
+    '/Trauma-abuse': "intergenerational trauma 2.png",
+
 }
 
 CW_TEXT = {
@@ -360,15 +500,26 @@ def main():
             node = {
                 "url": f'{path_so_far}{subcat}/'
             }
+
+            # Look up the icon
+            if node["url"][:-1] in CATEGORY_ICONS:
+                icon = CATEGORY_ICONS[node["url"][:-1]]
+                if not icon.startswith('/'):
+                    node["icon"] = node["url"] + icon
+                else:
+                    node["icon"] = icon
+
             # SPECIAL: Categories that have a blanket CW
             if node["url"][:-1] in CW_CATEGORY:
                 node["url"] = CW_CATEGORY[node["url"][:-1]]
-            # Loop up the nice name
+
+            # Look up the nice name
             assert path_so_far.endswith('/')
             if (path_so_far[:-1], subcat) in CATEGORY_FRIENDLY_NAMES:
                 node["desc"] = CATEGORY_FRIENDLY_NAMES[(path_so_far[:-1], subcat)]
             else:
                 node["desc"] = subcat
+
             # Do recursion
             if subcat_node:
                 node["children"] = reformat_sitemap_subtree(subcat_node, node["url"])
@@ -376,11 +527,9 @@ def main():
         ret.sort(key=lambda x: x["desc"].upper())
         return ret
     sitemap_data = reformat_sitemap_subtree(category_tree)
-    for x in sitemap_data:
-        print(x["url"])
 
     sitemap_template = jinja_env.get_template("map.html")
-    with open(f'{REPO_ROOT}/site/map2.html', 'w') as f:
+    with open(f'{REPO_ROOT}/site/map.html', 'w') as f:
         rendered = sitemap_template.render(sitemap_data=sitemap_data)
         f.write(rendered)
 
