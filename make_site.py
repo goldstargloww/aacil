@@ -3,6 +3,7 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import csv
 import glob
+import grapheme
 import os
 
 # Get the directory this script is found in
@@ -186,7 +187,7 @@ def collect_subcategories(all_csv_files):
     return subcategories
 
 
-def generate_one_page(csv_filename, all_subcategories, template):
+def generate_one_page(all_syms, csv_filename, all_subcategories, template):
     # Get the URL for looking up subcategories
     remove_prefix = f'{REPO_ROOT}/site'
     assert csv_filename.startswith(remove_prefix)
@@ -224,6 +225,17 @@ def generate_one_page(csv_filename, all_subcategories, template):
             if row["Image URL"] == '----------':
                 current_figs = figs_with_cw
                 continue
+
+            # Resolve the URL appropriately
+            url = row["Image URL"]
+            if not url.startswith('/'):
+                url = this_cat+'/'+url
+
+            # Keep track of information, for "all symbols" list
+            if url not in all_syms:
+                all_syms[url] = set()
+            all_syms[url].add(row["Caption"])
+
             current_figs.append(row)
 
     # .csv -> index.html
@@ -269,8 +281,38 @@ def main():
 
     all_csvs = find_all_csv_files()
     subcategories = collect_subcategories(all_csvs)
+    all_syms = {}
     for csv_file in all_csvs:
-        generate_one_page(csv_file, subcategories, category_template)
+        generate_one_page(all_syms, csv_file, subcategories, category_template)
+
+    # Generate "all symbols" page
+    # all_syms is currently a map of URLs to a *set* of captions, so flatten it
+    all_syms_flattened = []
+    for (url, captions) in all_syms.items():
+        for caption in captions:
+            all_syms_flattened.append((url, caption))
+    all_syms_flattened.sort(key=lambda x: (x[1].upper(), x[0]))
+    # print(all_syms_flattened)
+    all_sym_first_letters = []
+    all_syms_by_letter = {}
+    for (url, caption) in all_syms_flattened:
+        first_letter = grapheme.graphemes(caption).__next__()
+        first_letter = first_letter.upper()
+        if first_letter not in all_syms_by_letter:
+            all_sym_first_letters.append(first_letter)
+            all_syms_by_letter[first_letter] = []
+        all_syms_by_letter[first_letter].append({
+            "url": url,
+            "caption": caption,
+        })
+
+    all_syms_template = jinja_env.get_template("list.html")
+    with open(f'{REPO_ROOT}/site/list.html', 'w') as f:
+        rendered = all_syms_template.render(
+            sym_first_letters=all_sym_first_letters,
+            syms_by_letter=all_syms_by_letter,
+        )
+        f.write(rendered)
 
 
 if __name__ == '__main__':
