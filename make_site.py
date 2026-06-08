@@ -9,8 +9,127 @@ import os
 REPO_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 # TODO: We should make this more user-friendly to edit
+# Sometimes a subcategory is needed which doesn't match the folder tree
+EXTRA_SUBCATEGORIES = {
+    '/Body': [('/Nature/animals/parts/', 'animal parts')],
+    '/Disability': [('/AAC/verbality/', 'verbality')],
+    '/Education': [('/Concepts/anthropology sociology/', 'Anthropology & Sociology')],
+
+    '/Linguistics': [
+        ('/Linguistics/glyphs/latin lc/', 'lowercase latin letters (abcs)'),
+        ('/Linguistics/glyphs/latin uc/', 'uppercase latin letters (ABCs)'),
+        ('/Linguistics/glyphs/aurebesh/', 'aurebesh letters'),
+        ('/Linguistics/glyphs/furthark/', 'the Elder Furthark'),
+        ('/Linguistics/glyphs/ender/', 'Ender glyphs'),
+        ('/Linguistics/glyphs/greek/', 'ancient Greek letters'),
+        ('/Linguistics/glyphs/sitelen pona/', 'sitelen pona'),
+    ],
+
+    '/Nature': [('animals/bugs', 'Bugs')],
+
+    '/Objects/clothes': [('/Objects/religious head coverings/', 'religious head coverings/')],
+    '/Objects/food/dq': [('/Medical/allergy/', 'allergies')],
+    '/Objects/religion': [('/Objects/religious head coverings/', 'religious head coverings/')],
+}
+
+# Anything listed here is renamed when displaying
+# (Anything _not_ listed will display the folder name)
 SUBCATEGORY_FRIENDLY_NAMES = {
-    ('/AAC Org', 'bodymedical'): "body & medical folders"
+    ('/AAC Org', 'bodymedical'): "body & medical folders",
+    ('/AAC Org', 'conceptsfolders'): "concepts folders",
+    ('/AAC Org', 'disabilityfolders'): "disability folders",
+    ('/AAC Org', 'letter folders'): "letter folders",
+    ('/AAC Org', 'naturefolders'): "nature & animals folders",
+    ('/AAC Org', 'people folders'): "people folders",
+    ('/AAC Org', 'religionfolders'): "religion folders",
+    ('/AAC Org', 'templates'): "symbol templates",
+
+    ('/Actions', 'ADLs'): "ADLs and iADLs",
+    ('/Actions', 'talking'): "communicating",
+
+    ('/Body', 'facialfeatures'): "facial features",
+    ('/Body', 'chest'): "chests",
+
+    ('/Concepts', 'alterhumanity'): "Alterhumanity, therianthropy, otherkin",
+    ('/Concepts', 'anthropology sociology'): "Anthropology & Sociology",
+    ('/Concepts', 'physics'): "Physics",
+    ('/Concepts', 'astrology'): "Astrology",
+
+    ('/description', 'quantity'): "quantities and sizes",
+    ('/description', 'sensory'): "sensory description",
+
+    ('/Disability', 'pd'): "personality disorders",
+    ('/Disability', 'delusion_hallucination'): "delusions & hallucinations",
+    ('/Disability', 'orgs'): "disability organisations",
+    ('/Disability', 'plurality_system'): "plurality / systems",
+    ('/Disability', 'specific_disabilities'): "specific disabilities / impairments",
+    ('/Disability/specific_disabilities', 'tics'): "tics & Tourette",
+
+    ('/Education', 'sci'): "general science",
+
+    ('/Feelings', 'empathy'): "empathy & sympathy",
+
+    ('/HR INR', 'IP'): "Israel and Palestine",
+
+    ('/Law', 'laws'): "specific laws",
+
+    # FIXME
+    # ('/Media', 'My Little Pony'): "",
+    # ('/Media', 'Pokemon'): "",
+    # ('/Media', 'Sega'): "",
+    # ('/Media', 'X Men'): "",
+    # ('/Media', 'TMA'): "",
+    # ('/Media', 'Star Wars'): "",
+    # ('/Media', 'Transformers'): "",
+    # ('/Media', 'Tropes'): "",
+    # ('/Media', 'Deltarune'): "",
+    # ('/Media', 'Star Trek'): "",
+    # ('/Media', 'Bluey'): "",
+    # ('/Media', 'Minecraft'): "",
+    # ('/Media', 'Animal Crossing'): "",
+    # ('/Media/Minecraft', 'cake'): "",
+
+    ('/Medical', 'tumor'): "tumors",
+    ('/Medical', 'allergy'): "allergies",
+
+    ('/Nature', 'plants'): "Plants",
+    ('/Nature', 'elements'): "Elements",
+    ('/Nature', 'animals'): "Animals",
+    ('/Nature', 'weather'): "Weather",
+    ('/Nature', 'genetics'): "Genetics",
+    ('/Nature', 'astro'): "Astronomy",
+    ('/Nature/animals', 'parts'): "animal parts",
+
+    ('/Objects', 'religion'): "religion & folklore",
+    ('/Objects/food', 'dq'): "dietary requirements",
+    ('/Objects/religion', 'paganism'): "paganism & neopaganism",
+    ('/Objects/religion', 'i'): "Islam",
+    ('/Objects/religion', 'folklore'): "Folklore",
+    ('/Objects/religion', 'buddhism'): "Buddhism",
+    ('/Objects/religion', 'j'): "Judaism",
+    ('/Objects/religion', 'c'): "Christianity",
+
+    ('/Pain', 'charts levels'): "pain charts & pain levels",
+    ('/Pain', 'parts'): "pain in specific body parts",
+
+    ('/People', 'r'): "relationships",
+    ('/People', 'nonspecific'): "nonspecific people / generic faces",
+
+    ('/Places', 'regions'): "countries & regions",
+
+    ('/Self-Advocacy', 'disability'): "disability self-advocacy",
+
+    ('/Small-Core words/pronouns', 'neos'): "neopronouns",
+
+    ('/Sports-Games', 'MTG'): "Magic: the Gathering",
+    ('/Sports-Games', 'ttrpg'): "tabletop role-playing games",
+    ('/Sports-Games', 'Ski'): "skiing",
+
+    ('/Supports', 'mobility'): "mobility aids",
+    ('/Supports', 'braces'): "braces & orthortics",
+
+    ('/Time/holidays', 'halloween'): "Halloween",
+    ('/Time/holidays', 'christmas'): "Christmas & Yule",
 }
 
 
@@ -58,7 +177,7 @@ def generate_one_page(csv_filename, all_subcategories, template):
 
     # Look up the subcategories
     if this_cat in all_subcategories:
-        subcategories = sorted(all_subcategories[this_cat])
+        subcategories = all_subcategories[this_cat]
         # print(this_cat, subcategories)
     else:
         subcategories = []
@@ -71,6 +190,12 @@ def generate_one_page(csv_filename, all_subcategories, template):
         else:
             subcat_names.append(subcat)
 
+    # Get the _extra_ subcategories
+    if this_cat in EXTRA_SUBCATEGORIES:
+        for (extra_cat_url, extra_cat_text) in EXTRA_SUBCATEGORIES[this_cat]:
+            subcategories.append(extra_cat_url)
+            subcat_names.append(extra_cat_text)
+
     # Load CSV
     with open(csv_filename, 'r', newline='') as f:
         reader = csv.DictReader(f)
@@ -80,7 +205,7 @@ def generate_one_page(csv_filename, all_subcategories, template):
     html_filename = os.path.dirname(csv_filename) + '/index.html'
 
     # Actually make the output
-    subcats = list(zip(subcategories, subcat_names))
+    subcats = sorted(zip(subcategories, subcat_names), key=lambda x: x[1])
     rendered = template.render(figs=figs, subcats=subcats)
     with open(html_filename, 'w') as f:
         f.write(rendered)
