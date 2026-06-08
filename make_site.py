@@ -124,20 +124,20 @@ SUBCATEGORY_FRIENDLY_NAMES = {
     ('/Time/holidays', 'christmas'): "Christmas & Yule",
 }
 
-MEDIA_PAGE_SPECIAL_ICONS = {
-    'My Little Pony': "earth pony.png",
-    'Pokemon': "pokeball.png",
-    'Sega': "classic sonic the hedgehog.png",
-    'X Men': "professor x.png",
-    'TMA': "the archivist gp 1.png",
-    'Star Wars': "charas/Yoda 1.png",
-    'Transformers': "transformers m.png",
-    'Tropes': "van helsing hate crimes.png",
-    'Deltarune': "deltarune ot.png",
-    'Star Trek': "Starfleet 1.png",
-    'Bluey': "bluey crows.png",
-    'Minecraft': "blocks/grass block neon.png",
-    'Animal Crossing': "gyroid.png",
+CATEGORY_ICONS = {
+    '/Media/My Little Pony': "earth pony.png",
+    '/Media/Pokemon': "pokeball.png",
+    '/Media/Sega': "classic sonic the hedgehog.png",
+    '/Media/X Men': "professor x.png",
+    '/Media/TMA': "the archivist gp 1.png",
+    '/Media/Star Wars': "charas/Yoda 1.png",
+    '/Media/Transformers': "transformers m.png",
+    '/Media/Tropes': "van helsing hate crimes.png",
+    '/Media/Deltarune': "deltarune ot.png",
+    '/Media/Star Trek': "Starfleet 1.png",
+    '/Media/Bluey': "bluey crows.png",
+    '/Media/Minecraft': "blocks/grass block neon.png",
+    '/Media/Animal Crossing': "gyroid.png",
 }
 
 CW_TEXT = {
@@ -155,8 +155,8 @@ def find_all_csv_files():
     return glob.glob(f'{REPO_ROOT}/site/**/*.csv', recursive=True)
 
 
-def collect_subcategories(all_csv_files):
-    subcategories = {}
+def collect_categories(all_csv_files):
+    cat_tree = {}
 
     for csv_file in all_csv_files:
         remove_prefix = f'{REPO_ROOT}/site'
@@ -165,40 +165,35 @@ def collect_subcategories(all_csv_files):
 
         # This is the path the CSV file is in,
         # e.g. /AAC Org/aacorg.csv --> /AAC Org
-        containing_dir_name = os.path.dirname(csv_file_name)
-        # This is one level further up,
-        # e.g. /AAC Org/aacorg.csv --> /AAC Org --> /
-        parent_dir_name = os.path.dirname(containing_dir_name)
-        # The name of just this category by itself
-        # e.g. /AAC Org/aacorg.csv --> /AAC Org --> AAC Org
-        this_category_name = os.path.basename(containing_dir_name)
-        # Make sure it was all correct
-        assert this_category_name
-        if parent_dir_name == '/':
-            assert containing_dir_name == '/'+this_category_name
-        else:
-            assert containing_dir_name == parent_dir_name \
-                + '/'+this_category_name
+        this_cat_path = os.path.dirname(csv_file_name)
 
-        if parent_dir_name not in subcategories:
-            subcategories[parent_dir_name] = []
-        subcategories[parent_dir_name].append(this_category_name)
+        # Remove leading / and split into segments
+        assert this_cat_path.startswith('/')
+        this_cat_path = this_cat_path[1:].split('/')
 
-    return subcategories
+        cat_tree_walk = cat_tree
+        # Make sure each segment is defined in the tree
+        for path_seg in this_cat_path:
+            if path_seg not in cat_tree_walk:
+                cat_tree_walk[path_seg] = {}
+            cat_tree_walk = cat_tree_walk[path_seg]
+
+    return cat_tree
 
 
-def generate_one_page(all_syms, csv_filename, all_subcategories, template):
+def generate_one_page(all_syms, csv_filename, category_tree, template):
     # Get the URL for looking up subcategories
     remove_prefix = f'{REPO_ROOT}/site'
     assert csv_filename.startswith(remove_prefix)
     this_cat = os.path.dirname(csv_filename[len(remove_prefix):])
 
     # Look up the subcategories
-    if this_cat in all_subcategories:
-        subcategories = all_subcategories[this_cat]
-        # print(this_cat, subcategories)
-    else:
-        subcategories = []
+    assert this_cat.startswith('/')
+    this_cat_path = this_cat[1:].split('/')
+    subcategories = category_tree
+    for path_seg in this_cat_path:
+        subcategories = subcategories[path_seg]
+    subcategories = list(subcategories)
 
     # Get the human-friendly subcategory names
     subcat_names = []
@@ -246,7 +241,7 @@ def generate_one_page(all_syms, csv_filename, all_subcategories, template):
         data_for_page = [{
             "url": subcategories[i],
             "text": subcat_names[i],
-            "icon": subcategories[i]+'/'+MEDIA_PAGE_SPECIAL_ICONS[subcategories[i]],
+            "icon": subcategories[i]+'/'+CATEGORY_ICONS[this_cat+'/'+subcategories[i]],
         } for i in range(len(subcategories))]
     else:
         data_for_page = [{
@@ -280,10 +275,10 @@ def main():
     category_template = jinja_env.get_template("category.html")
 
     all_csvs = find_all_csv_files()
-    subcategories = collect_subcategories(all_csvs)
+    category_tree = collect_categories(all_csvs)
     all_syms = {}
     for csv_file in all_csvs:
-        generate_one_page(all_syms, csv_file, subcategories, category_template)
+        generate_one_page(all_syms, csv_file, category_tree, category_template)
 
     # Generate "all symbols" page
     # all_syms is currently a map of URLs to a *set* of captions, so flatten it
