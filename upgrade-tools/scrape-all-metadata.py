@@ -19,45 +19,49 @@ def parse_one_file(fn):
     with open(fn, 'r') as f:
         soup = BeautifulSoup(f, 'html5lib')
 
-    figures = soup.find_all('figure')
     all_figs_meta = []
 
-    for fig in figures:
-        alt_text = fig.img.get('alt').strip()
-        url = fig.img.get('src').strip()
-        caption = fig.find(class_="caption").get_text().strip()
-        credit = fig.find(class_="credit").get_text().strip()
+    cols = soup.find_all('div', class_="column")
+    for (col_i, col) in enumerate(cols):
+        figures = col.find_all('figure')
+        for fig in figures:
+            alt_text = fig.img.get('alt').strip()
+            url = fig.img.get('src').strip()
+            caption = fig.find(class_="caption").get_text().strip()
+            credit = fig.find(class_="credit").get_text().strip()
 
-        # This should never happen, we're validating the data quality
-        if not credit.startswith("| By ") and not credit.startswith("| by "):
-            print(f"WARN BAD! '{credit}'")
-            assert False
+            # This should never happen, we're validating the data quality
+            if not credit.startswith("| By ") and not credit.startswith("| by "):
+                print(f"WARN BAD! '{credit}'")
+                assert False
 
-        # Remove the "| By " part
-        credit = credit[5:]
+            # Remove the "| By " part
+            credit = credit[5:]
 
-        if credit.endswith('.'):
-            credit = credit[:-1].strip()
+            if credit.endswith('.'):
+                credit = credit[:-1].strip()
 
-        # This should never happen either
-        if not url.startswith('/'):
-            print(f"WARN BAD! '{url}'")
-            assert False
+            # This should never happen either
+            if not url.startswith('/'):
+                print(f"WARN BAD! '{url}'")
+                assert False
 
-        # Make sure the image actually exists
-        url = urllib.parse.unquote(url)
-        if not os.path.exists('../site' + url):
-            print(f"WARN BAD! '{url}' '{caption}'")
-            # For now, some files are just missing
-            continue
+            # Make sure the image actually exists
+            url = urllib.parse.unquote(url)
+            if not os.path.exists('../site' + url):
+                print(f"WARN BAD! '{url}' '{caption}'")
+                # For now, some files are just missing
+                continue
 
-        # Make sure this is all filled in correctly
-        if not alt_text or not caption or not credit:
-            print(f"WARN BAD! '{url}'")
-            assert False
+            # Make sure this is all filled in correctly
+            if not alt_text or not caption or not credit:
+                print(f"WARN BAD! '{url}'")
+                assert False
 
-        # print(alt_text, url, caption, credit)
-        all_figs_meta.append((alt_text, url, caption, credit))
+            # Handle 3 cols, or 6 cols for pages with CW
+            assert col_i >= 0 and col_i < 6
+
+            all_figs_meta.append((alt_text, url, caption, credit, col_i))
 
     return all_figs_meta
 
