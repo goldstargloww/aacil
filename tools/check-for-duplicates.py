@@ -22,6 +22,12 @@ with open(filename, 'r', newline='') as fr:
                     anything_changed = True
                     continue
                 print(f"BAD! Duplicate found! {row["Image URL"]}")
+                print(existing_row["Credit"])
+                print(row["Credit"])
+                print(existing_row["Caption"])
+                print(row["Caption"])
+                print(existing_row["Alt text"])
+                print(row["Alt text"])
 
             seen_files[row["Image URL"]] = row
             writer.writerow(row)
