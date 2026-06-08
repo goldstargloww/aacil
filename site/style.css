@@ -8,28 +8,6 @@ body {
   font-family: Verdana;
 }
 
-.box{
-width: 500px;
-border: 1px solid grey;
-} 
-
-   
- /* Responsive layout - when the screen is less than 600px wide, make the three columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 600px) {
-  .column {
-    width: 100%;
-  }
-} 
-    
-    .row {
-  display: flex;
-}
-
-.column {
-  flex: 33%;
-}
-
-/* New code, TODO clean up old code */
 .space_above {
   margin-top: 2lh;
 }
