@@ -30,6 +30,10 @@ border: 1px solid grey;
 }
 
 /* New code, TODO clean up old code */
+.center {
+  text-align: center;
+}
+
 .figlist {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

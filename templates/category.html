@@ -11,7 +11,13 @@
     <body>
         <p><a href="..">click here to go back.</a></p>
 
-        <!-- TODO: Sub-categories -->
+        {% if subcats %}
+        <ul>
+            {% for subcat in subcats %}
+            <li><a href="{{ subcat[0] }}">{{ subcat[1] }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
         <div class="figlist">
         {% for fig in figs %}
@@ -24,5 +30,7 @@
             </figure>
         {% endfor %}
         </div>
+
+        <p class="center"><a href="..">click here to go back.</a></p>
     </body>
 </html>
