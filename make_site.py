@@ -25,6 +25,8 @@ EXTRA_SUBCATEGORIES = {
         ('/Linguistics/glyphs/sitelen pona/', 'sitelen pona'),
     ],
 
+    '/Media/Minecraft': [('/Linguistics/glyphs/ender/', 'Ender glyphs')],
+
     '/Nature': [('animals/bugs', 'Bugs')],
 
     '/Objects/clothes': [('/Objects/religious head coverings/', 'religious head coverings/')],
@@ -73,21 +75,10 @@ SUBCATEGORY_FRIENDLY_NAMES = {
 
     ('/Law', 'laws'): "specific laws",
 
-    # FIXME
-    # ('/Media', 'My Little Pony'): "",
-    # ('/Media', 'Pokemon'): "",
-    # ('/Media', 'Sega'): "",
-    # ('/Media', 'X Men'): "",
-    # ('/Media', 'TMA'): "",
-    # ('/Media', 'Star Wars'): "",
-    # ('/Media', 'Transformers'): "",
-    # ('/Media', 'Tropes'): "",
-    # ('/Media', 'Deltarune'): "",
-    # ('/Media', 'Star Trek'): "",
-    # ('/Media', 'Bluey'): "",
-    # ('/Media', 'Minecraft'): "",
-    # ('/Media', 'Animal Crossing'): "",
-    # ('/Media/Minecraft', 'cake'): "",
+    ('/Media', 'Sega'): "Sega / Sonic",
+    ('/Media', 'TMA'): "The Magnus Archives",
+    ('/Media', 'Tropes'): "tropes",
+    ('/Media/Minecraft', 'cake'): "minecraft-styled birthday cake",
 
     ('/Medical', 'tumor'): "tumors",
     ('/Medical', 'allergy'): "allergies",
@@ -130,6 +121,22 @@ SUBCATEGORY_FRIENDLY_NAMES = {
 
     ('/Time/holidays', 'halloween'): "Halloween",
     ('/Time/holidays', 'christmas'): "Christmas & Yule",
+}
+
+MEDIA_PAGE_SPECIAL_ICONS = {
+    'My Little Pony': "earth pony.png",
+    'Pokemon': "pokeball.png",
+    'Sega': "classic sonic the hedgehog.png",
+    'X Men': "professor x.png",
+    'TMA': "the archivist gp 1.png",
+    'Star Wars': "charas/Yoda 1.png",
+    'Transformers': "transformers m.png",
+    'Tropes': "van helsing hate crimes.png",
+    'Deltarune': "deltarune ot.png",
+    'Star Trek': "Starfleet 1.png",
+    'Bluey': "bluey crows.png",
+    'Minecraft': "blocks/grass block neon.png",
+    'Animal Crossing': "gyroid.png",
 }
 
 
@@ -204,8 +211,21 @@ def generate_one_page(csv_filename, all_subcategories, template):
     # .csv -> index.html
     html_filename = os.path.dirname(csv_filename) + '/index.html'
 
+    if this_cat == '/Media':
+        # SPECIAL: handle icons on /Media
+        data_for_page = [{
+            "url": subcategories[i],
+            "text": subcat_names[i],
+            "icon": subcategories[i]+'/'+MEDIA_PAGE_SPECIAL_ICONS[subcategories[i]],
+        } for i in range(len(subcategories))]
+    else:
+        data_for_page = [{
+            "url": subcategories[i],
+            "text": subcat_names[i],
+        } for i in range(len(subcategories))]
+
     # Actually make the output
-    subcats = sorted(zip(subcategories, subcat_names), key=lambda x: x[1])
+    subcats = sorted(data_for_page, key=lambda x: x["text"])
     rendered = template.render(figs=figs, subcats=subcats)
     with open(html_filename, 'w') as f:
         f.write(rendered)
