@@ -499,6 +499,15 @@ def main():
         )
         f.write(rendered)
 
+    # Generate "all symbols" report, only for the admins to look at
+    all_img_urls = set()
+    for (url, caption) in all_syms_flattened:
+        all_img_urls.add(url)
+    all_img_urls = sorted(all_img_urls)
+    with open('all_images.txt', 'w') as f:
+        for url in all_img_urls:
+            f.write(url+'\n')
+
     # Generate category map page
     def reformat_sitemap_subtree(category_node, path_so_far='/'):
         ret = []
