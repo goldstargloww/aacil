@@ -360,6 +360,8 @@ def collect_categories(all_csv_files):
         # This is the path the CSV file is in,
         # e.g. /AAC Org/aacorg.csv --> /AAC Org
         this_cat_path = os.path.dirname(csv_file_name)
+        if os.name == 'nt':
+            this_cat_path = this_cat_path.replace('\\', '/')
 
         # Remove leading / and split into segments
         assert this_cat_path.startswith('/')
@@ -380,6 +382,8 @@ def generate_one_page(all_syms, csv_filename, category_tree, template):
     remove_prefix = f'{REPO_ROOT}/site'
     assert csv_filename.startswith(remove_prefix)
     this_cat = os.path.dirname(csv_filename[len(remove_prefix):])
+    if os.name == 'nt':
+        this_cat = this_cat.replace('\\', '/')
 
     # Look up the subcategories
     assert this_cat.startswith('/')
