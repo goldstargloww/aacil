@@ -411,7 +411,7 @@ def generate_one_page(all_syms, csv_filename, category_tree, template):
     figs = []
     figs_with_cw = []
     current_figs = figs
-    with open(csv_filename, 'r', newline='') as f:
+    with open(csv_filename, 'r', newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             # This marks the separation with CWed items
@@ -461,7 +461,7 @@ def generate_one_page(all_syms, csv_filename, category_tree, template):
         subcats=subcats,
         cw_text=cw_text,
     )
-    with open(html_filename, 'w') as f:
+    with open(html_filename, 'w', encoding='utf-8') as f:
         f.write(rendered)
 
 
@@ -500,7 +500,7 @@ def main():
         })
 
     all_syms_template = jinja_env.get_template("list.html")
-    with open(f'{REPO_ROOT}/site/list.html', 'w') as f:
+    with open(f'{REPO_ROOT}/site/list.html', 'w', encoding='utf-8') as f:
         rendered = all_syms_template.render(
             sym_first_letters=all_sym_first_letters,
             syms_by_letter=all_syms_by_letter,
@@ -513,7 +513,7 @@ def main():
         url = os.path.normpath(url)
         all_img_urls.add(url)
     all_img_urls = sorted(all_img_urls)
-    with open('all_images.txt', 'w') as f:
+    with open('all_images.txt', 'w', encoding='utf-8') as f:
         for url in all_img_urls:
             f.write(url+'\n')
 
@@ -553,7 +553,7 @@ def main():
     sitemap_data = reformat_sitemap_subtree(category_tree)
 
     sitemap_template = jinja_env.get_template("map.html")
-    with open(f'{REPO_ROOT}/site/map.html', 'w') as f:
+    with open(f'{REPO_ROOT}/site/map.html', 'w', encoding='utf-8') as f:
         rendered = sitemap_template.render(sitemap_data=sitemap_data)
         f.write(rendered)
 
@@ -570,7 +570,7 @@ def main():
     mainpage_categories.sort(key=lambda x: x["desc"].upper())
 
     mainpage_template = jinja_env.get_template("index.html")
-    with open(f'{REPO_ROOT}/site/index.html', 'w') as f:
+    with open(f'{REPO_ROOT}/site/index.html', 'w', encoding='utf-8') as f:
         rendered = mainpage_template.render(categories=mainpage_categories)
         f.write(rendered)
 
