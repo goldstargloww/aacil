@@ -90,10 +90,16 @@ figcaption {
   }
 }
 
-/* Responsive layout - when the screen is less than 600px wide, make the three columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 600px) {
+/* Responsive layout - on larger screens, use 4 or 5 columns */
+@media screen and (min-width: 769px) {
   .figlist {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media screen and (min-width: 1280px) {
+  .figlist {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
   }
 }
