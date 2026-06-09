@@ -29,9 +29,10 @@ body {
 /* This is specifically used on the main page */
 ul.figlist {
   list-style: none;
+  padding: 0;
 }
 ul.figlist li {
-  margin: 1lh;
+  margin: 1lh 0;
 }
 
 figure {

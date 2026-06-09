@@ -28,13 +28,13 @@
             <!-- inc. stellar: 145+-->
 
             <h2 class="space_above">Topics:</h2>
-
-            <ul class="figlist">
-            {% for item in categories %}
-                <li><a href="{{ item.url }}">{{ item.desc }}</a></li>
-            {% endfor %}
-            </ul>
         </div>
+
+        <ul class="figlist">
+        {% for item in categories %}
+            <li><a href="{{ item.url }}">{{ item.desc }}</a></li>
+        {% endfor %}
+        </ul>
 
         <p>Theme:
             <input type="radio" id="light_theme" name="theme"><label for="light_theme">Light</label>
