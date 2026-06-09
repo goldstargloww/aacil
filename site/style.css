@@ -42,6 +42,8 @@ figure {
 
   box-sizing: border-box;
   max-height: 300px;
+  /* Force contents to shrink on tiny screens */
+  min-width: 0;
 
   display: flex;
   flex-direction: column;
