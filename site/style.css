@@ -69,7 +69,7 @@ figcaption {
 }
 
 /* Automatic dark theme */
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
   body {
     background-color: #111;
     color: white;
