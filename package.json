@@ -4,11 +4,16 @@
   "description": "AAC Image Library website",
   "type": "module",
   "scripts": {
+    "build": "webpack --help",
     "build_site": "node --experimental-sqlite build_site.js"
   },
   "author": "",
   "license": "CC-BY-NC-4.0",
   "dependencies": {
     "csv": "^6.5.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3"
   }
 }
