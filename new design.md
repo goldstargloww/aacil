@@ -47,6 +47,8 @@
 
 - **ID** (PK)
 - display name
+- name disclaimer (optional, for front page)
+- name extra (optional, for front page)
 
 ## symbol artists
 
