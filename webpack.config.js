@@ -2,6 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import AACILCustomPlugin from "./src/build_site.js";
+import CopyPlugin from 'copy-webpack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,6 +24,13 @@ const config = {
         },
     },
     plugins: [
+        // Make sqlite WASM completely skip webpack
+        new CopyPlugin({
+            patterns: [{
+                from: 'node_modules/@sqlite.org/sqlite-wasm/dist/',
+                to: 'sqlite/',
+            }],
+        }),
         new AACILCustomPlugin(),
     ],
 };

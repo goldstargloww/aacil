@@ -12,9 +12,11 @@
   "author": "",
   "license": "CC-BY-NC-4.0",
   "dependencies": {
+    "@sqlite.org/sqlite-wasm": "^3.53.0-build1",
     "csv": "^6.5.1"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^14.0.0",
     "webpack": "^5.107.2",
     "webpack-cli": "^7.0.3",
     "webpack-dev-server": "^5.2.4"
