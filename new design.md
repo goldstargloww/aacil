@@ -38,7 +38,7 @@
 ## symbols
 
 - **ID** (PK)
-- filename
+- filename (unique)
 - caption
 - alt text
 - CW (FK)
@@ -77,6 +77,7 @@ FIXME: Do we want to track _which_ image it's adapted from?
 
 - Category ID (FK)
 - Symbol ID (FK)
+- override caption (e.g. for noun vs adjective)
 
 this allows many-to-many relationships
 
@@ -96,6 +97,13 @@ database must _always_ be acyclic:
 - page building doesn't check for cycles
 - adding a totally-new subcategory cannot possibly create a cycle
 - adding a copy of a category (child) under an existing category (parent) has to check for cycles, but it only has to DFS from the _child_, checking against the current path
+
+## suppress image CWs on category
+
+- Category ID (FK)
+- CW ID (FK)
+
+e.g. this is used for the "bigotry" page so that it doesn't show CWs related to bigotry, but when those symbols show up on other pages it will be in a CW section
 
 # Site generation
 

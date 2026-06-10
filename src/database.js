@@ -5,6 +5,14 @@ export async function make_databases(sqlite3, load_csv) {
 
     // Create all tables
     db.exec("create table page_cw(id integer primary key, text string not null);")
+    db.exec(`create table images (
+            id integer primary key,
+            filename string not null unique,
+            caption string not null,
+            alt_text string not null,
+            cw_id integer,
+            foreign key(cw_id) references page_cw(id)
+        );`);
 
     // Import CSVs into database
     async function import_one_csv(name) {
@@ -29,10 +37,11 @@ export async function make_databases(sqlite3, load_csv) {
         }
     }
     await import_one_csv('page_cw');
+    await import_one_csv('images');
 
-    db.exec("insert into page_cw(id, text) values(?, 'hewwo testing');", Snowflake.generate());
+    // db.exec("insert into page_cw(id, text) values(?, 'hewwo testing');", Snowflake.generate());
     let result = [];
-    db.exec("select * from page_cw;", {
+    db.exec("select * from images where cw_id;", {
         rowMode: 'object',
         resultRows: result,
     });
