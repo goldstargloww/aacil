@@ -5,10 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "webpack --mode=production --config-node-env=production",
-    "build:dev": "webpack --mode=development",
-    "serve": "webpack serve",
-    "build_site": "node --experimental-sqlite build_site.js"
+    "build": "NODE_OPTIONS=--experimental-sqlite webpack --mode=production --config-node-env=production",
+    "build:dev": "NODE_OPTIONS=--experimental-sqlite webpack --mode=development",
+    "serve": "NODE_OPTIONS=--experimental-sqlite webpack serve"
   },
   "author": "",
   "license": "CC-BY-NC-4.0",
