@@ -13,6 +13,12 @@ export async function make_databases(sqlite3, load_csv) {
             cw_id integer,
             foreign key(cw_id) references page_cw(id)
         );`);
+    db.exec(`create table artists (
+            id integer primary key,
+            display string not null,
+            front_page_footnote string,
+            front_page_parens string
+        );`)
 
     // Import CSVs into database
     async function import_one_csv(name) {
@@ -38,10 +44,11 @@ export async function make_databases(sqlite3, load_csv) {
     }
     await import_one_csv('page_cw');
     await import_one_csv('images');
+    await import_one_csv('artists');
 
     // db.exec("insert into page_cw(id, text) values(?, 'hewwo testing');", Snowflake.generate());
     let result = [];
-    db.exec("select * from images where cw_id;", {
+    db.exec("select * from artists;", {
         rowMode: 'object',
         resultRows: result,
     });
