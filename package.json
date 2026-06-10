@@ -1,0 +1,14 @@
+{
+  "name": "aacil",
+  "version": "0.0.0",
+  "description": "AAC Image Library website",
+  "type": "module",
+  "scripts": {
+    "build_site": "node --experimental-sqlite build_site.js"
+  },
+  "author": "",
+  "license": "CC-BY-NC-4.0",
+  "dependencies": {
+    "csv": "^6.5.1"
+  }
+}
