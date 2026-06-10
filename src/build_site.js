@@ -1,9 +1,10 @@
-import fs from "node:fs";
 import path from "node:path";
 
-import { parse as csv_parse } from 'csv-parse';
 import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
 const sqlite3 = await sqlite3InitModule();
+
+import load_csv from './load_csv_nodejs.js';
+import { make_databases } from './database.js';
 
 const __dirname = new URL("..", import.meta.url).pathname;
 
@@ -25,17 +26,7 @@ class AACILCustomPlugin {
             }, async (_assets) => {
                 console.log("Hello world!", sqlite3);
 
-                const parser = fs.createReadStream(`${__dirname}/site/AAC/aac.csv`).pipe(
-                    csv_parse({
-                        columns: true,
-                    }),
-                );
-                let data = "";
-                for await (const record of parser) {
-                    data += `${record["Image URL"]}\n`;
-                }
-
-                compilation.emitAsset("testtesttest", new RawSource(data));
+                await make_databases(load_csv);
             });
         });
     }
