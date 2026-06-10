@@ -2,9 +2,12 @@
   "name": "aacil",
   "version": "0.0.0",
   "description": "AAC Image Library website",
+  "private": true,
   "type": "module",
   "scripts": {
-    "build": "webpack --help",
+    "build": "webpack --mode=production --config-node-env=production",
+    "build:dev": "webpack --mode=development",
+    "serve": "webpack serve",
     "build_site": "node --experimental-sqlite build_site.js"
   },
   "author": "",
@@ -14,6 +17,7 @@
   },
   "devDependencies": {
     "webpack": "^5.107.2",
-    "webpack-cli": "^7.0.3"
+    "webpack-cli": "^7.0.3",
+    "webpack-dev-server": "^5.2.4"
   }
 }

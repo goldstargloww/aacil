@@ -46,3 +46,5 @@ function on_main_page_load() {
         set_theme(system_theme_watcher);
     });
 }
+// Make sure function is exported to HTML
+window.on_main_page_load = on_main_page_load;
