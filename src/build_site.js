@@ -1,8 +1,9 @@
 import fs from "node:fs";
+import path from "node:path";
 import sqlite from 'node:sqlite';
 import { parse as csv_parse } from 'csv-parse';
 
-const __dirname = new URL("../site", import.meta.url).pathname;
+const __dirname = new URL("..", import.meta.url).pathname;
 
 class AACILCustomPlugin {
     apply(compiler) {
@@ -13,13 +14,15 @@ class AACILCustomPlugin {
         const { RawSource } = webpack.sources;
 
         compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
+            compilation.contextDependencies.add(path.resolve(__dirname, "templates"));
+
             compilation.hooks.processAssets.tapPromise({
                 name: pluginName,
                 stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
             }, async (_assets) => {
                 console.log("Hello world!", sqlite);
 
-                const parser = fs.createReadStream(`${__dirname}/AAC/aac.csv`).pipe(
+                const parser = fs.createReadStream(`${__dirname}/site/AAC/aac.csv`).pipe(
                     csv_parse({
                         columns: true,
                     }),
