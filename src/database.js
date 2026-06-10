@@ -1,3 +1,5 @@
+import { Snowflake } from "@theinternetfolks/snowflake";
+
 export async function make_databases(sqlite3, load_csv) {
     const db = new sqlite3.oo1.DB();
 
@@ -28,7 +30,7 @@ export async function make_databases(sqlite3, load_csv) {
     }
     await import_one_csv('page_cw');
 
-    db.exec("insert into page_cw(text) values('hewwo testing');");
+    db.exec("insert into page_cw(id, text) values(?, 'hewwo testing');", Snowflake.generate());
     let result = [];
     db.exec("select * from page_cw;", {
         rowMode: 'object',
