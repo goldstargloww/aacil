@@ -8,7 +8,8 @@ const isProduction = process.env.NODE_ENV === "production";
 /** @type {import("webpack").Configuration} */
 const config = {
     entry: {
-        frontend: "./src/frontend.js"
+        frontend: "./src/frontend.js",
+        editor: "./src/editor.js"
     },
     output: {
         filename: '[name].js',
