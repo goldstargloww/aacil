@@ -17,16 +17,14 @@ class AACILCustomPlugin {
         const { RawSource } = webpack.sources;
 
         compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
-            compilation.contextDependencies.add(path.resolve(__dirname, "database"));
+            compilation.contextDependencies.add(path.resolve(__dirname, "site/database"));
             compilation.contextDependencies.add(path.resolve(__dirname, "templates"));
 
             compilation.hooks.processAssets.tapPromise({
                 name: pluginName,
                 stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
             }, async (_assets) => {
-                console.log("Hello world!", sqlite3);
-
-                await make_databases(load_csv);
+                await make_databases(sqlite3, load_csv);
             });
         });
     }
