@@ -9,6 +9,15 @@ import { make_databases } from './database.js';
 
 const __dirname = new URL("..", import.meta.url).pathname;
 
+function sort_syms(a, b) {
+    // First check the caption...
+    let compare = String(a.caption).toUpperCase().localeCompare(String(b.caption).toUpperCase());
+    if (!compare)
+        // ...then check the filename if they're identical
+        return String(a.filename).localeCompare(String(b.filename));
+    return compare;
+}
+
 class AACILCustomPlugin {
     apply(compiler) {
         const pluginName = AACILCustomPlugin.name;
@@ -82,6 +91,7 @@ class AACILCustomPlugin {
                         // cw_id --> text, or null for one that is suppressed
                         let cw_info = new Map();
                         for (let sym of syms) {
+                            // Look up if not cached
                             if (sym.cw_id !== null && !cw_info.has(sym.cw_id)) {
                                 let cw_text = []
                                 database.exec(`select text from page_cw where id=?`, {
@@ -102,8 +112,63 @@ class AACILCustomPlugin {
                                 else
                                     cw_info.set(sym.cw_id, cw_text)
                             }
+
+                            // Apply suppression
+                            if (cw_info.get(sym.cw_id) === null)
+                                sym.cw_id = null;
                         }
-                        console.log(cw_info);
+                        // console.log(cw_info);
+                        // console.log(syms);
+
+                        // Sort into CW categories
+                        let syms_by_cw = new Map();
+                        for (let sym of syms) {
+                            let cw_id = sym.cw_id;
+                            delete sym.cw_id;
+                            if (!syms_by_cw.has(cw_id))
+                                syms_by_cw.set(cw_id, []);
+                            syms_by_cw.get(cw_id).push(sym);
+                        }
+                        // console.log(syms_by_cw);
+
+                        // Sort the CWs in order by their text
+                        let sym_cw_ordered_ids = Array.from(syms_by_cw.keys())
+                        sym_cw_ordered_ids.sort((a, b) => {
+                            // null is always less than everything else
+                            if (a === null) return -1;
+                            if (b === null) return 1;
+                            a = cw_info.get(a);
+                            b = cw_info.get(b);
+                            return a.toUpperCase().localeCompare(b.toUpperCase());
+                        });
+
+                        // Sort each set of symbols
+                        for (let sym_set of syms_by_cw.values()) {
+                            sym_set.sort(sort_syms);
+                        }
+                        // console.log(syms_by_cw);
+
+                        let main_syms = syms_by_cw.get(null);
+                        let cw_syms = [];
+                        for (let cw_id of sym_cw_ordered_ids) {
+                            if (cw_id !== null) {
+                                cw_syms.push({
+                                    cw: cw_info.get(cw_id),
+                                    syms: syms_by_cw.get(cw_id),
+                                });
+                            }
+                        }
+                        // console.log(main_syms);
+
+                        let emit_asset_path = new_url_path_components.join('/') + '/index.html';
+                        compilation.emitAsset(emit_asset_path, new RawSource(
+                            nunjucks.render(path.resolve(__dirname, 'templates/category.html'), {
+                                main_syms,
+                                // sym_first_letters: all_sym_first_letters,
+                                // syms_by_letter: all_syms_by_letter,
+                                // map_get: (m, k) => m.get(k),
+                            })
+                        ));
                     } else {
                         // TODO: Main page
                         new_url_path_components.push('');
@@ -129,12 +194,7 @@ class AACILCustomPlugin {
                 });
 
                 // Sort
-                all_syms.sort((a, b) => {
-                    let compare = String(a.caption).toUpperCase().localeCompare(String(b.caption).toUpperCase());
-                    if (!compare)
-                        return String(a.filename).localeCompare(String(b.filename));
-                    return compare;
-                });
+                all_syms.sort(sort_syms);
 
                 // Split by first letter
                 let all_sym_first_letters = [];

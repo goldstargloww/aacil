@@ -21,12 +21,12 @@
         {% endif %}
 
         <div class="figlist">
-        {% for fig in figs %}
+        {% for sym in main_syms %}
             <figure>
-                <div class="imgcontain"><img src="{{ fig["Image URL"] }}" alt="{{ fig["Alt text"] }}"></div>
+                <div class="imgcontain"><img src="{{ sym.filename }}" alt="{{ sym.alt_text }}"></div>
                 <figcaption>
-                    <span class="caption">{{ fig["Caption"] }}</span>
-                    <span class="credit"> | By {{ fig["Credit"] }}.</span>
+                    <span class="caption">{{ sym.caption }}</span>
+                    <span class="credit"> | By TODO.</span>
                 </figcaption>
             </figure>
         {% endfor %}
