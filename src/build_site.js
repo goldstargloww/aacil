@@ -86,6 +86,8 @@ class AACILCustomPlugin {
                             ret.icon_url = subcat.icon_url;
                         return ret;
                     });
+                    // ...and sort it
+                    subcats_for_page.sort((a, b) => a.desc.toUpperCase().localeCompare(b.desc.toUpperCase()));
 
                     if (cat_id != 0) {
                         // A normal category page
@@ -232,6 +234,12 @@ class AACILCustomPlugin {
                     } else {
                         // TODO: Main page
                         new_url_path_components.push('');
+
+                        compilation.emitAsset("/index.html", new RawSource(
+                            nunjucks.render(path.resolve(__dirname, 'templates/index.html'), {
+                                subcats: subcats_for_page,
+                            })
+                        ));
                     }
 
                     // Recurse

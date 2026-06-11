@@ -30,8 +30,8 @@
             <h2 class="space_above">Topics:</h2>
 
             <ul class="figlist">
-            {% for item in categories %}
-                <li><a href="{{ item.url }}">{{ item.desc }}</a></li>
+            {% for item in subcats %}
+                <li><a href="{{ item.url_path }}">{{ item.desc }}</a></li>
             {% endfor %}
             </ul>
         </div>
