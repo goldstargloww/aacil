@@ -24,8 +24,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     let new_artists_adapted;
 
     function reset_ui() {
-        console.log(cat_id);
-
         // Load all the existing CW information
         let all_cws = [];
         database.exec(`select * from page_cw`, {
@@ -107,7 +105,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
             });
         }
         all_syms.sort(sorting.sort_syms);
-        console.log(all_syms);
 
         // Reset all the relevant UI
         sym_status.innerHTML = '&nbsp;';
@@ -453,7 +450,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
                 bind: [sym_id],
                 resultRows: num_uses,
             });
-            console.log(num_uses);
 
             if (num_uses[0][0] > 1) {
                 // If the symbol is used in multiple places, only delete *this* copy

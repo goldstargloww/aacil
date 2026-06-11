@@ -86,7 +86,7 @@ class AACILCustomPlugin {
                         // Look up all the symbols that belong on this page
                         let syms = [];
                         database.exec(`
-                            select id as img_id, filename, caption, alt_text, cw_id
+                            select id as img_id, filename, caption, alt_text, cw_id, override_caption
                             from images join cat_syms on cat_syms.img_id = images.id
                             where cat_syms.cat_id=?`, {
                             bind: [cat_id],
@@ -98,6 +98,11 @@ class AACILCustomPlugin {
                         for (let sym of syms) {
                             let img_id = sym.img_id;
                             delete sym.img_id;
+
+                            if (sym.override_caption) {
+                                sym.caption = sym.override_caption;
+                                delete sym.override_caption;
+                            }
 
                             let artist_credits = [];
                             database.exec(`
@@ -310,7 +315,7 @@ class AACILCustomPlugin {
                 });
 
                 // Sort
-                all_syms.sort(sort_syms);
+                all_syms.sort(sorting.sort_syms);
 
                 // Split by first letter
                 let all_sym_first_letters = [];

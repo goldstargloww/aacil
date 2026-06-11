@@ -46,6 +46,10 @@ form button {
 }
 #cat_tree {
     list-style: '▼ ';
+    padding-right: 16px;
+}
+#cat_tree ol {
+    list-style: '▼ ';
 }
 
 /* Whenever we clicky something, it highlights */
