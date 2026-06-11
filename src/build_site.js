@@ -60,6 +60,7 @@ class AACILCustomPlugin {
                         select subcategories.child_id as id,
                                categories.desc,
                                categories.url_path,
+                               categories.cw,
                                images.filename as icon_url
                         from subcategories
                         join categories on subcategories.child_id = categories.id
@@ -68,6 +69,22 @@ class AACILCustomPlugin {
                         bind: [cat_id],
                         rowMode: 'object',
                         resultRows: subcats,
+                    });
+
+                    // Munge the subcategory data
+                    let subcats_for_page = subcats.map((subcat) => {
+                        let ret = {
+                            desc: subcat.desc,
+                        };
+
+                        if (subcat.cw !== null)
+                            ret.url_path = `${subcat.url_path}/warning.html`;
+                        else
+                            ret.url_path = `${subcat.url_path}/`;
+
+                        if (cat_info.have_subcat_icons)
+                            ret.icon_url = subcat.icon_url;
+                        return ret;
                     });
 
                     if (cat_id != 0) {
@@ -194,15 +211,6 @@ class AACILCustomPlugin {
                             }
                         }
 
-                        // Munge the subcategory data
-                        let subcats_for_page = subcats.map((subcat) => {
-                            let ret = structuredClone(subcat);
-                            delete ret.id;
-                            if (!cat_info.have_subcat_icons)
-                                delete ret.icon_url;
-                            return ret;
-                        });
-
                         let emit_asset_path = new_url_path_components.join('/') + '/index.html';
                         compilation.emitAsset(emit_asset_path, new RawSource(
                             nunjucks.render(path.resolve(__dirname, 'templates/category.html'), {
@@ -211,6 +219,16 @@ class AACILCustomPlugin {
                                 cw_syms,
                             })
                         ));
+
+                        if (cat_info.cw !== null) {
+                            // Interstitial warning page
+                            let emit_asset_path = new_url_path_components.join('/') + '/warning.html';
+                            compilation.emitAsset(emit_asset_path, new RawSource(
+                                nunjucks.render(path.resolve(__dirname, 'templates/warning.html'), {
+                                    cw: cat_info.cw,
+                                })
+                            ));
+                        }
                     } else {
                         // TODO: Main page
                         new_url_path_components.push('');

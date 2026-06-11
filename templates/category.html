@@ -15,7 +15,7 @@
         {% if subcats %}
         <ul>
             {% for subcat in subcats %}
-            <li><a href="{{ subcat.url_path }}/">{{ subcat.desc }}{% if subcat.icon_url %} <img src="{{ subcat.icon_url }}" height="50">{% endif %}</a></li>
+            <li><a href="{{ subcat.url_path }}">{{ subcat.desc }}{% if subcat.icon_url %} <img src="{{ subcat.icon_url }}" height="50">{% endif %}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
