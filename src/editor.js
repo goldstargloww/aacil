@@ -42,14 +42,6 @@ function on_select_tab(tab_id, ui_element, cb) {
 }
 
 async function load_artist_info() {
-    // Load all the existing artists
-    let all_artists = [];
-    database.exec(`select * from artists`, {
-        rowMode: 'object',
-        resultRows: all_artists,
-    });
-    all_artists.sort(sorting.sort_artists);
-
     let artists_cur_id = document.getElementById('artists_cur_id');
     let artists_status = document.getElementById('artists_status');
     let artist_display = document.getElementById('artist_display');
@@ -57,6 +49,75 @@ async function load_artist_info() {
     let artist_footnote = document.getElementById('artist_footnote');
     let artist_change = document.getElementById('artist_change');
     let artist_new = document.getElementById('artist_new');
+
+    let new_artists_select;
+
+    function reset_ui() {
+        // Load all the existing artists
+        let all_artists = [];
+        database.exec(`select * from artists`, {
+            rowMode: 'object',
+            resultRows: all_artists,
+        });
+        all_artists.sort(sorting.sort_artists);
+
+        // Reset all the relevant UI
+        artists_status.innerHTML = '&nbsp;';
+        artists_cur_id.innerHTML = '&nbsp;';
+        artist_display.value = '';
+        artist_parens.value = '';
+        artist_footnote.value = '';
+        artist_display.focus();
+        // Temporarily remove this, so that we can programmatically change the default button
+        artist_change.remove();
+        artist_change.disabled = true;
+        artist_change.style.display = 'none';
+
+        // Make entirely new list of artists
+        new_artists_select = document.createElement('select');
+        new_artists_select.id = 'artists_select'
+        // Add an empty option
+        new_artists_select.appendChild(document.createElement('option'));
+
+        let all_artists_map = new Map();
+        for (let artist of all_artists) {
+            let option = document.createElement('option');
+            option.value = artist.id;
+            option.innerText = artist.display;
+            new_artists_select.appendChild(option);
+
+            all_artists_map.set(artist.id, artist);
+        }
+
+        new_artists_select.addEventListener('change', () => {
+            let selected_artist_id = new_artists_select.value;
+            if (selected_artist_id) {
+                artists_cur_id.innerText = `Selected artist ID: ${selected_artist_id}`;
+                selected_artist_id = BigInt(selected_artist_id);
+
+                let artist = all_artists_map.get(selected_artist_id);
+                artist_display.value = artist.display;
+                artist_parens.value = artist.front_page_parens;
+                artist_footnote.value = artist.front_page_footnote;
+
+                artist_new.parentNode.insertBefore(artist_change, artist_new);
+                artist_change.disabled = false;
+                artist_change.style.display = '';
+            } else {
+                artists_cur_id.innerHTML = '&nbsp;';
+                artist_display.value = '';
+                artist_parens.value = '';
+                artist_footnote.value = '';
+
+                artist_change.remove();
+                artist_change.disabled = true;
+                artist_change.style.display = 'none';
+            }
+        })
+
+        let old_artists_select = document.getElementById('artists_select');
+        old_artists_select.parentNode.replaceChild(new_artists_select, old_artists_select);
+    }
 
     // The buttons to actually do things
     function perform_input_validation(read_id) {
@@ -99,10 +160,7 @@ async function load_artist_info() {
         });
 
         // Ok
-        artist_display.value = '';
-        artist_parens.value = '';
-        artist_footnote.value = '';
-        artist_display.focus();
+        reset_ui();
 
         artists_status.className = "status_ok";
         artists_status.innerText = "OK!";
@@ -127,62 +185,15 @@ async function load_artist_info() {
         });
 
         // Ok
-        artist_display.value = '';
-        artist_parens.value = '';
-        artist_footnote.value = '';
-        artist_display.focus();
+        reset_ui();
 
         artists_status.className = "status_ok";
         artists_status.innerText = `OK, new id ${new_id}!`;
         download_changes_elem.style.visibility = '';
     };
 
-    // Reset all the relevant UI
-    artists_status.innerHTML = '&nbsp;';
-    artist_display.value = '';
-    artist_parens.value = '';
-    artist_footnote.value = '';
-
-    let new_artists_select = document.createElement('select');
-    new_artists_select.id = 'artists_select'
-    // Add an empty option
-    new_artists_select.appendChild(document.createElement('option'));
-
-    let all_artists_map = new Map();
-    for (let artist of all_artists) {
-        let option = document.createElement('option');
-        option.value = artist.id;
-        option.innerText = artist.display;
-        new_artists_select.appendChild(option);
-
-        all_artists_map.set(artist.id, artist);
-    }
-
-    new_artists_select.addEventListener('change', () => {
-        let selected_artist_id = new_artists_select.value;
-        if (selected_artist_id) {
-            artists_cur_id.innerText = `Selected artist ID: ${selected_artist_id}`;
-            selected_artist_id = BigInt(selected_artist_id);
-
-            let artist = all_artists_map.get(selected_artist_id);
-            artist_display.value = artist.display;
-            artist_parens.value = artist.front_page_parens;
-            artist_footnote.value = artist.front_page_footnote;
-
-            artist_change.style.display = '';
-        } else {
-            artists_cur_id.innerHTML = '&nbsp;';
-            artist_display.value = '';
-            artist_parens.value = '';
-            artist_footnote.value = '';
-            console.log("deselect artist", artists_cur_id);
-
-            artist_change.style.display = 'none';
-        }
-    })
-
-    let old_artists_select = document.getElementById('artists_select');
-    old_artists_select.parentNode.replaceChild(new_artists_select, old_artists_select);
+    // Set up the UI the first time
+    reset_ui();
 }
 
 window.onload = async () => {

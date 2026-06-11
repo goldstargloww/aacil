@@ -18,3 +18,16 @@
 .tabs_header input:checked + label {
     background-color: red;
 }
+
+/* Used for labeled fields in forms */
+form {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+}
+form div {
+    display: contents;
+}
+form button {
+    grid-column: 1;
+}
