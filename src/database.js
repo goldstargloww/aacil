@@ -41,7 +41,7 @@ export async function make_databases(sqlite3, load_csv) {
             url_path string not null,
             icon_id integer,
             cw string,
-            have_subcat_icons boolean,
+            have_subcat_icons integer,
             foreign key(icon_id) references images(id)
         );`);
     db.exec(`create table subcategories(
