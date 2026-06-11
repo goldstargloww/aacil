@@ -48,3 +48,6 @@ form button {
 ol {
     list-style: '▼ ';
 }
+li[data-selected] > div > span {
+    background-color: green;
+}

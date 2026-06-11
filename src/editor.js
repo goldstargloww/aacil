@@ -119,12 +119,23 @@ function flatten_category_tree(cat_tree) {
 }
 
 function make_cat_tree_ui(cat_tree, cb) {
-    with_cat_tree.style.display = '';
+    let new_cat_tree = document.createElement('ol');
+    new_cat_tree.id = 'cat_tree';
 
     function make_recurse(node) {
         let li = document.createElement('li');
-        li.innerText = node.desc;
+        let li_div = document.createElement('div');
+        li.appendChild(li_div);
+        let li_span = document.createElement('span');
+        li_div.appendChild(li_span);
+        li_span.innerText = node.desc;
         li.addEventListener('click', async (e) => {
+            // Clear all the existing selections
+            for (let e of new_cat_tree.querySelectorAll('[data-selected]')) {
+                delete e.dataset.selected;
+            }
+
+            li.dataset.selected = true;
             await cb(node.id);
             e.stopPropagation();
         });
@@ -141,12 +152,12 @@ function make_cat_tree_ui(cat_tree, cb) {
     }
 
     let li = make_recurse(cat_tree);
-    let ol = document.createElement('ol');
-    ol.id = 'cat_tree';
-    ol.appendChild(li);
+    new_cat_tree.appendChild(li);
 
     let old_cat_tree = document.getElementById('cat_tree');
-    old_cat_tree.parentNode.replaceChild(ol, old_cat_tree);
+    old_cat_tree.parentNode.replaceChild(new_cat_tree, old_cat_tree);
+
+    with_cat_tree.style.display = '';
 }
 
 window.onload = async () => {
