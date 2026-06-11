@@ -6,6 +6,7 @@ const sqlite3 = await sqlite3InitModule();
 
 import load_csv from './load_csv_nodejs.js';
 import { make_databases } from './database.js';
+import * as sorting from './sorting.js';
 
 const __dirname = new URL("..", import.meta.url).pathname;
 
@@ -241,18 +242,7 @@ class AACILCustomPlugin {
                         });
 
                         // Deal with sorting
-                        all_artists.sort((a, b) => {
-                            a = a.display.toUpperCase();
-                            b = b.display.toUpperCase();
-
-                            // Deal with removing "The "
-                            if (a.startsWith("THE "))
-                                a = a.slice(4);
-                            if (b.startsWith("THE "))
-                                b = b.slice(4);
-
-                            return a.localeCompare(b);
-                        });
+                        all_artists.sort(sorting.sort_artists);
 
                         // Add parens and footnotes
                         let artist_footnotes = [];

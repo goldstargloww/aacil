@@ -7,12 +7,49 @@
 
         <link rel="icon" type="image/png" href="/favicon.png">
         <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+        <link href="/editor.css" rel="stylesheet" type="text/css" media="all">
         <script src="/frontend.js"></script>
         <script type="module" src="/sqlite/index.mjs"></script>
         <script src="/editor.js"></script>
         <!-- Work-in-progress friendly editor -->
     </head>
     <body>
-        Hello world!
+        <h1 id="main_status">Loading, please wait…</h1>
+        <a id="download_changes" href="#" style="visibility: hidden">You have made changes. Click here to download them.</a>
+
+        <div class="tabs_header">
+            <input type="radio" id="tab_artists" name="main_tabs">
+            <label for="tab_artists">Artists</label>
+
+            <input type="radio" id="tab_cws" name="main_tabs">
+            <label for="tab_cws">Symbol content warnings</label>
+        </div>
+
+        <div id="artists_ui" style="display: none">
+            <h2>Add or change artists</h2>
+            <select id="artists_select"></select>
+            <p><small id="artists_cur_id">&nbsp;</small></p>
+            <p id="artists_status">&nbsp;</p>
+            <form action="javascript:void(0)">
+                <div>
+                    <label for="artist_display">Artist name:</label>
+                    <input type="text" id="artist_display" required>
+                </div>
+                <div>
+                    <label for="artist_parens">Artist extra ( OnlineName (Real Name) ):</label>
+                    <input type="text" id="artist_parens">
+                </div>
+                <div>
+                    <label for="artist_footnote">Artist footnote:</label>
+                    <input type="text" id="artist_footnote">
+                </div>
+                <button id="artist_change" style="display: none">Change artist</button>
+                <button id="artist_new">Make NEW artist</button>
+            </form>
+        </div>
+
+        <div id="sym_cw_ui" style="display: none">
+            CW!!
+        </div>
     </body>
 </html>
