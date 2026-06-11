@@ -2,6 +2,7 @@ import { Snowflake } from "@theinternetfolks/snowflake";
 import load_csv from './load_csv_web.js';
 import { make_databases, export_databases } from './database.js';
 import * as sorting from './sorting.js';
+import { load_syms } from "./editor/symbols.js";
 import { load_artist_info } from "./editor/artists.js";
 import { load_sym_cw_info } from "./editor/symbol_cws.js";
 
@@ -175,12 +176,12 @@ window.onload = async () => {
 
     // Load information about categories out of DB into memory
     let category_tree = get_category_tree(0);
-    console.log(category_tree);
     let category_list = flatten_category_tree(category_tree);
-    console.log(category_list);
 
     on_select_tab('tab_symbols', symbols_ui, async () => {
-        make_cat_tree_ui(category_tree, console.log);
+        make_cat_tree_ui(category_tree, async (cat_id) => {
+            await load_syms(database, download_changes_elem, cat_id);
+        });
     });
     on_select_tab('tab_artists', artists_ui, load_artist_info);
     on_select_tab('tab_cws', sym_cw_ui, load_sym_cw_info);

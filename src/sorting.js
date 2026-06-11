@@ -1,3 +1,12 @@
+export function sort_syms(a, b) {
+    // First check the caption...
+    let compare = String(a.caption).toUpperCase().localeCompare(String(b.caption).toUpperCase());
+    if (!compare)
+        // ...then check the filename if they're identical
+        return String(a.filename).localeCompare(String(b.filename));
+    return compare;
+}
+
 export function sort_artists(a, b) {
     a = String(a.display).toUpperCase();
     b = String(b.display).toUpperCase();

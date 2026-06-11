@@ -31,7 +31,28 @@
         <div id="with_cat_tree" style="display: none">
             <ol id="cat_tree"><!-- This will be ignored! --></ol>
             <div id="symbols_ui" style="display: none">
-                SYMBOLS!!
+                <h2>Click a symbol to edit it, or add a new one below</h2>
+                <p id="sym_status">&nbsp;</p>
+                <div id="sym_list"><!-- This will be ignored! --></div>
+                <p><small id="sym_cur_id">&nbsp;</small></p>
+                <div id="one_sym_actions" style="display: none">
+                    <form action="javascript:void(0)">
+                        <div>
+                            <label for="sym_url">URL ( /Where/the/image/is.png ):</label>
+                            <input type="text" id="sym_url" required>
+                        </div>
+                        <div>
+                            <label for="sym_caption">Caption:</label>
+                            <input type="text" id="sym_caption">
+                        </div>
+                        <div>
+                            <label for="sym_alt_text">Description (alt text):</label>
+                            <input type="text" id="sym_alt_text">
+                        </div>
+                        <!-- <button id="artist_change">Change artist</button>
+                        <button id="artist_new">Make NEW artist</button> -->
+                    </form>
+                </div>
             </div>
         </div>
 

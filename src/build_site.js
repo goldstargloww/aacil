@@ -10,15 +10,6 @@ import * as sorting from './sorting.js';
 
 const __dirname = new URL("..", import.meta.url).pathname;
 
-function sort_syms(a, b) {
-    // First check the caption...
-    let compare = String(a.caption).toUpperCase().localeCompare(String(b.caption).toUpperCase());
-    if (!compare)
-        // ...then check the filename if they're identical
-        return String(a.filename).localeCompare(String(b.filename));
-    return compare;
-}
-
 class AACILCustomPlugin {
     apply(compiler) {
         const pluginName = AACILCustomPlugin.name;
@@ -198,7 +189,7 @@ class AACILCustomPlugin {
 
                         // Sort each set of symbols
                         for (let sym_set of syms_by_cw.values()) {
-                            sym_set.sort(sort_syms);
+                            sym_set.sort(sorting.sort_syms);
                         }
 
                         let main_syms = syms_by_cw.get(null);

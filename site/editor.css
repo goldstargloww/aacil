@@ -40,7 +40,7 @@ form button {
     display: flex;
     flex-direction: row;
 }
-#with_cat_tree :not(:first-child) {
+#with_cat_tree > :not(:first-child) {
     flex: 1;
 }
 
@@ -50,4 +50,20 @@ ol {
 }
 li[data-selected] > div > span {
     background-color: green;
+}
+
+/* Used for editing symbols */
+#sym_list {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
+figure {
+    max-height: 200px;
+    user-select: none;
+}
+figure[data-selected] {
+    background-color: green;
+}
+#sym_list img {
+    pointer-events: none;
 }
