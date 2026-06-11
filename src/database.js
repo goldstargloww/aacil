@@ -33,6 +33,28 @@ export async function make_databases(sqlite3, load_csv) {
             foreign key(img_id) references images(id),
             foreign key(artist_id) references artists(id)
         );`)
+    db.exec(`create table categories(
+            id integer primary_key,
+            desc string not null,
+            icon_id integer,
+            cw string,
+            foreign key(icon_id) references images(id)
+        );`);
+    db.exec(`create table subcategories(
+            parent_id integer,
+            child_id integer,
+            primary key(parent_id, child_id),
+            foreign key(parent_id) references categories(id),
+            foreign key(child_id) references categories(id)
+        );`)
+    db.exec(`create table cat_syms(
+            cat_id integer,
+            img_id integer,
+            override_caption string,
+            primary key(cat_id, img_id),
+            foreign key(cat_id) references categories(id),
+            foreign key(img_id) references images(id)
+        );`);
 
     // Import CSVs into database
     async function import_one_csv(name) {
@@ -42,6 +64,8 @@ export async function make_databases(sqlite3, load_csv) {
             let q_template = "";
             let values = [];
             for (let [col_name, col_value] of Object.entries(row)) {
+                if (col_value.length == 0)
+                    continue;
                 cols_template += `${col_name},`;
                 q_template += '?,';
                 values.push(col_value);
@@ -66,10 +90,13 @@ export async function make_databases(sqlite3, load_csv) {
     await import_one_csv('artists');
     await import_one_csv('sym_artists');
     await import_one_csv('sym_derived_from');
+    await import_one_csv('categories');
+    await import_one_csv('subcategories');
+    await import_one_csv('cat_syms');
 
     // db.exec("insert into page_cw(id, text) values(?, 'hewwo testing');", Snowflake.generate());
     let result = [];
-    db.exec("select images.filename, artists.display from images LEFT JOIN sym_artists ON images.id = sym_artists.img_id LEFT JOIN artists ON sym_artists.artist_id = artists.id WHERE images.filename = '/AAC/aacil.png';", {
+    db.exec("select images.filename, categories.desc from cat_syms JOIN images ON cat_syms.img_id = images.id JOIN categories ON cat_syms.cat_id = categories.id;", {
         rowMode: 'object',
         resultRows: result,
     });
