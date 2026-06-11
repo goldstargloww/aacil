@@ -15,7 +15,7 @@
         {% if subcats %}
         <ul>
             {% for subcat in subcats %}
-            <li><a href="{{ subcat.url }}">{{ subcat.text }}{% if subcat.icon %} <img src="{{ subcat.icon }}" height="50">{% endif %}</a></li>
+            <li><a href="{{ subcat.url_path }}/">{{ subcat.desc }}{% if subcat.icon_url %} <img src="{{ subcat.icon_url }}" height="50">{% endif %}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -26,27 +26,27 @@
                 <div class="imgcontain"><img src="{{ sym.filename }}" alt="{{ sym.alt_text }}"></div>
                 <figcaption>
                     <span class="caption">{{ sym.caption }}</span>
-                    <span class="credit"> | By TODO.</span>
+                    <span class="credit"> | By {{ sym.credit }}.</span>
                 </figcaption>
             </figure>
         {% endfor %}
         </div>
 
-        {% if figs_with_cw %}
-        <h2 class="cw">{{ cw_text }}</h2>
+        {% for cw_sym_set in cw_syms %}
+        <h2 class="cw">{{ cw_sym_set.cw }}</h2>
 
         <div class="figlist">
-        {% for fig in figs_with_cw %}
+        {% for sym in cw_sym_set.syms %}
             <figure>
-                <div class="imgcontain"><img src="{{ fig["Image URL"] }}" alt="{{ fig["Alt text"] }}"></div>
+                <div class="imgcontain"><img src="{{ sym.filename }}" alt="{{ sym.alt_text }}"></div>
                 <figcaption>
-                    <span class="caption">{{ fig["Caption"] }}</span>
-                    <span class="credit"> | By {{ fig["Credit"] }}.</span>
+                    <span class="caption">{{ sym.caption }}</span>
+                    <span class="credit"> | By {{ sym.credit }}.</span>
                 </figcaption>
             </figure>
         {% endfor %}
         </div>
-        {% endif %}
+        {% endfor %}
 
         <p class="center"><a href="..">click here to go back.</a></p>
 

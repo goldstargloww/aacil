@@ -60,7 +60,6 @@ class AACILCustomPlugin {
                         select subcategories.child_id as id,
                                categories.desc,
                                categories.url_path,
-                               categories.icon_id,
                                images.filename as icon_url
                         from subcategories
                         join categories on subcategories.child_id = categories.id
@@ -70,7 +69,6 @@ class AACILCustomPlugin {
                         rowMode: 'object',
                         resultRows: subcats,
                     });
-                    // console.log(subcats);
 
                     if (cat_id != 0) {
                         // A normal category page
@@ -79,14 +77,55 @@ class AACILCustomPlugin {
                         // Look up all the symbols that belong on this page
                         let syms = [];
                         database.exec(`
-                            select filename, caption, alt_text, cw_id
+                            select id as img_id, filename, caption, alt_text, cw_id
                             from images join cat_syms on cat_syms.img_id = images.id
                             where cat_syms.cat_id=?`, {
                             bind: [cat_id],
                             rowMode: 'object',
                             resultRows: syms,
                         });
-                        // console.log(syms);
+
+                        // Look up the artist credits for symbols
+                        for (let sym of syms) {
+                            let img_id = sym.img_id;
+                            delete sym.img_id;
+
+                            let artist_credits = [];
+                            database.exec(`
+                                select artists.display from artists
+                                join sym_artists on sym_artists.artist_id = artists.id
+                                where sym_artists.img_id=?`, {
+                                bind: [img_id],
+                                resultRows: artist_credits
+                            });
+                            artist_credits = artist_credits.map((x) => x[0]);
+                            artist_credits.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+
+                            let artist_derived_from_credits = [];
+                            database.exec(`
+                                select artists.display from artists
+                                join sym_derived_from on sym_derived_from.artist_id = artists.id
+                                where sym_derived_from.img_id=?`, {
+                                bind: [img_id],
+                                resultRows: artist_derived_from_credits
+                            });
+                            artist_derived_from_credits = artist_derived_from_credits.map((x) => x[0]);
+                            artist_derived_from_credits.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+
+                            // Make it pretty
+                            if (artist_credits.length === 0) {
+                                console.warn(`${img_id} ${sym.filename} doesn't have artist credits`);
+                                artist_credits = "<unknown>";
+                            } else {
+                                artist_credits = artist_credits.join(" & ");
+                            }
+
+                            if (artist_derived_from_credits.length > 0) {
+                                artist_derived_from_credits = artist_derived_from_credits.join(" & ");
+                                artist_credits += `, adapted from ${artist_derived_from_credits}`;
+                            }
+                            sym.credit = artist_credits;
+                        }
 
                         // cw_id --> text, or null for one that is suppressed
                         let cw_info = new Map();
@@ -117,8 +156,6 @@ class AACILCustomPlugin {
                             if (cw_info.get(sym.cw_id) === null)
                                 sym.cw_id = null;
                         }
-                        // console.log(cw_info);
-                        // console.log(syms);
 
                         // Sort into CW categories
                         let syms_by_cw = new Map();
@@ -129,7 +166,6 @@ class AACILCustomPlugin {
                                 syms_by_cw.set(cw_id, []);
                             syms_by_cw.get(cw_id).push(sym);
                         }
-                        // console.log(syms_by_cw);
 
                         // Sort the CWs in order by their text
                         let sym_cw_ordered_ids = Array.from(syms_by_cw.keys())
@@ -146,7 +182,6 @@ class AACILCustomPlugin {
                         for (let sym_set of syms_by_cw.values()) {
                             sym_set.sort(sort_syms);
                         }
-                        // console.log(syms_by_cw);
 
                         let main_syms = syms_by_cw.get(null);
                         let cw_syms = [];
@@ -158,15 +193,22 @@ class AACILCustomPlugin {
                                 });
                             }
                         }
-                        // console.log(main_syms);
+
+                        // Munge the subcategory data
+                        let subcats_for_page = subcats.map((subcat) => {
+                            let ret = structuredClone(subcat);
+                            delete ret.id;
+                            if (!cat_info.have_subcat_icons)
+                                delete ret.icon_url;
+                            return ret;
+                        });
 
                         let emit_asset_path = new_url_path_components.join('/') + '/index.html';
                         compilation.emitAsset(emit_asset_path, new RawSource(
                             nunjucks.render(path.resolve(__dirname, 'templates/category.html'), {
+                                subcats: subcats_for_page,
                                 main_syms,
-                                // sym_first_letters: all_sym_first_letters,
-                                // syms_by_letter: all_syms_by_letter,
-                                // map_get: (m, k) => m.get(k),
+                                cw_syms,
                             })
                         ));
                     } else {
