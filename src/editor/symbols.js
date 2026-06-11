@@ -172,6 +172,30 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
         let old_sym_list = document.getElementById('sym_list');
         old_sym_list.parentNode.replaceChild(new_sym_list, old_sym_list);
+
+        // Load all the existing CW information
+        let all_cws = [];
+        database.exec(`select * from page_cw`, {
+            rowMode: 'object',
+            resultRows: all_cws,
+        });
+        all_cws.sort(sorting.sort_sym_cw);
+
+        // Make list of CWs
+        let new_sym_cw_select = document.createElement('select');
+        new_sym_cw_select.id = 'sym_on_page_cw'
+        // Add an empty option
+        new_sym_cw_select.appendChild(document.createElement('option'));
+
+        for (let cw of all_cws) {
+            let option = document.createElement('option');
+            option.value = cw.id;
+            option.innerText = cw.text;
+            new_sym_cw_select.appendChild(option);
+        }
+
+        let old_sym_cw_select = document.getElementById('sym_on_page_cw');
+        old_sym_cw_select.parentNode.replaceChild(new_sym_cw_select, old_sym_cw_select);
     }
 
     // // The buttons to actually do things
