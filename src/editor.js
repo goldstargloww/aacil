@@ -7,5 +7,7 @@ window.onload = async () => {
     console.log("This is the editor WIP!");
 
     const database = await make_databases(sqlite3, load_csv);
-    await export_databases(database);
+    let zip_blob = await export_databases(database);
+    let url = window.URL.createObjectURL(zip_blob);
+    window.location.assign(url);
 };

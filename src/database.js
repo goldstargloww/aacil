@@ -1,5 +1,6 @@
 import { Snowflake } from "@theinternetfolks/snowflake";
 import { stringify as csv_stringify } from 'csv-stringify/browser/esm';
+import JSZip from "jszip";
 
 export async function make_databases(sqlite3, load_csv) {
     const db = new sqlite3.oo1.DB();
@@ -141,7 +142,16 @@ function export_one_db(db, query) {
 }
 
 export async function export_databases(db) {
-    let blob = await export_one_db(db, "select * from images;");
-    let url = window.URL.createObjectURL(blob);
-    window.location.assign(url);
+    let zip = new JSZip();
+    zip.file("page_cw.csv", export_one_db(db, "select * from page_cw order by id"));
+    zip.file("images.csv", export_one_db(db, "select * from images order by id"));
+    zip.file("artists.csv", export_one_db(db, "select * from artists order by id"));
+    zip.file("sym_artists.csv", export_one_db(db, "select * from sym_artists order by img_id, artist_id"));
+    zip.file("sym_derived_from.csv", export_one_db(db, "select * from sym_derived_from order by img_id, artist_id"));
+    zip.file("categories.csv", export_one_db(db, "select * from categories order by id"));
+    zip.file("subcategories.csv", export_one_db(db, "select * from subcategories order by parent_id, child_id"));
+    zip.file("cat_syms.csv", export_one_db(db, "select * from cat_syms order by cat_id, img_id"));
+    zip.file("cw_suppressions.csv", export_one_db(db, "select * from cw_suppressions order by cat_id, cw_id"));
+
+    return await zip.generateAsync({ type: 'blob' });
 }
