@@ -38,7 +38,7 @@ function on_select_tab(tab_id, ui_element, cb) {
     tab_element.checked = false;
     tab_element.addEventListener('input', async () => {
         deselect_all_tabs();
-        await cb(database);
+        await cb(database, download_changes_elem);
         ui_element.style.display = '';
     });
 }

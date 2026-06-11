@@ -1,6 +1,6 @@
 import * as sorting from '../sorting.js';
 
-export async function load_artist_info(database) {
+export async function load_artist_info(database, download_changes_elem) {
     let artists_cur_id = document.getElementById('artists_cur_id');
     let artists_status = document.getElementById('artists_status');
     let artist_display = document.getElementById('artist_display');

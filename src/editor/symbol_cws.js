@@ -1,6 +1,6 @@
 import * as sorting from '../sorting.js';
 
-export async function load_sym_cw_info(database) {
+export async function load_sym_cw_info(database, download_changes_elem) {
     let sym_cw_cur_id = document.getElementById('sym_cw_cur_id');
     let sym_cw_status = document.getElementById('sym_cw_status');
     let sym_cw_text = document.getElementById('sym_cw_text');
