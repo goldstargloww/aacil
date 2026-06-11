@@ -36,6 +36,7 @@ form button {
     content: '';
 }
 
+/* Editing symbols or categories requires a tree to show up on the left */
 #with_cat_tree {
     display: flex;
     flex-direction: row;
@@ -43,11 +44,11 @@ form button {
 #with_cat_tree > :not(:first-child) {
     flex: 1;
 }
-
-/* Used for category tree */
-ol {
+#cat_tree {
     list-style: '▼ ';
 }
+
+/* Whenever we clicky something, it highlights */
 li[data-selected] > div > span {
     background-color: green;
 }

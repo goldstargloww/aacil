@@ -64,7 +64,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         function update_sym_form() {
             let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
             selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
-            console.log(selected_syms);
 
             let selected_sym_str = selected_syms.map((x) => x.id).join(', ');
             sym_cur_id.innerText = `Selected symbol ID(s): ${selected_sym_str}`;
@@ -196,6 +195,40 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
         let old_sym_cw_select = document.getElementById('sym_on_page_cw');
         old_sym_cw_select.parentNode.replaceChild(new_sym_cw_select, old_sym_cw_select);
+
+        // Load all the existing artists
+        let all_artists = [];
+        database.exec(`select * from artists`, {
+            rowMode: 'object',
+            resultRows: all_artists,
+        });
+        all_artists.sort(sorting.sort_artists);
+
+        // Make list of artists (twice)
+        let new_artists_select = document.createElement('select');
+        new_artists_select.id = 'sym_artists'
+        new_artists_select.multiple = true;
+        let new_artists_adapted = document.createElement('select');
+        new_artists_adapted.id = 'sym_adapted_from'
+        new_artists_adapted.multiple = true;
+
+        for (let artist of all_artists) {
+            let option = document.createElement('option');
+            option.value = artist.id;
+            option.innerText = artist.display;
+            new_artists_select.appendChild(option);
+
+            option = document.createElement('option');
+            option.value = artist.id;
+            option.innerText = artist.display;
+            new_artists_adapted.appendChild(option);
+
+        }
+
+        let old_artists_select = document.getElementById('sym_artists');
+        old_artists_select.parentNode.replaceChild(new_artists_select, old_artists_select);
+        let old_artists_adapted = document.getElementById('sym_adapted_from');
+        old_artists_adapted.parentNode.replaceChild(new_artists_adapted, old_artists_adapted);
     }
 
     // // The buttons to actually do things
