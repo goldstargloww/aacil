@@ -1,6 +1,8 @@
 import * as sorting from '../sorting.js';
 
 export async function load_sym_cw_info(database, download_changes_elem) {
+    let dummy_element_parking_lot = document.getElementById('dummy_element_parking_lot');
+
     let sym_cw_cur_id = document.getElementById('sym_cw_cur_id');
     let sym_cw_status = document.getElementById('sym_cw_status');
     let sym_cw_text = document.getElementById('sym_cw_text');
@@ -30,8 +32,7 @@ export async function load_sym_cw_info(database, download_changes_elem) {
         sym_cw_text.focus();
         // Temporarily remove this, so that we can programmatically change the default button
         sym_cw_change.remove();
-        sym_cw_change.disabled = true;
-        sym_cw_change.style.display = 'none';
+        dummy_element_parking_lot.appendChild(sym_cw_change);
         sym_cw_delete.style.display = 'none';
 
         // Make entirely new list of CWs
@@ -59,9 +60,8 @@ export async function load_sym_cw_info(database, download_changes_elem) {
                 sym_cw_cur_id.innerText = `Selected CW ID: ${selected_cw_id} (used by ${cw.imgs_using} symbols)`;
                 sym_cw_text.value = cw.text;
 
+                sym_cw_change.remove();
                 sym_cw_new.parentNode.insertBefore(sym_cw_change, sym_cw_new);
-                sym_cw_change.disabled = false;
-                sym_cw_change.style.display = '';
                 sym_cw_delete.style.display = '';
                 // Only allow delete button if there are no images using it
                 sym_cw_delete.disabled = cw.imgs_using > 0;
@@ -70,8 +70,7 @@ export async function load_sym_cw_info(database, download_changes_elem) {
                 sym_cw_text.value = '';
 
                 sym_cw_change.remove();
-                sym_cw_change.disabled = true;
-                sym_cw_change.style.display = 'none';
+                dummy_element_parking_lot.appendChild(sym_cw_change);
                 sym_cw_delete.style.display = 'none';
             }
         });

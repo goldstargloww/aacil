@@ -1,6 +1,8 @@
 import * as sorting from '../sorting.js';
 
 export async function load_artist_info(database, download_changes_elem) {
+    let dummy_element_parking_lot = document.getElementById('dummy_element_parking_lot');
+
     let artists_cur_id = document.getElementById('artists_cur_id');
     let artists_status = document.getElementById('artists_status');
     let artist_display = document.getElementById('artist_display');
@@ -34,8 +36,7 @@ export async function load_artist_info(database, download_changes_elem) {
         artist_display.focus();
         // Temporarily remove this, so that we can programmatically change the default button
         artist_change.remove();
-        artist_change.disabled = true;
-        artist_change.style.display = 'none';
+        dummy_element_parking_lot.appendChild(artist_change);
         artist_merge_details.style.display = 'none';
 
         // Make entirely new list of artists
@@ -73,9 +74,8 @@ export async function load_artist_info(database, download_changes_elem) {
                 artist_parens.value = artist.front_page_parens;
                 artist_footnote.value = artist.front_page_footnote;
 
+                artist_change.remove();
                 artist_new.parentNode.insertBefore(artist_change, artist_new);
-                artist_change.disabled = false;
-                artist_change.style.display = '';
                 artist_merge_details.style.display = '';
             } else {
                 artists_cur_id.innerHTML = '&nbsp;';
@@ -84,8 +84,7 @@ export async function load_artist_info(database, download_changes_elem) {
                 artist_footnote.value = '';
 
                 artist_change.remove();
-                artist_change.disabled = true;
-                artist_change.style.display = 'none';
+                dummy_element_parking_lot.appendChild(artist_change);
                 artist_merge_details.style.display = 'none';
             }
         });

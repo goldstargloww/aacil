@@ -18,11 +18,21 @@
         <a id="download_changes" href="#" style="visibility: hidden">You have made changes. Click here to download them.</a>
 
         <div class="tabs_header">
+            <input type="radio" id="tab_symbols" name="main_tabs">
+            <label for="tab_symbols">Symbols</label>
+
             <input type="radio" id="tab_artists" name="main_tabs">
             <label for="tab_artists">Artists</label>
 
             <input type="radio" id="tab_cws" name="main_tabs">
             <label for="tab_cws">Symbol content warnings</label>
+        </div>
+
+        <div id="with_cat_tree">
+            <ol id="cat_tree"></ol>
+            <div id="symbols_ui" style="display: none">
+                SYMBOLS!!
+            </div>
         </div>
 
         <div id="artists_ui" style="display: none">
@@ -71,5 +81,7 @@
                 <button id="sym_cw_delete">Delete CW</button>
             </form>
         </div>
+
+        <div id="dummy_element_parking_lot" style="display: none"></div>
     </body>
 </html>

@@ -17,3 +17,10 @@ export function sort_sym_cw(a, b) {
 
     return a.localeCompare(b);
 }
+
+export function sort_categories(a, b) {
+    a = String(a.desc).toUpperCase();
+    b = String(b.desc).toUpperCase();
+
+    return a.localeCompare(b);
+}

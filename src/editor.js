@@ -1,6 +1,7 @@
 import { Snowflake } from "@theinternetfolks/snowflake";
 import load_csv from './load_csv_web.js';
 import { make_databases, export_databases } from './database.js';
+import * as sorting from './sorting.js';
 import { load_artist_info } from "./editor/artists.js";
 import { load_sym_cw_info } from "./editor/symbol_cws.js";
 
@@ -9,6 +10,7 @@ let database;
 let main_status;
 let download_changes_elem;
 
+let symbols_ui;
 let artists_ui;
 let sym_cw_ui;
 
@@ -30,6 +32,7 @@ async function download_changes_fn() {
 }
 
 function deselect_all_tabs() {
+    symbols_ui.style.display = 'none';
     artists_ui.style.display = 'none';
     sym_cw_ui.style.display = 'none';
 }
@@ -43,9 +46,80 @@ function on_select_tab(tab_id, ui_element, cb) {
     });
 }
 
+// Returns: {
+//      $children: [...]
+//      $parent: <instance>
+//      ...other DB data
+// }
+// Useful for displaying a tree of categories.
+function get_category_tree(node_id) {
+    // Ask the database for this node's information
+    let node_info = [];
+    database.exec(`select * from categories where id = ?`, {
+        bind: [node_id],
+        rowMode: 'object',
+        resultRows: node_info,
+    });
+
+    // Ask the database for children (subcategories)
+    let children = [];
+    database.exec(`select child_id from subcategories where parent_id = ?`, {
+        bind: [node_id],
+        resultRows: children,
+    });
+
+    let node = {
+        $children: [],
+        $parent: null,
+        ...node_info[0],
+    };
+
+    node.$children = children.map((x) => {
+        let child_node_id = x[0];
+        let child_node_obj = get_category_tree(child_node_id);
+        child_node_obj.$parent = node;
+        return child_node_obj;
+    });
+    node.$children.sort(sorting.sort_categories);
+
+    return node;
+}
+
+// Flatten category tree into a list, "preorder traversal"
+// Yields a list of {
+//      id: BigInt,
+//      desc_path: string,
+//      url_path: string,
+// }
+// Used specifically to allow *choosing* a category
+function flatten_category_tree(cat_tree) {
+    let flattened = [];
+    function flatten_recurse(node, desc_path, url_path) {
+        // Don't emit the root, otherwise emit self
+        if (node.id !== 0) {
+            desc_path.push(node.desc);
+            url_path.push(node.url_path);
+            flattened.push({
+                id: node.id,
+                desc_path: desc_path.join(" > "),
+                url_path: '/' + url_path.join("/") + '/',
+            });
+        }
+
+        for (let child of node.$children) {
+            let desc_path_new = desc_path.slice(0);
+            let url_path_new = url_path.slice(0);
+            flatten_recurse(child, desc_path_new, url_path_new);
+        }
+    }
+    flatten_recurse(cat_tree, [], []);
+    return flattened;
+}
+
 window.onload = async () => {
     main_status = document.getElementById('main_status');
     download_changes_elem = document.getElementById('download_changes');
+    symbols_ui = document.getElementById('symbols_ui');
     artists_ui = document.getElementById('artists_ui');
     sym_cw_ui = document.getElementById('sym_cw_ui');
 
@@ -54,8 +128,15 @@ window.onload = async () => {
     const sqlite3 = await window.sqlite3InitModule();
     database = await make_databases(sqlite3, load_csv);
 
+    on_select_tab('tab_symbols', symbols_ui, async () => { });
     on_select_tab('tab_artists', artists_ui, load_artist_info);
     on_select_tab('tab_cws', sym_cw_ui, load_sym_cw_info);
+
+    // Load information about categories out of DB into memory
+    let category_tree = get_category_tree(0);
+    console.log(category_tree);
+    let category_list = flatten_category_tree(category_tree);
+    console.log(category_list);
 
     // Loading complete!
     main_status.innerText = "What would you like to work on?";

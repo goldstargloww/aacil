@@ -70,7 +70,7 @@ class AACILCustomPlugin {
                         resultRows: subcats,
                     });
                     // ...and sort it
-                    subcats.sort((a, b) => a.desc.toUpperCase().localeCompare(b.desc.toUpperCase()));
+                    subcats.sort(sorting.sort_categories);
 
                     // Munge the subcategory data
                     let subcats_for_page = subcats.map((subcat) => {
