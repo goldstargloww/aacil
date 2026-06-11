@@ -21,14 +21,22 @@
 
         <h1>symbol pages map</h1>
 
+        {% macro map_level(item) %}
+        <li>
+            <a href="{{ item.url_path }}">{{ item.desc }}{% if item.icon_url %} <img src="{{ item.icon_url }}" height="80">{% endif %}</a>
+            {% if item.children %}
+            <ul>
+                {% for item in item.children %}
+                {{ map_level(item) }}
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </li>
+        {% endmacro %}
+
         <ul>
-        {% for item in sitemap_data recursive %}
-            <li>
-                <a href="{{ item.url }}">{{ item.desc }}{% if item.icon %} <img src="{{ item.icon }}" height="80">{% endif %}</a>
-                {% if item.children %}
-                <ul>{{ loop(item.children) }}</ul>
-                {% endif %}
-            </li>
+        {% for item in sitemap_data %}
+            {{ map_level(item) }}
         {% endfor %}
         </ul>
 

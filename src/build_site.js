@@ -38,9 +38,7 @@ class AACILCustomPlugin {
 
                 // Generate all category pages and the main page.
                 // Also collect the information needed to build the map page (TODO)
-                function make_category_page(cat_id, url_path_components = []) {
-                    console.log(cat_id, url_path_components);
-
+                function make_category_page(cat_id, children_out, url_path_components = []) {
                     // Look up information about this category
                     let cat_info = [];
                     database.exec(`select url_path, cw, have_subcat_icons from categories where id=?`, {
@@ -70,6 +68,8 @@ class AACILCustomPlugin {
                         rowMode: 'object',
                         resultRows: subcats,
                     });
+                    // ...and sort it
+                    subcats.sort((a, b) => a.desc.toUpperCase().localeCompare(b.desc.toUpperCase()));
 
                     // Munge the subcategory data
                     let subcats_for_page = subcats.map((subcat) => {
@@ -86,8 +86,6 @@ class AACILCustomPlugin {
                             ret.icon_url = subcat.icon_url;
                         return ret;
                     });
-                    // ...and sort it
-                    subcats_for_page.sort((a, b) => a.desc.toUpperCase().localeCompare(b.desc.toUpperCase()));
 
                     if (cat_id != 0) {
                         // A normal category page
@@ -242,12 +240,38 @@ class AACILCustomPlugin {
                         ));
                     }
 
-                    // Recurse
+                    // Recurse, and generate site map data
                     for (let subcat of subcats) {
-                        make_category_page(subcat.id, new_url_path_components);
+                        let child = {
+                            desc: subcat.desc,
+                            icon_url: subcat.icon_url,
+                            children: [],
+                        };
+
+                        let subcat_url = new_url_path_components.slice(0);
+                        subcat_url.push(subcat.url_path);
+                        subcat_url = subcat_url.join('/');
+                        if (subcat.cw !== null)
+                            child.url_path = `${subcat_url}/warning.html`;
+                        else
+                            child.url_path = `${subcat_url}/`;
+
+                        make_category_page(subcat.id, child.children, new_url_path_components);
+
+                        if (child.children.length === 0)
+                            delete child.children;
+                        children_out.push(child);
                     }
                 }
-                make_category_page(0);
+                let root_tree = [];
+                make_category_page(0, root_tree);
+
+                // Generate site map page
+                compilation.emitAsset("/map.html", new RawSource(
+                    nunjucks.render(path.resolve(__dirname, 'templates/map.html'), {
+                        sitemap_data: root_tree,
+                    })
+                ));
 
                 // Generate "all symbols" page
                 // We can't use sqlite nocase, because it's not powerful enough
@@ -277,7 +301,7 @@ class AACILCustomPlugin {
                     all_syms_by_letter.get(first_letter).push(sym);
                 }
 
-                compilation.emitAsset("list.html", new RawSource(
+                compilation.emitAsset("/list.html", new RawSource(
                     nunjucks.render(path.resolve(__dirname, 'templates/list.html'), {
                         sym_first_letters: all_sym_first_letters,
                         syms_by_letter: all_syms_by_letter,
