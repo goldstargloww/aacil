@@ -49,6 +49,7 @@
 
             <details id="artist_merge_details">
                 <summary><h2>⚠️ Careful: Merge two artists (click to toggle) ⚠️</h2></summary>
+                <p>It is hard to un-merge artists. Only use if you are sure.</p>
                 <select id="artists_merge_select"><!-- This will be ignored! --></select>
                 <p><small id="artists_merge_victim_id">&nbsp;</small></p>
                 <button id="artist_merge_button">Merge artists</button>
@@ -56,7 +57,19 @@
         </div>
 
         <div id="sym_cw_ui" style="display: none">
-            CW!!
+            <h2>Change symbol CWs (content warnings)</h2>
+            <select id="sym_cw_select"><!-- This will be ignored! --></select>
+            <p><small id="sym_cw_cur_id">&nbsp;</small></p>
+            <p id="sym_cw_status">&nbsp;</p>
+            <form action="javascript:void(0)">
+                <div>
+                    <label for="sym_cw_text">CW text:</label>
+                    <input type="text" id="sym_cw_text" required>
+                </div>
+                <button id="sym_cw_change">Change CW</button>
+                <button id="sym_cw_new">Make NEW CW</button>
+                <button id="sym_cw_delete">Delete CW</button>
+            </form>
         </div>
     </body>
 </html>
