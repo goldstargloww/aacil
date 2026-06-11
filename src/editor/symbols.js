@@ -17,7 +17,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     let sym_move_button = document.getElementById('sym_move_button');
     let sym_dup_button = document.getElementById('sym_dup_button');
 
-    let all_syms_map;
     let new_sym_list;
 
     let new_sym_cw_select;
@@ -25,6 +24,8 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     let new_artists_adapted;
 
     function reset_ui() {
+        let all_syms_map = new Map();
+
         // Load all the existing CW information
         let all_cws = [];
         database.exec(`select * from page_cw`, {
@@ -209,7 +210,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
             update_sym_form();
         });
 
-        all_syms_map = new Map();
         let all_figures = [];
         for (let [sym_i, sym] of all_syms.entries()) {
             let figure = document.createElement('figure');
@@ -346,7 +346,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
         if (read_id) {
             let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
-            selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
+            selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
 
             if (selected_syms.length !== 1) {
                 sym_status.className = "status_error";
@@ -354,8 +354,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
                 return;
             }
 
-            ret.id = selected_syms[0].id;
-            ret.orig_obj = selected_syms[0];
+            ret.id = selected_syms[0];
         }
 
         return ret;
@@ -478,10 +477,13 @@ export async function load_syms(database, download_changes_elem, cat_id) {
                     bind: [new_id, artist]
                 });
             }
-            // Insert it into the current category
-            txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
-                bind: [cat_id, new_id]
-            });
+            if (cat_id !== 0) {
+                // Insert it into the current category
+                // (Root cannot actually have symbols show up)
+                txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
+                    bind: [cat_id, new_id]
+                });
+            }
         });
 
         // Ok
@@ -548,15 +550,15 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         }
 
         let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
-        selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
+        selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
 
-        for (let sym of selected_syms) {
+        for (let sym_id of selected_syms) {
             database.transaction((txn) => {
                 txn.exec(`delete from cat_syms where cat_id = ? and img_id = ?`, {
-                    bind: [cat_id, sym.id]
+                    bind: [cat_id, sym_id]
                 });
                 txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
-                    bind: [to_cat, sym.id]
+                    bind: [to_cat, sym_id]
                 });
             });
         }
@@ -578,12 +580,12 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         }
 
         let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
-        selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
+        selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
 
-        for (let sym of selected_syms) {
+        for (let sym_id of selected_syms) {
             database.transaction((txn) => {
                 txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
-                    bind: [to_cat, sym.id]
+                    bind: [to_cat, sym_id]
                 });
             });
         }
