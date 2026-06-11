@@ -69,7 +69,8 @@ FIXME: Do we want to track _which_ image it's adapted from?
 ## category
 
 - **ID** (PK)
-- name
+- name to display
+- name on filesystem and in URLs
 - icon (FK, optional)
 - CW (optional)
 

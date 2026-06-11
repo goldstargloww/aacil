@@ -38,6 +38,7 @@ export async function make_databases(sqlite3, load_csv) {
     db.exec(`create table categories(
             id integer primary_key,
             desc string not null,
+            url_path string not null,
             icon_id integer,
             cw string,
             foreign key(icon_id) references images(id)
