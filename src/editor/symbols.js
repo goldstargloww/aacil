@@ -15,6 +15,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     let sym_delete = document.getElementById('sym_delete');
 
     let sym_move_button = document.getElementById('sym_move_button');
+    let sym_dup_button = document.getElementById('sym_dup_button');
 
     let all_syms_map;
     let new_sym_list;
@@ -217,10 +218,15 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
             let imgcontain = document.createElement('div');
             imgcontain.className = 'imgcontain';
-            let img = document.createElement('img');
-            img.src = sym.filename;
-            img.alt = sym.alt_text;
-            imgcontain.appendChild(img);
+            if (cat_id !== 0) {
+                let img = document.createElement('img');
+                img.src = sym.filename;
+                img.alt = sym.alt_text;
+                imgcontain.appendChild(img);
+            } else {
+                // Loading all the 10k+ images on a page will make it lag too much, so don't
+                imgcontain.innerText = sym.filename;
+            }
             figure.appendChild(imgcontain);
 
             let figcaption = document.createElement('figcaption');
@@ -560,6 +566,33 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
         sym_status.className = "status_ok";
         sym_status.innerText = `OK! Moved ${selected_syms.length} items.`;
+        download_changes_elem.style.visibility = '';
+    }
+
+    sym_dup_button.onclick = () => {
+        let to_cat = BigInt(document.getElementById('category_move_select').value);
+        if (!to_cat) {
+            sym_status.className = "status_error";
+            sym_status.innerText = "No category selected";
+            return;
+        }
+
+        let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
+        selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
+
+        for (let sym of selected_syms) {
+            database.transaction((txn) => {
+                txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
+                    bind: [to_cat, sym.id]
+                });
+            });
+        }
+
+        // Ok
+        reset_ui();
+
+        sym_status.className = "status_ok";
+        sym_status.innerText = `OK! Made copies of ${selected_syms.length} items.`;
         download_changes_elem.style.visibility = '';
     }
 
