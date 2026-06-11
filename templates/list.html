@@ -21,8 +21,8 @@
         <h2 class="center">{{ sym_letter }}</h2>
 
         <ol style="list-style: none; padding: 0;">
-            {% for sym in syms_by_letter[sym_letter] %}
-            <li><a href="{{ sym.url }}">{{ sym.caption }}</a></li>
+            {% for sym in map_get(syms_by_letter, sym_letter) %}
+            <li><a href="{{ sym.filename }}">{{ sym.caption }}</a></li>
             {% endfor %}
         </ol>
 
