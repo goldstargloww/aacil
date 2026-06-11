@@ -60,3 +60,12 @@ window.onload = async () => {
     // Loading complete!
     main_status.innerText = "What would you like to work on?";
 };
+
+window.addEventListener('error', (e) => {
+    console.log(e);
+    alert(`Error: something broke!\n\nCheck the browser console for more details.\n\n${e.message}`)
+});
+window.addEventListener('unhandledrejection', (e) => {
+    console.log(e);
+    alert(`Error: something broke!\n\nCheck the browser console for more details.\n\n${e.reason}`)
+});
