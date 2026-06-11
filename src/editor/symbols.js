@@ -88,14 +88,14 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         let all_syms = [];
         if (cat_id === 0) {
             database.exec(`
-                select images.*, page_cw.text as cw_text
+                select images.*, page_cw.text as cw_text, null as override_caption
                     from images left join page_cw on images.cw_id = page_cw.id`, {
                 rowMode: 'object',
                 resultRows: all_syms,
             });
         } else {
             database.exec(`
-                select images.*, page_cw.text as cw_text
+                select images.*, page_cw.text as cw_text, cat_syms.override_caption
                     from images join cat_syms on images.id = cat_syms.img_id
                     left join page_cw on images.cw_id = page_cw.id
                     where cat_syms.cat_id = ?`, {
@@ -103,6 +103,10 @@ export async function load_syms(database, download_changes_elem, cat_id) {
                 rowMode: 'object',
                 resultRows: all_syms,
             });
+        }
+        for (let sym of all_syms) {
+            if (sym.override_caption !== null)
+                sym.caption = sym.override_caption;
         }
         all_syms.sort(sorting.sort_syms);
 
@@ -122,6 +126,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
         let last_selected_i = 0;
         let last_selected_was_already_marked = false;
+        sym_delete.disabled = true;
 
         function update_sym_form() {
             let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
@@ -354,6 +359,14 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         let changed_sym = perform_input_validation(true);
         if (changed_sym === undefined) return;
 
+        // How many places is this used?
+        let num_uses = [];
+        database.exec(`select count(*) from cat_syms where img_id = ?`, {
+            bind: [changed_sym.id],
+            resultRows: num_uses,
+        });
+        num_uses = num_uses[0][0];
+
         database.transaction((txn) => {
             // Delete old artist credits
             txn.exec(`delete from sym_artists where img_id = ?`, {
@@ -362,21 +375,55 @@ export async function load_syms(database, download_changes_elem, cat_id) {
             txn.exec(`delete from sym_derived_from where img_id = ?`, {
                 bind: [changed_sym.id],
             });
+
+            // Figure out _where_ to put the caption
+            let use_override_caption = false;
+            if (num_uses <= 1) {
+                // If this is only used in one place, do not use override.
+                // Also make sure there aren't any lingering overrides either
+                txn.exec(`update cat_syms set override_caption = null where cat_id = ? and img_id = ?`, {
+                    bind: [cat_id, changed_sym.id],
+                });
+            } else if (cat_id !== 0) {
+                // If we are editing from the root, always update the "true" caption
+
+                // Otherwise, this is used in two or more places, so use local override
+                use_override_caption = true;
+            }
+
             // Update the image
-            txn.exec(`update images set
-                filename = ?,
-                caption = ?,
-                alt_text = ?,
-                cw_id = ?
-                where id = ?`, {
-                bind: [
-                    changed_sym.url,
-                    changed_sym.caption,
-                    changed_sym.alt_text,
-                    changed_sym.cw,
-                    changed_sym.id
-                ],
-            });
+            if (!use_override_caption) {
+                txn.exec(`update images set
+                    filename = ?,
+                    caption = ?,
+                    alt_text = ?,
+                    cw_id = ?
+                    where id = ?`, {
+                    bind: [
+                        changed_sym.url,
+                        changed_sym.caption,
+                        changed_sym.alt_text,
+                        changed_sym.cw,
+                        changed_sym.id
+                    ],
+                });
+            } else {
+                txn.exec(`update cat_syms set override_caption = ? where cat_id = ? and img_id = ?`, {
+                    bind: [changed_sym.caption, cat_id, changed_sym.id],
+                });
+                txn.exec(`update images set
+                    filename = ?,
+                    alt_text = ?,
+                    cw_id = ?
+                    where id = ?`, {
+                    bind: [
+                        changed_sym.url,
+                        changed_sym.alt_text,
+                        changed_sym.cw,
+                        changed_sym.id
+                    ],
+                });
+            }
             // Put the artist credits back
             for (let artist of changed_sym.artists) {
                 txn.exec(`insert into sym_artists(img_id, artist_id) values (?, ?)`, {
