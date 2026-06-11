@@ -1,3 +1,7 @@
+body {
+    margin: 16px;
+}
+
 .status_error {
     color: red;
 }
@@ -6,6 +10,7 @@
 }
 
 .tabs_header {
+    padding-top: 1lh;
     display: flex;
 }
 .tabs_header input {
@@ -24,6 +29,10 @@ form {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 16px;
+    padding-bottom: 16px;
+}
+form label {
+    text-align: right;
 }
 form div {
     display: contents;
