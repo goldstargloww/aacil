@@ -178,7 +178,26 @@ window.onload = async () => {
     let category_tree = get_category_tree(0);
     let category_list = flatten_category_tree(category_tree);
 
+    // Populate the selection for moving symbols to different categories
+    let new_category_move_select = document.createElement('select');
+    new_category_move_select.id = 'category_move_select';
+
+    for (let category of category_list) {
+        let option = document.createElement('option');
+        option.value = category.id;
+        option.innerText = category.desc_path;
+        new_category_move_select.appendChild(option);
+    }
+
+    let old_category_move_select = document.getElementById('category_move_select');
+    old_category_move_select.parentNode.replaceChild(new_category_move_select, old_category_move_select);
+
     on_select_tab('tab_symbols', symbols_ui, async () => {
+        let sym_move_label = document.getElementById('sym_move_label');
+        let category_move_select = document.getElementById('category_move_select');
+        category_move_select.remove();
+        sym_move_label.after(category_move_select);
+
         make_cat_tree_ui(category_tree, async (cat_id) => {
             await load_syms(database, download_changes_elem, cat_id);
         });

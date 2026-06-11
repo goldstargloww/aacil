@@ -3,7 +3,6 @@ import * as sorting from '../sorting.js';
 export async function load_syms(database, download_changes_elem, cat_id) {
     let dummy_element_parking_lot = document.getElementById('dummy_element_parking_lot');
 
-    let symbols_ui = document.getElementById('symbols_ui');
     let sym_cur_id = document.getElementById('sym_cur_id');
     let sym_status = document.getElementById('sym_status');
     let one_sym_actions = document.getElementById('one_sym_actions');
@@ -13,6 +12,8 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     // let sym_cw_change = document.getElementById('sym_cw_change');
     // let sym_cw_new = document.getElementById('sym_cw_new');
     // let sym_cw_delete = document.getElementById('sym_cw_delete');
+
+    let sym_move_button = document.getElementById('sym_move_button');
 
     let all_syms_map;
     let new_sym_list;
@@ -85,7 +86,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
             }
         }
 
-        symbols_ui.addEventListener('click', () => {
+        new_sym_list.addEventListener('click', () => {
             // Clicked on a blank spot
             for (let elem of new_sym_list.querySelectorAll('[data-selected]')) {
                 delete elem.dataset.selected;
@@ -263,6 +264,36 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     //     sym_status.innerText = "OK!";
     //     download_changes_elem.style.visibility = '';
     // }
+
+    sym_move_button.onclick = () => {
+        let to_cat = BigInt(document.getElementById('category_move_select').value);
+        if (!to_cat) {
+            sym_status.className = "status_error";
+            sym_status.innerText = "No category selected";
+            return;
+        }
+
+        let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
+        selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
+
+        for (let sym of selected_syms) {
+            database.transaction((txn) => {
+                txn.exec(`delete from cat_syms where cat_id = ? and img_id = ?`, {
+                    bind: [cat_id, sym.id]
+                });
+                txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
+                    bind: [to_cat, sym.id]
+                });
+            });
+        }
+
+        // Ok
+        reset_ui();
+
+        sym_status.className = "status_ok";
+        sym_status.innerText = `OK! Moved ${selected_syms.length} items.`;
+        download_changes_elem.style.visibility = '';
+    }
 
     // Set up the UI the first time
     reset_ui();
