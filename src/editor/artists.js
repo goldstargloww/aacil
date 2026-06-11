@@ -1,3 +1,4 @@
+import { Snowflake } from "@theinternetfolks/snowflake";
 import * as sorting from '../sorting.js';
 
 export async function load_artist_info(database, download_changes_elem) {

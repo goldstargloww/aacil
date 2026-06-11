@@ -1,3 +1,4 @@
+import { Snowflake } from "@theinternetfolks/snowflake";
 import * as sorting from '../sorting.js';
 
 export async function load_syms(database, download_changes_elem, cat_id) {
@@ -117,7 +118,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         // Temporarily remove this, so that we can programmatically change the default button
         sym_change.remove();
         dummy_element_parking_lot.appendChild(sym_change);
-        sym_delete.style.display = 'none';
 
         // Make entirely new list of CWs
         new_sym_list = document.createElement('div');
@@ -132,6 +132,8 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
             let selected_sym_str = selected_syms.map((x) => x.id).join(', ');
             sym_cur_id.innerText = `Selected symbol ID(s): ${selected_sym_str}`;
+
+            sym_delete.disabled = selected_syms.length === 0;
 
             if (selected_syms.length > 1) {
                 one_sym_actions.style.display = 'none';
@@ -177,7 +179,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
                     sym_change.remove();
                     sym_new.parentNode.insertBefore(sym_change, sym_new);
-                    sym_delete.style.display = '';
                 } else {
                     sym_url.value = '';
                     sym_caption.value = '';
@@ -188,7 +189,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
 
                     sym_change.remove();
                     dummy_element_parking_lot.appendChild(sym_change);
-                    sym_delete.style.display = 'none';
                 }
 
                 one_sym_actions.style.display = '';
@@ -356,7 +356,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     sym_change.onclick = () => {
         let changed_sym = perform_input_validation(true);
         if (changed_sym === undefined) return;
-        console.log(changed_sym);
 
         database.transaction((txn) => {
             // Delete old artist credits
@@ -401,58 +400,95 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         sym_status.innerText = "OK!";
         download_changes_elem.style.visibility = '';
     };
-    // sym_new.onclick = () => {
-    //     let new_cw = perform_input_validation(false);
-    //     if (new_cw === undefined) return;
+    sym_new.onclick = () => {
+        let new_sym = perform_input_validation(false);
+        if (new_sym === undefined) return;
 
-    //     let { query_insert_args, query_data } = new_cw;
+        let new_id = Snowflake.generate();
 
-    //     let new_id = Snowflake.generate();
-    //     query_data.push(new_id);
+        database.transaction((txn) => {
+            // Create the image
+            txn.exec(`insert into images(id, filename, caption, alt_text, cw_id) values (?, ?, ?, ?, ?)`, {
+                bind: [
+                    new_id,
+                    new_sym.url,
+                    new_sym.caption,
+                    new_sym.alt_text,
+                    new_sym.cw,
+                ],
+            });
+            // Put the artist credits
+            for (let artist of new_sym.artists) {
+                txn.exec(`insert into sym_artists(img_id, artist_id) values (?, ?)`, {
+                    bind: [new_id, artist]
+                });
+            }
+            for (let artist of new_sym.adapted_from) {
+                txn.exec(`insert into sym_derived_from(img_id, artist_id) values (?, ?)`, {
+                    bind: [new_id, artist]
+                });
+            }
+            // Insert it into the current category
+            txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
+                bind: [cat_id, new_id]
+            });
+        });
 
-    //     let query_values = []
-    //     for (let i = 0; i < query_data.length; i++)
-    //         query_values.push('?');
-    //     query_values = query_values.join(', ');
+        // Ok
+        reset_ui();
 
-    //     database.exec(`insert into page_cw ${query_insert_args} values (${query_values})`, {
-    //         bind: query_data
-    //     });
+        sym_status.className = "status_ok";
+        sym_status.innerText = `OK, new id ${new_id}!`;
+        download_changes_elem.style.visibility = '';
+    };
+    sym_delete.onclick = () => {
+        let selected_syms = new_sym_list.querySelectorAll('[data-selected]');
 
-    //     // Ok
-    //     reset_ui();
+        for (let sym of selected_syms) {
+            let sym_id = BigInt(sym.dataset.id);
 
-    //     sym_status.className = "status_ok";
-    //     sym_status.innerText = `OK, new id ${new_id}!`;
-    //     download_changes_elem.style.visibility = '';
-    // };
-    // sym_delete.onclick = () => {
-    //     let sym_id = new_sym_list.value;
-    //     if (!sym_id) {
-    //         sym_status.className = "status_error";
-    //         sym_status.innerText = "No CW selected";
-    //         return;
-    //     }
-    //     sym_id = BigInt(sym_id);
+            // How many places is this used?
+            let num_uses = [];
+            database.exec(`select count(*) from cat_syms where img_id = ?`, {
+                bind: [sym_id],
+                resultRows: num_uses,
+            });
+            console.log(num_uses);
 
-    //     let sym_data = all_syms_map.get(sym_id);
-    //     if (sym_data.imgs_using > 0) {
-    //         sym_status.className = "status_error";
-    //         sym_status.innerText = "Cannot delete, there are symbols using it";
-    //         return;
-    //     }
+            if (num_uses[0][0] > 1) {
+                // If the symbol is used in multiple places, only delete *this* copy
+                database.exec(`delete from cat_syms where cat_id = ? and img_id = ?`, {
+                    bind: [cat_id, sym_id],
+                });
+            } else {
+                // Otherwise delete *everything*
+                database.transaction((txn) => {
+                    // Delete artist credits
+                    txn.exec(`delete from sym_artists where img_id = ?`, {
+                        bind: [sym_id],
+                    });
+                    txn.exec(`delete from sym_derived_from where img_id = ?`, {
+                        bind: [sym_id],
+                    });
+                    // Delete the references
+                    txn.exec(`delete from cat_syms where img_id = ?`, {
+                        bind: [sym_id],
+                    });
+                    // Delete the image
+                    txn.exec(`delete from images where id = ?`, {
+                        bind: [sym_id],
+                    });
+                });
+            }
+        }
 
-    //     database.exec(`delete from page_cw where id = ?`, {
-    //         bind: [sym_id]
-    //     });
+        // Ok
+        reset_ui();
 
-    //     // Ok
-    //     reset_ui();
-
-    //     sym_status.className = "status_ok";
-    //     sym_status.innerText = "OK!";
-    //     download_changes_elem.style.visibility = '';
-    // }
+        sym_status.className = "status_ok";
+        sym_status.innerText = "OK!";
+        download_changes_elem.style.visibility = '';
+    }
 
     sym_move_button.onclick = () => {
         let to_cat = BigInt(document.getElementById('category_move_select').value);
