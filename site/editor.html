@@ -36,7 +36,7 @@
                 <p id="sym_status">&nbsp;</p>
                 <div id="sym_list"><!-- This will be ignored! --></div>
                 <p><small id="sym_cur_id">&nbsp;</small></p>
-                <div id="one_sym_actions" style="display: none">
+                <div id="one_sym_actions">
                     <form action="javascript:void(0)">
                         <div>
                             <label for="sym_url">URL ( /Where/the/image/is.png ):</label>
@@ -44,11 +44,11 @@
                         </div>
                         <div>
                             <label for="sym_caption">Caption:</label>
-                            <input type="text" id="sym_caption">
+                            <input type="text" id="sym_caption" required>
                         </div>
                         <div>
                             <label for="sym_alt_text">Description (alt text):</label>
-                            <input type="text" id="sym_alt_text">
+                            <input type="text" id="sym_alt_text" required>
                         </div>
                         <div>
                             <label for="sym_artists">Artist(s):</label>
@@ -62,8 +62,9 @@
                             <label for="sym_on_page_cw">Content warning:</label>
                             <select id="sym_on_page_cw"><!-- This will be ignored! --></select>
                         </div>
-                        <!-- <button id="artist_change">Change artist</button>
-                        <button id="artist_new">Make NEW artist</button> -->
+                        <button id="sym_change">Change symbol</button>
+                        <button id="sym_new">Make NEW symbol</button>
+                        <button id="sym_delete">Delete symbol</button>
                     </form>
                 </div>
 

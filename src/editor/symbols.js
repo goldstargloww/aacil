@@ -9,14 +9,18 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     let sym_url = document.getElementById('sym_url');
     let sym_caption = document.getElementById('sym_caption');
     let sym_alt_text = document.getElementById('sym_alt_text');
-    // let sym_cw_change = document.getElementById('sym_cw_change');
-    // let sym_cw_new = document.getElementById('sym_cw_new');
-    // let sym_cw_delete = document.getElementById('sym_cw_delete');
+    let sym_change = document.getElementById('sym_change');
+    let sym_new = document.getElementById('sym_new');
+    let sym_delete = document.getElementById('sym_delete');
 
     let sym_move_button = document.getElementById('sym_move_button');
 
     let all_syms_map;
     let new_sym_list;
+
+    let new_sym_cw_select;
+    let new_artists_select;
+    let new_artists_adapted;
 
     function reset_ui() {
         console.log(cat_id);
@@ -30,7 +34,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         all_cws.sort(sorting.sort_sym_cw);
 
         // Make list of CWs
-        let new_sym_cw_select = document.createElement('select');
+        new_sym_cw_select = document.createElement('select');
         new_sym_cw_select.id = 'sym_on_page_cw'
         // Add an empty option
         new_sym_cw_select.appendChild(document.createElement('option'));
@@ -54,12 +58,14 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         all_artists.sort(sorting.sort_artists);
 
         // Make list of artists (twice)
-        let new_artists_select = document.createElement('select');
+        new_artists_select = document.createElement('select');
         new_artists_select.id = 'sym_artists'
         new_artists_select.multiple = true;
-        let new_artists_adapted = document.createElement('select');
+        new_artists_adapted = document.createElement('select');
         new_artists_adapted.id = 'sym_adapted_from'
         new_artists_adapted.multiple = true;
+        // Add an empty option
+        new_artists_adapted.appendChild(document.createElement('option'));
 
         for (let artist of all_artists) {
             let option = document.createElement('option');
@@ -108,10 +114,10 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         sym_url.value = '';
         sym_caption.value = '';
         sym_alt_text.value = '';
-        // // Temporarily remove this, so that we can programmatically change the default button
-        // sym_cw_change.remove();
-        // dummy_element_parking_lot.appendChild(sym_cw_change);
-        // sym_cw_delete.style.display = 'none';
+        // Temporarily remove this, so that we can programmatically change the default button
+        sym_change.remove();
+        dummy_element_parking_lot.appendChild(sym_change);
+        sym_delete.style.display = 'none';
 
         // Make entirely new list of CWs
         new_sym_list = document.createElement('div');
@@ -168,6 +174,10 @@ export async function load_syms(database, download_changes_elem, cat_id) {
                             option.selected = true;
                         }
                     }
+
+                    sym_change.remove();
+                    sym_new.parentNode.insertBefore(sym_change, sym_new);
+                    sym_delete.style.display = '';
                 } else {
                     sym_url.value = '';
                     sym_caption.value = '';
@@ -175,6 +185,10 @@ export async function load_syms(database, download_changes_elem, cat_id) {
                     new_sym_cw_select.value = '';
                     new_artists_select.selectedIndex = -1;
                     new_artists_adapted.selectedIndex = -1;
+
+                    sym_change.remove();
+                    dummy_element_parking_lot.appendChild(sym_change);
+                    sym_delete.style.display = 'none';
                 }
 
                 one_sym_actions.style.display = '';
@@ -256,12 +270,6 @@ export async function load_syms(database, download_changes_elem, cat_id) {
                 e.stopPropagation();
 
                 update_sym_form();
-
-                //         sym_cw_change.remove();
-                //         sym_cw_new.parentNode.insertBefore(sym_cw_change, sym_cw_new);
-                //         sym_cw_delete.style.display = '';
-                //         // Only allow delete button if there are no images using it
-                //         sym_cw_delete.disabled = cw.imgs_using > 0;
             });
         }
 
@@ -269,45 +277,131 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         old_sym_list.parentNode.replaceChild(new_sym_list, old_sym_list);
     }
 
-    // // The buttons to actually do things
-    // function perform_input_validation(read_id) {
-    //     let new_text = sym_cw_text.value;
+    // The buttons to actually do things
+    function perform_input_validation(read_id) {
+        let new_url = sym_url.value;
+        if (!new_url) {
+            sym_url.focus();
+            sym_status.className = "status_error";
+            sym_status.innerText = "Must have a URL";
+            return;
+        }
 
-    //     if (!new_text) {
-    //         sym_cw_text.focus();
-    //         sym_status.className = "status_error";
-    //         sym_status.innerText = "Must have some text";
-    //         return;
-    //     }
+        let new_caption = sym_caption.value;
+        if (!new_caption) {
+            sym_caption.focus();
+            sym_status.className = "status_error";
+            sym_status.innerText = "Must have a caption";
+            return;
+        }
 
-    //     let query_data = [new_text];
-    //     if (read_id) {
-    //         query_data.push(BigInt(new_sym_list.value));
-    //     }
-    //     return {
-    //         query_insert_args: "(text, id)",
-    //         query_update_args: "text = ?",
-    //         query_data,
-    //     };
-    // }
+        let new_alt_text = sym_alt_text.value;
+        if (!new_alt_text) {
+            sym_alt_text.focus();
+            sym_status.className = "status_error";
+            sym_status.innerText = "Must have alt text";
+            return;
+        }
 
-    // sym_cw_change.onclick = () => {
-    //     let changed_cw = perform_input_validation(true);
-    //     if (changed_cw === undefined) return;
+        let new_cw = new_sym_cw_select.value;
+        if (new_cw)
+            new_cw = BigInt(new_cw);
+        else
+            new_cw = null;
 
-    //     let { query_update_args, query_data } = changed_cw;
-    //     database.exec(`update page_cw set ${query_update_args} where id = ?`, {
-    //         bind: query_data
-    //     });
+        let new_artists = new Set();
+        for (let option of new_artists_select.selectedOptions) {
+            if (option.value)
+                new_artists.add(BigInt(option.value));
+        }
+        if (new_artists.size === 0) {
+            new_artists_select.focus();
+            sym_status.className = "status_error";
+            sym_status.innerText = "Please select an artist";
+            return;
+        }
 
-    //     // Ok
-    //     reset_ui();
+        let new_adapted_from = new Set();
+        for (let option of new_artists_adapted.selectedOptions) {
+            if (option.value)
+                new_adapted_from.add(BigInt(option.value));
+        }
 
-    //     sym_status.className = "status_ok";
-    //     sym_status.innerText = "OK!";
-    //     download_changes_elem.style.visibility = '';
-    // };
-    // sym_cw_new.onclick = () => {
+        let ret = {
+            url: new_url,
+            caption: new_caption,
+            alt_text: new_alt_text,
+            cw: new_cw,
+            artists: new_artists,
+            adapted_from: new_adapted_from,
+        };
+
+        if (read_id) {
+            let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
+            selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
+
+            if (selected_syms.length !== 1) {
+                sym_status.className = "status_error";
+                sym_status.innerText = "Please select a symbol to change";
+                return;
+            }
+
+            ret.id = selected_syms[0].id;
+            ret.orig_obj = selected_syms[0];
+        }
+
+        return ret;
+    }
+
+    sym_change.onclick = () => {
+        let changed_sym = perform_input_validation(true);
+        if (changed_sym === undefined) return;
+        console.log(changed_sym);
+
+        database.transaction((txn) => {
+            // Delete old artist credits
+            txn.exec(`delete from sym_artists where img_id = ?`, {
+                bind: [changed_sym.id],
+            });
+            txn.exec(`delete from sym_derived_from where img_id = ?`, {
+                bind: [changed_sym.id],
+            });
+            // Update the image
+            txn.exec(`update images set
+                filename = ?,
+                caption = ?,
+                alt_text = ?,
+                cw_id = ?
+                where id = ?`, {
+                bind: [
+                    changed_sym.url,
+                    changed_sym.caption,
+                    changed_sym.alt_text,
+                    changed_sym.cw,
+                    changed_sym.id
+                ],
+            });
+            // Put the artist credits back
+            for (let artist of changed_sym.artists) {
+                txn.exec(`insert into sym_artists(img_id, artist_id) values (?, ?)`, {
+                    bind: [changed_sym.id, artist]
+                });
+            }
+            for (let artist of changed_sym.adapted_from) {
+                txn.exec(`insert into sym_derived_from(img_id, artist_id) values (?, ?)`, {
+                    bind: [changed_sym.id, artist]
+                });
+            }
+        });
+
+        // Ok
+        reset_ui();
+
+        sym_status.className = "status_ok";
+        sym_status.innerText = "OK!";
+        download_changes_elem.style.visibility = '';
+    };
+    // sym_new.onclick = () => {
     //     let new_cw = perform_input_validation(false);
     //     if (new_cw === undefined) return;
 
@@ -332,7 +426,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     //     sym_status.innerText = `OK, new id ${new_id}!`;
     //     download_changes_elem.style.visibility = '';
     // };
-    // sym_cw_delete.onclick = () => {
+    // sym_delete.onclick = () => {
     //     let sym_id = new_sym_list.value;
     //     if (!sym_id) {
     //         sym_status.className = "status_error";
