@@ -44,12 +44,19 @@
         <div class="center">
             <p class="space_above" xmlns:cc="http://creativecommons.org/ns#">The works on this website are licensed under <a href="http://creativecommons.org/licenses/by-nc/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC 4.0. <img src="https://aacil.neocities.org/cc%20by%20nc.png" height=30px></a></p>
 
-            <p class="space_above"><small><b>Image artists:</b> Aerron; Alena Semi; Alex W.; The Andromeda Collective; Ani; aok-aac; Astro; Bauwex; Bear; Blackholemojis; blackrocklabs; Blur The Colors (Max Dearing); Boonanas; bunnsemojis; C; CC; Coastal; comet; creature; Creature's creations; Crows; cytochrome-sea; damsii; DoctorZero; dtcd; Dragon; Dusty; Eldritch-Emojis; envi; Esrah; Estrelle; Evan; The Five (+) Guys Collective; Fractals; Forget Us All; Frogverbal; froggygolem; Fukurō; gillipop; Gleepglorpian; goldstargloww; Harlow; InsertNameHere*; Jasper; K9Emote; Katt; Kay; Koda; Kip; Kirby; Kit; Krow; Lady; Leaf; legless rat; Levi; Loveelikeadog; M (M. Scharnke); MATRIX; Méabh; Melody; meowing-emojis; Midi; Mikey; Millie; Moony; Neon; NonspeakingKiku; Nubs; Ottertime; pandora's box; Pepsi**; Petri; Pheonix; Phoenix (QueeringAAC); Pi; Plum; Proxy; Rae; Rayin; Rory; Rover; Ry; Samuel; Smolmoss; SpeakUpSymbols; StellarSymbols (Colin Mcnamee); TalkSense (Tony Jones); TCC-mojis; Teddy; TinyTyra; Tonto (Freddy); Vincent; vinter; Vixen; yanas_emotes; Wolf; Zaza-art. <b>Almost all of us are AAC users as well as artists, and all of us are Disabled</b>. If you want to contribute AAC symbols or otherwise contact us, email: <u>aacschar@gmail.com</u>. Website founded and managed by M Scharnke.</p>
+            <p class="space_above">
+                <small>
+                    <b>Image artists:</b> {{ artists | join("; ") }}
+                    <b>Almost all of us are AAC users as well as artists, and all of us are Disabled</b>.
+                    If you want to contribute AAC symbols or otherwise contact us, email: <u>aacschar@gmail.com</u>. Website founded and managed by M Scharnke.
+                </small>
+            </p>
         </div>
 
         <div class="space_above"></div>
-        <p>*Not a placeholder; the preferred online handle of the anonymised contributor.</p>
-        <p>**Individual artist, not brand; AACIL is unaffiliated with PepsiCo.</p>
+        {% for item in artist_footnotes %}
+        <p>{{ item }}</p>
+        {% endfor %}
 
         <script src="https://website-widgets.pages.dev/dist/sienna.min.js" defer></script>
     </body>

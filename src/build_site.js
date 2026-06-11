@@ -230,12 +230,55 @@ class AACILCustomPlugin {
                             ));
                         }
                     } else {
-                        // TODO: Main page
+                        // Main page
                         new_url_path_components.push('');
+
+                        // Deal with artist names
+                        let all_artists = [];
+                        database.exec(`select display, front_page_footnote, front_page_parens from artists`, {
+                            rowMode: 'object',
+                            resultRows: all_artists,
+                        });
+
+                        // Deal with sorting
+                        all_artists.sort((a, b) => {
+                            a = a.display.toUpperCase();
+                            b = b.display.toUpperCase();
+
+                            // Deal with removing "The "
+                            if (a.startsWith("THE "))
+                                a = a.slice(4);
+                            if (b.startsWith("THE "))
+                                b = b.slice(4);
+
+                            return a.localeCompare(b);
+                        });
+
+                        // Add parens and footnotes
+                        let artist_footnotes = [];
+                        all_artists = all_artists.map((x) => {
+                            let display = x.display;
+
+                            if (x.front_page_parens !== null)
+                                display = `${display} (${x.front_page_parens})`;
+
+                            if (x.front_page_footnote !== null) {
+                                let stars = '';
+                                for (let i = 0; i < artist_footnotes.length + 1; i++)
+                                    stars += "*";
+
+                                artist_footnotes.push(stars + x.front_page_footnote);
+                                display += stars;
+                            }
+
+                            return display;
+                        });
 
                         compilation.emitAsset("/index.html", new RawSource(
                             nunjucks.render(path.resolve(__dirname, 'templates/index.html'), {
                                 subcats: subcats_for_page,
+                                artists: all_artists,
+                                artist_footnotes,
                             })
                         ));
                     }
