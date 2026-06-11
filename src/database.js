@@ -1,4 +1,5 @@
 import { Snowflake } from "@theinternetfolks/snowflake";
+import { stringify as csv_stringify } from 'csv-stringify/browser/esm';
 
 export async function make_databases(sqlite3, load_csv) {
     const db = new sqlite3.oo1.DB();
@@ -58,7 +59,6 @@ export async function make_databases(sqlite3, load_csv) {
     db.exec(`create table cw_suppressions(
             cat_id integer,
             cw_id integer,
-            override_caption string,
             primary key(cat_id, cw_id),
             foreign key(cat_id) references categories(id),
             foreign key(cw_id) references page_cw(id)
@@ -88,7 +88,7 @@ export async function make_databases(sqlite3, load_csv) {
                     bind: values,
                 })
             } catch (e) {
-                console.log("Failed to insert!", row, e);
+                console.error("Failed to insert!", row, e);
                 throw e;
             }
         }
@@ -103,11 +103,45 @@ export async function make_databases(sqlite3, load_csv) {
     await import_one_csv('cat_syms');
     await import_one_csv('cw_suppressions');
 
-    // db.exec("insert into page_cw(id, text) values(?, 'hewwo testing');", Snowflake.generate());
-    let result = [];
-    db.exec("select images.filename, categories.desc from cat_syms JOIN images ON cat_syms.img_id = images.id JOIN categories ON cat_syms.cat_id = categories.id;", {
-        rowMode: 'object',
-        resultRows: result,
+    return db;
+}
+
+function export_one_db(db, query) {
+    return new Promise((resolve, reject) => {
+        let wrote_header = false;
+        let byte_frags = [];
+        const stringifier = csv_stringify({
+            record_delimiter: "\r\n",
+        });
+        stringifier.on('readable', () => {
+            let row;
+            while ((row = stringifier.read()) !== null) {
+                byte_frags.push(row);
+            }
+        });
+        stringifier.on('error', function (err) {
+            reject(err);
+        });
+        stringifier.on("finish", () => {
+            resolve(new Blob(byte_frags, {
+                type: 'text/csv',
+            }));
+        });
+        db.exec(query, {
+            callback: (row, stmt) => {
+                if (!wrote_header) {
+                    stringifier.write(stmt.getColumnNames());
+                    wrote_header = true;
+                }
+                stringifier.write(row);
+            },
+        });
+        stringifier.end();
     });
-    console.log(result);
+}
+
+export async function export_databases(db) {
+    let blob = await export_one_db(db, "select * from images;");
+    let url = window.URL.createObjectURL(blob);
+    window.location.assign(url);
 }
