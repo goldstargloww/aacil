@@ -31,3 +31,7 @@ form div {
 form button {
     grid-column: 1;
 }
+
+#artist_merge_details > summary::marker {
+    content: '';
+}

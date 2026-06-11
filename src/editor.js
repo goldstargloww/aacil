@@ -50,7 +50,12 @@ async function load_artist_info() {
     let artist_change = document.getElementById('artist_change');
     let artist_new = document.getElementById('artist_new');
 
+    let artists_merge_victim_id = document.getElementById('artists_merge_victim_id');
+    let artist_merge_details = document.getElementById('artist_merge_details');
+    let artist_merge_button = document.getElementById('artist_merge_button');
+
     let new_artists_select;
+    let new_artists_merge_select;
 
     function reset_ui() {
         // Load all the existing artists
@@ -72,6 +77,7 @@ async function load_artist_info() {
         artist_change.remove();
         artist_change.disabled = true;
         artist_change.style.display = 'none';
+        artist_merge_details.style.display = 'none';
 
         // Make entirely new list of artists
         new_artists_select = document.createElement('select');
@@ -79,12 +85,20 @@ async function load_artist_info() {
         // Add an empty option
         new_artists_select.appendChild(document.createElement('option'));
 
+        new_artists_merge_select = document.createElement('select');
+        new_artists_merge_select.id = 'artists_merge_select'
+
         let all_artists_map = new Map();
         for (let artist of all_artists) {
             let option = document.createElement('option');
             option.value = artist.id;
             option.innerText = artist.display;
             new_artists_select.appendChild(option);
+
+            option = document.createElement('option');
+            option.value = artist.id;
+            option.innerText = artist.display;
+            new_artists_merge_select.appendChild(option);
 
             all_artists_map.set(artist.id, artist);
         }
@@ -103,6 +117,7 @@ async function load_artist_info() {
                 artist_new.parentNode.insertBefore(artist_change, artist_new);
                 artist_change.disabled = false;
                 artist_change.style.display = '';
+                artist_merge_details.style.display = '';
             } else {
                 artists_cur_id.innerHTML = '&nbsp;';
                 artist_display.value = '';
@@ -112,11 +127,24 @@ async function load_artist_info() {
                 artist_change.remove();
                 artist_change.disabled = true;
                 artist_change.style.display = 'none';
+                artist_merge_details.style.display = 'none';
             }
-        })
+        });
+
+        new_artists_merge_select.addEventListener('change', () => {
+            let selected_artist_id = new_artists_merge_select.value;
+            if (selected_artist_id) {
+                artists_merge_victim_id.innerText = `Selected artist ID: ${selected_artist_id}`;
+            } else {
+                artists_merge_victim_id.innerHTML = '&nbsp;';
+            }
+        });
 
         let old_artists_select = document.getElementById('artists_select');
         old_artists_select.parentNode.replaceChild(new_artists_select, old_artists_select);
+
+        let old_artists_merge_select = document.getElementById('artists_merge_select');
+        old_artists_merge_select.parentNode.replaceChild(new_artists_merge_select, old_artists_merge_select);
     }
 
     // The buttons to actually do things
@@ -191,6 +219,47 @@ async function load_artist_info() {
         artists_status.innerText = `OK, new id ${new_id}!`;
         download_changes_elem.style.visibility = '';
     };
+
+    artist_merge_button.onclick = () => {
+        let artist_merge_into = new_artists_select.value;
+        if (!artist_merge_into) {
+            artists_status.className = "status_error";
+            artists_status.innerText = "No artist selected to merge into";
+            return;
+        }
+        artist_merge_into = BigInt(artist_merge_into);
+
+        let artist_merge_victim = artists_merge_select.value;
+        if (!artist_merge_victim) {
+            artists_status.className = "status_error";
+            artists_status.innerText = "No artist selected to merge into";
+            return;
+        }
+        artist_merge_victim = BigInt(artist_merge_victim);
+
+        if (artist_merge_into == artist_merge_victim) {
+            artists_status.className = "status_error";
+            artists_status.innerText = "Selected the same artists";
+            return;
+        }
+
+        console.log(artist_merge_into, artist_merge_victim);
+        database.transaction((txn) => {
+            txn.exec(`update sym_artists set artist_id = ? where artist_id = ?`, {
+                bind: [artist_merge_into, artist_merge_victim],
+            });
+            txn.exec(`update sym_derived_from set artist_id = ? where artist_id = ?`, {
+                bind: [artist_merge_into, artist_merge_victim],
+            });
+            txn.exec(`delete from artists where id = ?`, {
+                bind: [artist_merge_victim]
+            });
+        });
+
+        artists_status.className = "status_ok";
+        artists_status.innerText = "OK!";
+        download_changes_elem.style.visibility = '';
+    }
 
     // Set up the UI the first time
     reset_ui();
