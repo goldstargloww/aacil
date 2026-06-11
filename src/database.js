@@ -55,6 +55,14 @@ export async function make_databases(sqlite3, load_csv) {
             foreign key(cat_id) references categories(id),
             foreign key(img_id) references images(id)
         );`);
+    db.exec(`create table cw_suppressions(
+            cat_id integer,
+            cw_id integer,
+            override_caption string,
+            primary key(cat_id, cw_id),
+            foreign key(cat_id) references categories(id),
+            foreign key(cw_id) references page_cw(id)
+        );`);
 
     // Import CSVs into database
     async function import_one_csv(name) {
@@ -93,6 +101,7 @@ export async function make_databases(sqlite3, load_csv) {
     await import_one_csv('categories');
     await import_one_csv('subcategories');
     await import_one_csv('cat_syms');
+    await import_one_csv('cw_suppressions');
 
     // db.exec("insert into page_cw(id, text) values(?, 'hewwo testing');", Snowflake.generate());
     let result = [];
