@@ -1,7 +1,7 @@
 import { parse as csv_parse } from 'csv-parse/browser/esm/sync';
 
 async function load_csv(path) {
-    const resp = await fetch(path);
+    const resp = await fetch(path, { cache: "no-store" });
     if (!resp.ok) {
         throw new Error(`Fetch failed, status: ${resp.status}`);
     }
