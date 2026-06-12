@@ -91,7 +91,8 @@ export async function load_syms(database, download_changes_elem, category_text_m
                 rowMode: 'object',
                 resultRows: all_syms,
             });
-        } else {
+        } else if (cat_id !== -1) {
+            // As a hack, use category -1 to denote "show nothing"
             database.exec(`
                 select images.*, cat_syms.override_caption
                     from images join cat_syms on images.id = cat_syms.img_id
@@ -509,7 +510,7 @@ export async function load_syms(database, download_changes_elem, category_text_m
                     bind: [new_id, artist]
                 });
             }
-            if (cat_id !== 0) {
+            if (cat_id !== 0 && cat_id !== -1) {
                 // Insert it into the current category
                 // (Root cannot actually have symbols show up)
                 txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {

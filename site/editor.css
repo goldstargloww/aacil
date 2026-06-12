@@ -37,6 +37,9 @@ form label {
 form div {
     display: contents;
 }
+form input[type='checkbox'] {
+    justify-self: start;
+}
 form button {
     grid-column: 1;
 }

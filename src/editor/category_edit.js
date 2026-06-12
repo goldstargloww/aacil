@@ -9,15 +9,18 @@ export async function load_cat_edit(
     console.log(cat_id, parent_cat_id, remake_ui_for_categories_ui);
     //     let dummy_element_parking_lot = document.getElementById('dummy_element_parking_lot');
 
-    //     let sym_cur_id = document.getElementById('sym_cur_id');
-    //     let sym_status = document.getElementById('sym_status');
-    //     let one_sym_actions = document.getElementById('one_sym_actions');
-    //     let sym_url = document.getElementById('sym_url');
-    //     let sym_caption = document.getElementById('sym_caption');
+    let cat_status = document.getElementById('cat_status');
+    let cat_cur_id = document.getElementById('cat_cur_id');
+    let cat_icon = document.getElementById('cat_icon');
+    let cat_desc = document.getElementById('cat_desc');
+    let cat_url = document.getElementById('cat_url');
+    let cat_icon_id = document.getElementById('cat_icon_id');
+    let cat_cw = document.getElementById('cat_cw');
+    let cat_show_icons = document.getElementById('cat_show_icons');
     //     let sym_alt_text = document.getElementById('sym_alt_text');
     //     let sym_also_found = document.getElementById('sym_also_found');
-    //     let sym_change = document.getElementById('sym_change');
-    //     let sym_new = document.getElementById('sym_new');
+    //     let cat_change = document.getElementById('cat_change');
+    //     let cat_new = document.getElementById('cat_new');
     //     let sym_delete = document.getElementById('sym_delete');
 
     //     let sym_move_button = document.getElementById('sym_move_button');
@@ -43,8 +46,9 @@ export async function load_cat_edit(
         // Load information about this category
         let this_cat_info = [];
         database.exec(`
-            select *, count(cat_syms.img_id) as num_symbols
+            select categories.*, count(cat_syms.img_id) as num_symbols, images.filename as icon_url, images.alt_text as icon_alt
             from categories left join cat_syms on categories.id = cat_syms.cat_id
+            left join images on images.id = categories.icon_id
             where categories.id = ?
             group by cat_syms.cat_id`, {
             bind: [cat_id],
@@ -57,9 +61,11 @@ export async function load_cat_edit(
         // Load the subcategories linked from here
         let subcategories = [];
         database.exec(`
-            select categories.id, categories.desc
+            select categories.id, categories.desc, count(subcat2.parent_id) as num_parents
             from subcategories join categories on subcategories.child_id = categories.id
-            where subcategories.parent_id = ?`, {
+            left join subcategories as subcat2 on subcategories.child_id = subcat2.child_id
+            where subcategories.parent_id = ?
+            group by subcat2.child_id`, {
             bind: [cat_id],
             rowMode: 'object',
             resultRows: subcategories,
@@ -152,15 +158,27 @@ export async function load_cat_edit(
         //         }
         //         all_syms.sort(sorting.sort_syms);
 
-        //         // Reset all the relevant UI
-        //         sym_status.innerHTML = '&nbsp;';
-        //         sym_cur_id.innerHTML = '&nbsp;';
-        //         sym_url.value = '';
-        //         sym_caption.value = '';
+        // Reset all the relevant UI
+        cat_status.innerHTML = '&nbsp;';
         //         sym_alt_text.value = '';
         //         // Temporarily remove this, so that we can programmatically change the default button
-        //         sym_change.remove();
-        //         dummy_element_parking_lot.appendChild(sym_change);
+        //         cat_change.remove();
+        //         dummy_element_parking_lot.appendChild(cat_change);
+
+        cat_cur_id.innerHTML = `Selected category ID: ${this_cat_info.id} (with ${this_cat_info.num_symbols} symbols)`;
+        if (this_cat_info.icon_id !== null) {
+            cat_icon.src = this_cat_info.icon_url;
+            cat_icon.alt = this_cat_info.icon_alt;
+        } else {
+            // This is a blank image
+            cat_icon.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+            cat_icon.alt = '';
+        }
+        cat_desc.value = this_cat_info.desc;
+        cat_url.value = this_cat_info.url_path;
+        cat_icon_id.value = this_cat_info.icon_id;
+        cat_cw.value = this_cat_info.cw;
+        cat_show_icons.checked = this_cat_info.have_subcat_icons;
 
         //         // Make entirely new list of CWs
         //         new_sym_list = document.createElement('div');
@@ -175,7 +193,7 @@ export async function load_cat_edit(
         //             selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
 
         //             let selected_sym_str = selected_syms.map((x) => x.id).join(', ');
-        //             sym_cur_id.innerText = `Selected symbol ID(s): ${selected_sym_str}`;
+        //             cat_cur_id.innerText = `Selected symbol ID(s): ${selected_sym_str}`;
 
         //             sym_delete.disabled = selected_syms.length === 0;
 
@@ -183,8 +201,8 @@ export async function load_cat_edit(
         //                 one_sym_actions.style.display = 'none';
         //             } else {
         //                 if (selected_syms.length === 1) {
-        //                     sym_url.value = selected_syms[0].filename;
-        //                     sym_caption.value = selected_syms[0].caption;
+        //                     cat_url.value = selected_syms[0].filename;
+        //                     cat_desc.value = selected_syms[0].caption;
         //                     sym_alt_text.value = selected_syms[0].alt_text;
         //                     new_sym_cw_select.value = selected_syms[0].cw_id;
 
@@ -255,18 +273,18 @@ export async function load_cat_edit(
         //                         }
         //                     }
 
-        //                     sym_change.remove();
-        //                     sym_new.parentNode.insertBefore(sym_change, sym_new);
+        //                     cat_change.remove();
+        //                     cat_new.parentNode.insertBefore(cat_change, cat_new);
         //                 } else {
-        //                     sym_url.value = '';
-        //                     sym_caption.value = '';
+        //                     cat_url.value = '';
+        //                     cat_desc.value = '';
         //                     sym_alt_text.value = '';
         //                     new_sym_cw_select.value = '';
         //                     new_artists_select.selectedIndex = -1;
         //                     new_artists_adapted.selectedIndex = -1;
 
-        //                     sym_change.remove();
-        //                     dummy_element_parking_lot.appendChild(sym_change);
+        //                     cat_change.remove();
+        //                     dummy_element_parking_lot.appendChild(cat_change);
         //                 }
 
         //                 one_sym_actions.style.display = '';
@@ -360,27 +378,27 @@ export async function load_cat_edit(
 
         //     // The buttons to actually do things
         //     function perform_input_validation(read_id) {
-        //         let new_url = sym_url.value;
+        //         let new_url = cat_url.value;
         //         if (!new_url) {
-        //             sym_url.focus();
-        //             sym_status.className = "status_error";
-        //             sym_status.innerText = "Must have a URL";
+        //             cat_url.focus();
+        //             cat_status.className = "status_error";
+        //             cat_status.innerText = "Must have a URL";
         //             return;
         //         }
 
-        //         let new_caption = sym_caption.value;
+        //         let new_caption = cat_desc.value;
         //         if (!new_caption) {
-        //             sym_caption.focus();
-        //             sym_status.className = "status_error";
-        //             sym_status.innerText = "Must have a caption";
+        //             cat_desc.focus();
+        //             cat_status.className = "status_error";
+        //             cat_status.innerText = "Must have a caption";
         //             return;
         //         }
 
         //         let new_alt_text = sym_alt_text.value;
         //         if (!new_alt_text) {
         //             sym_alt_text.focus();
-        //             sym_status.className = "status_error";
-        //             sym_status.innerText = "Must have alt text";
+        //             cat_status.className = "status_error";
+        //             cat_status.innerText = "Must have alt text";
         //             return;
         //         }
 
@@ -397,8 +415,8 @@ export async function load_cat_edit(
         //         }
         //         if (new_artists.size === 0) {
         //             new_artists_select.focus();
-        //             sym_status.className = "status_error";
-        //             sym_status.innerText = "Please select an artist";
+        //             cat_status.className = "status_error";
+        //             cat_status.innerText = "Please select an artist";
         //             return;
         //         }
 
@@ -422,8 +440,8 @@ export async function load_cat_edit(
         //             selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
 
         //             if (selected_syms.length !== 1) {
-        //                 sym_status.className = "status_error";
-        //                 sym_status.innerText = "Please select a symbol to change";
+        //                 cat_status.className = "status_error";
+        //                 cat_status.innerText = "Please select a symbol to change";
         //                 return;
         //             }
 
@@ -433,7 +451,7 @@ export async function load_cat_edit(
         //         return ret;
     }
 
-    //     sym_change.onclick = () => {
+    //     cat_change.onclick = () => {
     //         let changed_sym = perform_input_validation(true);
     //         if (changed_sym === undefined) return;
 
@@ -518,11 +536,11 @@ export async function load_cat_edit(
     //         // Ok
     //         reset_ui();
 
-    //         sym_status.className = "status_ok";
-    //         sym_status.innerText = "OK!";
+    //         cat_status.className = "status_ok";
+    //         cat_status.innerText = "OK!";
     //         download_changes_elem.style.visibility = '';
     //     };
-    //     sym_new.onclick = () => {
+    //     cat_new.onclick = () => {
     //         let new_sym = perform_input_validation(false);
     //         if (new_sym === undefined) return;
 
@@ -562,8 +580,8 @@ export async function load_cat_edit(
     //         // Ok
     //         reset_ui();
 
-    //         sym_status.className = "status_ok";
-    //         sym_status.innerText = `OK, new id ${new_id}!`;
+    //         cat_status.className = "status_ok";
+    //         cat_status.innerText = `OK, new id ${new_id}!`;
     //         download_changes_elem.style.visibility = '';
     //     };
     //     sym_delete.onclick = () => {
@@ -609,16 +627,16 @@ export async function load_cat_edit(
     //         // Ok
     //         reset_ui();
 
-    //         sym_status.className = "status_ok";
-    //         sym_status.innerText = "OK!";
+    //         cat_status.className = "status_ok";
+    //         cat_status.innerText = "OK!";
     //         download_changes_elem.style.visibility = '';
     //     }
 
     //     sym_move_button.onclick = () => {
     //         let to_cat = BigInt(document.getElementById('category_move_select').value);
     //         if (!to_cat) {
-    //             sym_status.className = "status_error";
-    //             sym_status.innerText = "No category selected";
+    //             cat_status.className = "status_error";
+    //             cat_status.innerText = "No category selected";
     //             return;
     //         }
 
@@ -639,16 +657,16 @@ export async function load_cat_edit(
     //         // Ok
     //         reset_ui();
 
-    //         sym_status.className = "status_ok";
-    //         sym_status.innerText = `OK! Moved ${selected_syms.length} items.`;
+    //         cat_status.className = "status_ok";
+    //         cat_status.innerText = `OK! Moved ${selected_syms.length} items.`;
     //         download_changes_elem.style.visibility = '';
     //     }
 
     //     sym_dup_button.onclick = () => {
     //         let to_cat = BigInt(document.getElementById('category_move_select').value);
     //         if (!to_cat) {
-    //             sym_status.className = "status_error";
-    //             sym_status.innerText = "No category selected";
+    //             cat_status.className = "status_error";
+    //             cat_status.innerText = "No category selected";
     //             return;
     //         }
 
@@ -666,8 +684,8 @@ export async function load_cat_edit(
     //         // Ok
     //         reset_ui();
 
-    //         sym_status.className = "status_ok";
-    //         sym_status.innerText = `OK! Made copies of ${selected_syms.length} items.`;
+    //         cat_status.className = "status_ok";
+    //         cat_status.innerText = `OK! Made copies of ${selected_syms.length} items.`;
     //         download_changes_elem.style.visibility = '';
     //     }
 

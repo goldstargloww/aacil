@@ -81,9 +81,12 @@ window.onload = async () => {
         let sym_move_label = document.getElementById('sym_move_label');
         category_move_select.remove();
         sym_move_label.after(category_move_select);
+
+        // Force deselect
+        await load_syms(database, download_changes_elem, category_text_map, -1);
     });
     on_select_tab('tab_cats', cats_ui, async () => {
-        function remake_ui_for_categories_ui() {
+        async function remake_ui_for_categories_ui() {
             let { category_move_select } = remake_category_ui(
                 database,
                 async (cat_id, from_cat) => {
@@ -100,8 +103,16 @@ window.onload = async () => {
             let cat_move_label = document.getElementById('cat_move_label');
             category_move_select.remove();
             cat_move_label.after(category_move_select);
+
+            // Force load the root category on startup
+            await load_cat_edit(
+                database,
+                download_changes_elem,
+                remake_ui_for_categories_ui,
+                0, null
+            );
         }
-        remake_ui_for_categories_ui();
+        await remake_ui_for_categories_ui();
     });
     on_select_tab('tab_artists', artists_ui, load_artist_info);
     on_select_tab('tab_cws', sym_cw_ui, load_sym_cw_info);

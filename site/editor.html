@@ -83,6 +83,34 @@
 
             <div id="cats_ui" style="display: none">
                 <h2>⇦ Select a category to edit it</h2>
+                <p id="cat_status">&nbsp;</p>
+                <p><small id="cat_cur_id">&nbsp;</small></p>
+                <p><img id="cat_icon", src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" height="80px"></p>
+
+                <form action="javascript:void(0)">
+                    <div>
+                        <label for="cat_desc">Description (for humans):</label>
+                        <input type="text" id="cat_desc" required>
+                    </div>
+                    <div>
+                        <label for="cat_url">URL (for computers):</label>
+                        <input type="text" id="cat_url" required>
+                    </div>
+                    <div>
+                        <label for="cat_icon_id">Icon ID (a big number):</label>
+                        <input type="number" id="cat_icon_id">
+                    </div>
+                    <div>
+                        <label for="cat_cw">Content Warning:</label>
+                        <input type="text" id="cat_cw">
+                    </div>
+                    <div>
+                        <label for="cat_show_icons">Have icons for subcategories:</label>
+                        <input type="checkbox" id="cat_show_icons">
+                    </div>
+                    <button id="cat_change">Change category</button>
+                    <button id="cat_new">Make NEW category HERE</button>
+                </form>
 
                 <h2 id="cat_move_label">Rearrange categories</h2>
                 <p>This is confusing, I'm sorry :/</p>
