@@ -123,7 +123,11 @@ window.onload = async () => {
         let dev_sql = document.getElementById('dev_sql');
         let dev_sql_table = document.getElementById('dev_sql_table');
         let dev_sql_run = document.getElementById('dev_sql_run');
+        let dev_snowflake = document.getElementById('dev_snowflake');
+        let dev_snowflake_find = document.getElementById('dev_snowflake_find');
+        let dev_snowflake_output = document.getElementById('dev_snowflake_output');
         dev_sql_table.innerHTML = '';
+        dev_snowflake_output.innerText = '';
 
         dev_sql_run.addEventListener('click', () => {
             let sql = dev_sql.value;
@@ -159,7 +163,53 @@ window.onload = async () => {
             dev_sql_table.appendChild(tbody);
 
             download_changes_elem.style.visibility = '';
-        })
+        });
+
+        dev_snowflake_find.addEventListener('click', () => {
+            let id = dev_snowflake.value;
+            if (!id) return;
+            id = BigInt(id);
+
+            let textout = '';
+
+            let rows = [];
+            database.exec(`select text from page_cw where id=?`, {
+                bind: [id],
+                resultRows: rows,
+            });
+            for (let res of rows) {
+                textout += `Is a symbol CW, "${res[0]}"\n`;
+            }
+
+            rows = [];
+            database.exec(`select caption, filename from images where id=?`, {
+                bind: [id],
+                resultRows: rows,
+            });
+            for (let res of rows) {
+                textout += `Is a symbol, "${res[0]}" (${res[1]})\n`;
+            }
+
+            rows = [];
+            database.exec(`select display from artists where id=?`, {
+                bind: [id],
+                resultRows: rows,
+            });
+            for (let res of rows) {
+                textout += `Is an artist, "${res[0]}"`;
+            }
+
+            rows = [];
+            database.exec(`select desc from categories where id=?`, {
+                bind: [id],
+                resultRows: rows,
+            });
+            for (let res of rows) {
+                textout += `Is a category, "${res[0]}"`;
+            }
+
+            dev_snowflake_output.innerText = textout;
+        });
     });
 
     // Loading complete!
