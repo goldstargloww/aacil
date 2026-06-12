@@ -12,7 +12,7 @@
     <body>
         <p><a href="..">click here to go back.</a></p>
 
-        {% if subcats %}
+        {% if subcats|length %}
         <ul>
             {% for subcat in subcats %}
             <li><a href="{{ subcat.url_path }}">{{ subcat.desc }}{% if subcat.icon_url %} <img src="{{ subcat.icon_url }}" height="50">{% endif %}</a></li>
