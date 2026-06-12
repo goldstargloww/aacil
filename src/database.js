@@ -5,6 +5,9 @@ import JSZip from "jszip";
 export async function make_databases(sqlite3, load_csv) {
     const db = new sqlite3.oo1.DB();
 
+    // Make sure to check foreign keys
+    db.exec("pragma foreign_keys = on");
+
     // Create all tables
     db.exec("create table page_cw(id integer primary key, text string not null);")
     db.exec(`create table images (
@@ -36,7 +39,7 @@ export async function make_databases(sqlite3, load_csv) {
             foreign key(artist_id) references artists(id)
         );`)
     db.exec(`create table categories(
-            id integer primary_key,
+            id integer primary key,
             desc string not null,
             url_path string not null,
             icon_id integer,

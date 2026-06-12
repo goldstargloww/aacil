@@ -154,9 +154,9 @@ window.onload = async () => {
                 },
             });
 
-            dev_sql_table.appendChild(thead);
+            if (thead)
+                dev_sql_table.appendChild(thead);
             dev_sql_table.appendChild(tbody);
-            console.log(tbody);
 
             download_changes_elem.style.visibility = '';
         })
