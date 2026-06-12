@@ -86,10 +86,16 @@ class AACILCustomPlugin {
                         // Look up all the symbols that belong on this page
                         let syms = [];
                         database.exec(`
-                            select id as img_id, filename, caption, alt_text, cw_id, override_caption
+                            select
+                                id as img_id,
+                                filename,
+                                caption,
+                                alt_text,
+                                if(cw_id not in (select cw_id from cw_suppressions where cat_id=$cat_id), cw_id, null) as cw_id,
+                                override_caption
                             from images join cat_syms on cat_syms.img_id = images.id
-                            where cat_syms.cat_id=?`, {
-                            bind: [cat_id],
+                            where cat_syms.cat_id=$cat_id`, {
+                            bind: { $cat_id: cat_id },
                             rowMode: 'object',
                             resultRows: syms,
                         });
@@ -141,7 +147,7 @@ class AACILCustomPlugin {
                             sym.credit = artist_credits;
                         }
 
-                        // cw_id --> text, or null for one that is suppressed
+                        // cw_id --> text
                         let cw_info = new Map();
                         for (let sym of syms) {
                             // Look up if not cached
@@ -151,24 +157,8 @@ class AACILCustomPlugin {
                                     bind: [sym.cw_id],
                                     resultRows: cw_text,
                                 });
-                                cw_text = cw_text[0][0];
-
-                                let cw_suppress = []
-                                database.exec(`select * from cw_suppressions where cat_id=? and cw_id=?`, {
-                                    bind: [cat_id, sym.cw_id],
-                                    resultRows: cw_suppress,
-                                });
-                                cw_suppress = cw_suppress.length > 0;
-
-                                if (cw_suppress)
-                                    cw_info.set(sym.cw_id, null);
-                                else
-                                    cw_info.set(sym.cw_id, cw_text)
+                                cw_info.set(sym.cw_id, cw_text[0][0]);
                             }
-
-                            // Apply suppression
-                            if (cw_info.get(sym.cw_id) === null)
-                                sym.cw_id = null;
                         }
 
                         // Sort into CW categories
