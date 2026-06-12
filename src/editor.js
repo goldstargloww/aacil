@@ -3,6 +3,7 @@ import load_csv from './load_csv_web.js';
 import { make_databases, export_databases } from './database.js';
 import { remake_category_ui } from "./editor/category_tree.js";
 import { load_syms } from "./editor/symbols.js";
+import { load_cat_edit } from "./editor/category_edit.js";
 import { load_artist_info } from "./editor/artists.js";
 import { load_sym_cw_info } from "./editor/symbol_cws.js";
 
@@ -86,10 +87,14 @@ window.onload = async () => {
             let { category_move_select } = remake_category_ui(
                 database,
                 async (cat_id, from_cat) => {
-                    console.log(cat_id, from_cat, remake_ui_for_categories_ui);
-                    remake_ui_for_categories_ui();
-                    // await load_syms(database, download_changes_elem, category_text_map, cat_id);
-                }
+                    await load_cat_edit(
+                        database,
+                        download_changes_elem,
+                        remake_ui_for_categories_ui,
+                        cat_id, from_cat
+                    );
+                },
+                true,
             );
 
             let cat_move_label = document.getElementById('cat_move_label');
