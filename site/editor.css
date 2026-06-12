@@ -55,10 +55,12 @@ form button {
 }
 #cat_tree {
     list-style: '▼ ';
+    padding-left: 1.5em;
     padding-right: 16px;
 }
 #cat_tree ol {
     list-style: '▼ ';
+    padding-left: 1.5em;
 }
 
 /* Whenever we clicky something, it highlights */

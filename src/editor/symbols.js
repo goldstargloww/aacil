@@ -89,17 +89,14 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         // Load all the existing symbols
         let all_syms = [];
         if (cat_id === 0) {
-            database.exec(`
-                select images.*, page_cw.text as cw_text, null as override_caption
-                    from images left join page_cw on images.cw_id = page_cw.id`, {
+            database.exec(`select images.*, null as override_caption`, {
                 rowMode: 'object',
                 resultRows: all_syms,
             });
         } else {
             database.exec(`
-                select images.*, page_cw.text as cw_text, cat_syms.override_caption
+                select images.*, cat_syms.override_caption
                     from images join cat_syms on images.id = cat_syms.img_id
-                    left join page_cw on images.cw_id = page_cw.id
                     where cat_syms.cat_id = ?`, {
                 bind: [cat_id],
                 rowMode: 'object',
