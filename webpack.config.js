@@ -12,7 +12,8 @@ const isProduction = process.env.NODE_ENV === "production";
 const config = {
     entry: {
         frontend: "./src/frontend.js",
-        editor: "./src/editor.js"
+        editor: "./src/editor.js",
+        search: "./src/search.js"
     },
     output: {
         filename: '[name].js',

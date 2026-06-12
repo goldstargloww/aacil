@@ -114,6 +114,12 @@ function make_cat_tree_ui(cat_tree, cb) {
     document.getElementById('with_cat_tree').style.display = '';
 }
 
+// The search page also uses this in order to show where an image is found
+export function get_flattened_categories(database) {
+    let category_tree = get_category_tree(database, 0);
+    return flatten_category_tree(category_tree);
+}
+
 // (Re-)create the category UI, which calls `cb` when something is clicked
 // cb(cat_id, from_parent_id)
 //
