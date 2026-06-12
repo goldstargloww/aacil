@@ -80,7 +80,8 @@ window.onload = async () => {
         );
 
         for (let cat of category_list) {
-            category_text_map.set(cat.id, cat.desc_path);
+            if (!category_text_map.has(cat.id))
+                category_text_map.set(cat.id, cat.desc_path);
         }
 
         let sym_move_label = document.getElementById('sym_move_label');
