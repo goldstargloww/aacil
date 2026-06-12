@@ -14,5 +14,38 @@
     </head>
     <body>
         <h1 id="main_status">Loading, please wait…</h1>
+
+        <form action="javascript:void(0)">
+            <div>
+                <label for="search_query">Search for:</label>
+                <input type="text" id="search_query" required>
+            </div>
+            <div>
+                <div class="form_label">Type of search:</div>
+                <div>
+                    <input type="radio" name="search_mode" id="search_basic" value="basic" checked>
+                    <label for="search_basic">Basic</label>
+                    <input type="radio" name="search_mode" id="search_advanced" value="advanced">
+                    <label for="search_advanced"><a href="https://sqlite.org/fts5.html#full_text_query_syntax">Advanced</a></label>
+                </div>
+            </div>
+            <div>
+                <label for="search_caption">Search captions:</label>
+                <input type="checkbox" id="search_caption" checked>
+            </div>
+            <div>
+                <label for="search_alt_text">Search descriptions (alt text):</label>
+                <input type="checkbox" id="search_alt_text" checked>
+            </div>
+            <div>
+                <label for="search_artist">Search by artist:</label>
+                <div><select id="search_artist"><!-- This will be ignored! --></select></div>
+            </div>
+            <button id="search_button">Search!</button>
+        </form>
+
+        <p id="search_results_summary">&nbsp;</p>
+        <p id="selected_sym_information">Found in category XYZ</p>
+        <div id="search_results" class="figlist"><!-- This will be ignored! --></div>
     </body>
 </html>

@@ -6,6 +6,7 @@ const sqlite3 = await sqlite3InitModule();
 
 import load_csv from './load_csv_nodejs.js';
 import { make_databases } from './database.js';
+import { lookup_artist_credits } from "./artist_credit.js";
 import * as sorting from './sorting.js';
 
 const __dirname = new URL("..", import.meta.url).pathname;
@@ -110,41 +111,7 @@ class AACILCustomPlugin {
                                 delete sym.override_caption;
                             }
 
-                            let artist_credits = [];
-                            database.exec(`
-                                select artists.display from artists
-                                join sym_artists on sym_artists.artist_id = artists.id
-                                where sym_artists.img_id=?`, {
-                                bind: [img_id],
-                                resultRows: artist_credits
-                            });
-                            artist_credits = artist_credits.map((x) => x[0]);
-                            artist_credits.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
-
-                            let artist_derived_from_credits = [];
-                            database.exec(`
-                                select artists.display from artists
-                                join sym_derived_from on sym_derived_from.artist_id = artists.id
-                                where sym_derived_from.img_id=?`, {
-                                bind: [img_id],
-                                resultRows: artist_derived_from_credits
-                            });
-                            artist_derived_from_credits = artist_derived_from_credits.map((x) => x[0]);
-                            artist_derived_from_credits.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
-
-                            // Make it pretty
-                            if (artist_credits.length === 0) {
-                                console.warn(`${img_id} ${sym.filename} doesn't have artist credits`);
-                                artist_credits = "<unknown>";
-                            } else {
-                                artist_credits = artist_credits.join(" & ");
-                            }
-
-                            if (artist_derived_from_credits.length > 0) {
-                                artist_derived_from_credits = artist_derived_from_credits.join(" & ");
-                                artist_credits += `, adapted from ${artist_derived_from_credits}`;
-                            }
-                            sym.credit = artist_credits;
+                            sym.credit = lookup_artist_credits(database, img_id);
                         }
 
                         // cw_id --> text
