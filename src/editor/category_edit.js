@@ -20,7 +20,7 @@ export async function load_cat_edit(
     let cat_show_icons = document.getElementById('cat_show_icons');
     let cat_change = document.getElementById('cat_change');
     let cat_new = document.getElementById('cat_new');
-    //     let sym_delete = document.getElementById('sym_delete');
+    let cat_delete = document.getElementById('cat_delete');
 
     //     let sym_move_button = document.getElementById('sym_move_button');
     //     let sym_dup_button = document.getElementById('sym_dup_button');
@@ -165,6 +165,8 @@ export async function load_cat_edit(
 
             cat_change.remove();
             cat_new.parentNode.insertBefore(cat_change, cat_new);
+            cat_delete.remove();
+            cat_new.after(cat_delete);
         } else {
             // Root properties cannot be changed
             cat_desc.value = '';
@@ -176,6 +178,8 @@ export async function load_cat_edit(
 
             cat_change.remove();
             dummy_element_parking_lot.appendChild(cat_change);
+            cat_delete.remove();
+            dummy_element_parking_lot.appendChild(cat_delete);
         }
 
         // Make entirely new list of subcategories
@@ -204,135 +208,6 @@ export async function load_cat_edit(
         }
 
         document.getElementById('cat_subcats').replaceWith(new_subcat_list);
-
-
-        //         let last_selected_i = 0;
-        //         let last_selected_was_already_marked = false;
-        //         sym_delete.disabled = true;
-
-        //         function update_sym_form() {
-        //             let selected_syms = Array.from(new_subcat_list.querySelectorAll('[data-selected]'));
-        //             selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
-
-        //             let selected_sym_str = selected_syms.map((x) => x.id).join(', ');
-        //             cat_cur_id.innerText = `Selected symbol ID(s): ${selected_sym_str}`;
-
-        //             sym_delete.disabled = selected_syms.length === 0;
-
-        //             if (selected_syms.length > 1) {
-        //                 one_sym_actions.style.display = 'none';
-        //             } else {
-        //                 if (selected_syms.length === 1) {
-        //                     cat_url.value = selected_syms[0].filename;
-        //                     cat_desc.value = selected_syms[0].caption;
-        //                     sym_alt_text.value = selected_syms[0].alt_text;
-        //                     new_suppress_cw_select.value = selected_syms[0].cw_id;
-
-        //                     // Look up where _else_ this symbol is used
-        //                     let used_elsewhere_cats = []
-        //                     database.exec(`
-        //                         select cat_id, override_caption from cat_syms
-        //                         where img_id = ? and cat_id != ?`, {
-        //                         bind: [selected_syms[0].id, cat_id],
-        //                         rowMode: 'object',
-        //                         resultRows: used_elsewhere_cats,
-        //                     });
-        //                     if (used_elsewhere_cats.length > 0) {
-        //                         let new_also_found = document.createElement('ul');
-        //                         new_also_found.id = sym_also_found.id;
-
-        //                         for (let used_elsewhere of used_elsewhere_cats) {
-        //                             let li = document.createElement('li');
-
-        //                             let alt_caption = used_elsewhere.override_caption;
-        //                             if (alt_caption === null)
-        //                                 alt_caption = selected_syms[0].orig_caption;
-        //                             li.innerText = `${category_text_map.get(used_elsewhere.cat_id)} as ${alt_caption}`;
-
-        //                             new_also_found.appendChild(li);
-        //                         }
-
-        //                         sym_also_found.replaceWith(new_also_found);
-        //                         sym_also_found = new_also_found;
-        //                     } else {
-        //                         let new_also_found = document.createElement('div');
-        //                         new_also_found.id = sym_also_found.id;
-        //                         new_also_found.innerText = "< none, only here >";
-        //                         sym_also_found.replaceWith(new_also_found);
-        //                         sym_also_found = new_also_found;
-        //                     }
-
-
-
-        //                 } else {
-        //                 }
-
-        //                 one_sym_actions.style.display = '';
-        //             }
-        //         }
-
-        //         new_subcat_list.addEventListener('click', () => {
-        //             // Clicked on a blank spot
-        //             for (let elem of new_subcat_list.querySelectorAll('[data-selected]')) {
-        //                 delete elem.dataset.selected;
-        //             }
-
-        //             last_selected_i = 0;
-        //             last_selected_was_already_marked = false;
-        //             update_sym_form();
-        //         });
-
-        //         let all_figures = [];
-        //         for (let [sym_i, sym] of all_syms.entries()) {
-
-        //             all_syms_map.set(sym.id, sym);
-
-        //             figure.addEventListener('click', (e) => {
-        //                 // macOS does something weird in the browser
-        //                 let ctrl = (e.metaKey || e.ctrlKey);
-        //                 let shift = e.shiftKey;
-
-        //                 // If the control key isn't held, clear all existing selections
-        //                 if (!ctrl) {
-        //                     for (let elem of new_subcat_list.querySelectorAll('[data-selected]')) {
-        //                         delete elem.dataset.selected;
-        //                     }
-        //                 }
-        //                 if (shift) {
-        //                     // If the control key isn't held but shift is,
-        //                     // (de)select everything between the last click and this
-        //                     let sym_i_a = sym_i;
-        //                     let sym_i_b = last_selected_i;
-        //                     if (sym_i_a > sym_i_b) {
-        //                         sym_i_a = last_selected_i;
-        //                         sym_i_b = sym_i;
-        //                     };
-        //                     for (let i = sym_i_a; i <= sym_i_b; i++) {
-        //                         if (!last_selected_was_already_marked)
-        //                             all_figures[i].dataset.selected = true;
-        //                         else
-        //                             delete all_figures[i].dataset.selected;
-        //                     }
-        //                 } else {
-        //                     // Control click or normal click, toggle the clicked element
-        //                     if (figure.dataset.selected) {
-        //                         delete figure.dataset.selected;
-        //                         last_selected_was_already_marked = true;
-        //                     } else {
-        //                         figure.dataset.selected = true;
-        //                         last_selected_was_already_marked = false;
-        //                     }
-        //                     last_selected_i = sym_i;
-        //                 }
-
-        //                 e.stopPropagation();
-
-        //                 update_sym_form();
-        //             });
-        //         }
-
-        //         document.getElementById('sym_list').replaceWith(new_subcat_list);
-        //     }
     }
 
     // The buttons to actually do things
@@ -479,53 +354,19 @@ export async function load_cat_edit(
         cat_status.innerText = `OK, new id ${new_id}!`;
         download_changes_elem.style.visibility = '';
     };
-    //     sym_delete.onclick = () => {
-    //         let selected_syms = new_subcat_list.querySelectorAll('[data-selected]');
+    cat_delete.onclick = () => {
+        // Cannot delete the root
+        if (cat_id === 0) return;
 
-    //         for (let sym of selected_syms) {
-    //             let sym_id = BigInt(sym.dataset.id);
+        delete_category(parent_cat_id, cat_id, this_cat_info.num_parents);
 
-    //             // How many places is this used?
-    //             let num_uses = [];
-    //             database.exec(`select count(*) from cat_syms where img_id = ?`, {
-    //                 bind: [sym_id],
-    //                 resultRows: num_uses,
-    //             });
+        // Ok
+        remake_ui_for_categories_ui();
 
-    //             if (num_uses[0][0] > 1) {
-    //                 // If the symbol is used in multiple places, only delete *this* copy
-    //                 database.exec(`delete from cat_syms where cat_id = ? and img_id = ?`, {
-    //                     bind: [cat_id, sym_id],
-    //                 });
-    //             } else {
-    //                 // Otherwise delete *everything*
-    //                 database.transaction((txn) => {
-    //                     // Delete artist credits
-    //                     txn.exec(`delete from sym_artists where img_id = ?`, {
-    //                         bind: [sym_id],
-    //                     });
-    //                     txn.exec(`delete from sym_derived_from where img_id = ?`, {
-    //                         bind: [sym_id],
-    //                     });
-    //                     // Delete the references
-    //                     txn.exec(`delete from cat_syms where img_id = ?`, {
-    //                         bind: [sym_id],
-    //                     });
-    //                     // Delete the image
-    //                     txn.exec(`delete from images where id = ?`, {
-    //                         bind: [sym_id],
-    //                     });
-    //                 });
-    //             }
-    //         }
-
-    //         // Ok
-    //         reset_ui();
-
-    //         cat_status.className = "status_ok";
-    //         cat_status.innerText = "OK!";
-    //         download_changes_elem.style.visibility = '';
-    //     }
+        cat_status.className = "status_ok";
+        cat_status.innerText = "OK!";
+        download_changes_elem.style.visibility = '';
+    }
 
     //     sym_move_button.onclick = () => {
     //         let to_cat = BigInt(document.getElementById('category_move_select').value);
