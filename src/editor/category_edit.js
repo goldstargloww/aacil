@@ -6,8 +6,7 @@ export async function load_cat_edit(
     remake_ui_for_categories_ui,
     cat_id, parent_cat_id) {
 
-    console.log(cat_id, parent_cat_id, remake_ui_for_categories_ui);
-    //     let dummy_element_parking_lot = document.getElementById('dummy_element_parking_lot');
+    let dummy_element_parking_lot = document.getElementById('dummy_element_parking_lot');
 
     let cat_status = document.getElementById('cat_status');
     let cat_cur_id = document.getElementById('cat_cur_id');
@@ -17,10 +16,8 @@ export async function load_cat_edit(
     let cat_icon_id = document.getElementById('cat_icon_id');
     let cat_cw = document.getElementById('cat_cw');
     let cat_show_icons = document.getElementById('cat_show_icons');
-    //     let sym_alt_text = document.getElementById('sym_alt_text');
-    //     let sym_also_found = document.getElementById('sym_also_found');
-    //     let cat_change = document.getElementById('cat_change');
-    //     let cat_new = document.getElementById('cat_new');
+    let cat_change = document.getElementById('cat_change');
+    let cat_new = document.getElementById('cat_new');
     //     let sym_delete = document.getElementById('sym_delete');
 
     //     let sym_move_button = document.getElementById('sym_move_button');
@@ -28,7 +25,7 @@ export async function load_cat_edit(
 
     //     let new_sym_list;
 
-    //     let new_sym_cw_select;
+    let new_suppress_cw_select;
     //     let new_artists_select;
     //     let new_artists_adapted;
 
@@ -79,57 +76,27 @@ export async function load_cat_edit(
             bind: [cat_id],
             resultRows: cw_suppressions,
         });
-        cw_suppressions = cw_suppressions.map((x) => x[0]);
-        console.log(cw_suppressions);
+        let cw_suppressions_set = new Set();
+        for (let cw of cw_suppressions) {
+            cw_suppressions_set.add(cw[0]);
+        }
+        console.log(cw_suppressions_set);
 
-        //         // Make list of CWs
-        //         new_sym_cw_select = document.createElement('select');
-        //         new_sym_cw_select.id = 'sym_on_page_cw'
-        //         // Add an empty option
-        //         new_sym_cw_select.appendChild(document.createElement('option'));
+        // Make list of CWs
+        new_suppress_cw_select = document.createElement('select');
+        new_suppress_cw_select.id = 'cat_suppress_cw';
+        new_suppress_cw_select.multiple = true;
+        // Add an empty option
+        new_suppress_cw_select.appendChild(document.createElement('option'));
 
-        //         for (let cw of all_cws) {
-        //             let option = document.createElement('option');
-        //             option.value = cw.id;
-        //             option.innerText = cw.text;
-        //             new_sym_cw_select.appendChild(option);
-        //         }
+        for (let cw of all_cws) {
+            let option = document.createElement('option');
+            option.value = cw.id;
+            option.innerText = cw.text;
+            new_suppress_cw_select.appendChild(option);
+        }
 
-        //         document.getElementById('sym_on_page_cw').replaceWith(new_sym_cw_select);
-
-        //         // Load all the existing artists
-        //         let all_artists = [];
-        //         database.exec(`select * from artists`, {
-        //             rowMode: 'object',
-        //             resultRows: all_artists,
-        //         });
-        //         all_artists.sort(sorting.sort_artists);
-
-        //         // Make list of artists (twice)
-        //         new_artists_select = document.createElement('select');
-        //         new_artists_select.id = 'sym_artists'
-        //         new_artists_select.multiple = true;
-        //         new_artists_adapted = document.createElement('select');
-        //         new_artists_adapted.id = 'sym_adapted_from'
-        //         new_artists_adapted.multiple = true;
-        //         // Add an empty option
-        //         new_artists_adapted.appendChild(document.createElement('option'));
-
-        //         for (let artist of all_artists) {
-        //             let option = document.createElement('option');
-        //             option.value = artist.id;
-        //             option.innerText = artist.display;
-        //             new_artists_select.appendChild(option);
-
-        //             option = document.createElement('option');
-        //             option.value = artist.id;
-        //             option.innerText = artist.display;
-        //             new_artists_adapted.appendChild(option);
-
-        //         }
-
-        //         document.getElementById('sym_artists').replaceWith(new_artists_select);
-        //         document.getElementById('sym_adapted_from').replaceWith(new_artists_adapted);
+        document.getElementById('cat_suppress_cw').replaceWith(new_suppress_cw_select);
 
         //         // Load all the existing symbols
         //         let all_syms = [];
@@ -160,10 +127,6 @@ export async function load_cat_edit(
 
         // Reset all the relevant UI
         cat_status.innerHTML = '&nbsp;';
-        //         sym_alt_text.value = '';
-        //         // Temporarily remove this, so that we can programmatically change the default button
-        //         cat_change.remove();
-        //         dummy_element_parking_lot.appendChild(cat_change);
 
         cat_cur_id.innerHTML = `Selected category ID: ${this_cat_info.id} (with ${this_cat_info.num_symbols} symbols)`;
         if (this_cat_info.icon_id !== null) {
@@ -174,11 +137,35 @@ export async function load_cat_edit(
             cat_icon.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
             cat_icon.alt = '';
         }
-        cat_desc.value = this_cat_info.desc;
-        cat_url.value = this_cat_info.url_path;
-        cat_icon_id.value = this_cat_info.icon_id;
-        cat_cw.value = this_cat_info.cw;
-        cat_show_icons.checked = this_cat_info.have_subcat_icons;
+        if (cat_id !== 0) {
+            cat_desc.value = this_cat_info.desc;
+            cat_url.value = this_cat_info.url_path;
+            cat_icon_id.value = this_cat_info.icon_id;
+            cat_cw.value = this_cat_info.cw;
+            cat_show_icons.checked = this_cat_info.have_subcat_icons;
+
+            // CW suppressions
+            new_suppress_cw_select.selectedIndex = -1;
+            for (let option of new_suppress_cw_select.options) {
+                if (cw_suppressions_set.has(BigInt(option.value))) {
+                    option.selected = true;
+                }
+            }
+
+            cat_change.remove();
+            cat_new.parentNode.insertBefore(cat_change, cat_new);
+        } else {
+            // Root properties cannot be changed
+            cat_desc.value = '';
+            cat_url.value = '';
+            cat_icon_id.value = '';
+            cat_cw.value = '';
+            cat_show_icons.checked = false;
+            new_suppress_cw_select.selectedIndex = -1;
+
+            cat_change.remove();
+            dummy_element_parking_lot.appendChild(cat_change);
+        }
 
         //         // Make entirely new list of CWs
         //         new_sym_list = document.createElement('div');
@@ -204,7 +191,7 @@ export async function load_cat_edit(
         //                     cat_url.value = selected_syms[0].filename;
         //                     cat_desc.value = selected_syms[0].caption;
         //                     sym_alt_text.value = selected_syms[0].alt_text;
-        //                     new_sym_cw_select.value = selected_syms[0].cw_id;
+        //                     new_suppress_cw_select.value = selected_syms[0].cw_id;
 
         //                     // Look up where _else_ this symbol is used
         //                     let used_elsewhere_cats = []
@@ -240,51 +227,9 @@ export async function load_cat_edit(
         //                         sym_also_found = new_also_found;
         //                     }
 
-        //                     // Look up all artists (and adapted from) for this symbol
-        //                     new_artists_select.selectedIndex = -1;
-        //                     let sym_artists = [];
-        //                     database.exec(`select artist_id from sym_artists where img_id = ?`, {
-        //                         bind: [selected_syms[0].id],
-        //                         resultRows: sym_artists,
-        //                     });
-        //                     let sym_artists_set = new Set();
-        //                     for (let artist of sym_artists) {
-        //                         sym_artists_set.add(artist[0]);
-        //                     }
-        //                     for (let option of new_artists_select.options) {
-        //                         if (sym_artists_set.has(BigInt(option.value))) {
-        //                             option.selected = true;
-        //                         }
-        //                     }
 
-        //                     new_artists_adapted.selectedIndex = -1;
-        //                     let sym_derived_from = [];
-        //                     database.exec(`select artist_id from sym_derived_from where img_id = ?`, {
-        //                         bind: [selected_syms[0].id],
-        //                         resultRows: sym_derived_from,
-        //                     });
-        //                     let sym_derived_from_set = new Set();
-        //                     for (let artist of sym_derived_from) {
-        //                         sym_derived_from_set.add(artist[0]);
-        //                     }
-        //                     for (let option of new_artists_adapted.options) {
-        //                         if (sym_derived_from_set.has(BigInt(option.value))) {
-        //                             option.selected = true;
-        //                         }
-        //                     }
 
-        //                     cat_change.remove();
-        //                     cat_new.parentNode.insertBefore(cat_change, cat_new);
         //                 } else {
-        //                     cat_url.value = '';
-        //                     cat_desc.value = '';
-        //                     sym_alt_text.value = '';
-        //                     new_sym_cw_select.value = '';
-        //                     new_artists_select.selectedIndex = -1;
-        //                     new_artists_adapted.selectedIndex = -1;
-
-        //                     cat_change.remove();
-        //                     dummy_element_parking_lot.appendChild(cat_change);
         //                 }
 
         //                 one_sym_actions.style.display = '';
@@ -402,7 +347,7 @@ export async function load_cat_edit(
         //             return;
         //         }
 
-        //         let new_cw = new_sym_cw_select.value;
+        //         let new_cw = new_suppress_cw_select.value;
         //         if (new_cw)
         //             new_cw = BigInt(new_cw);
         //         else

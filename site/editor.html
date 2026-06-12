@@ -101,12 +101,16 @@
                         <input type="number" id="cat_icon_id">
                     </div>
                     <div>
-                        <label for="cat_cw">Content Warning:</label>
-                        <input type="text" id="cat_cw">
+                        <label for="cat_cw">Category Content Warning:</label>
+                        <textarea rows="4" id="cat_cw"></textarea>
                     </div>
                     <div>
                         <label for="cat_show_icons">Have icons for subcategories:</label>
                         <input type="checkbox" id="cat_show_icons">
+                    </div>
+                    <div>
+                        <label for="cat_suppress_cw">Don't show these symbol CWs:</label>
+                        <select id="cat_suppress_cw" multiple><!-- This will be ignored! --></select>
                     </div>
                     <button id="cat_change">Change category</button>
                     <button id="cat_new">Make NEW category HERE</button>
