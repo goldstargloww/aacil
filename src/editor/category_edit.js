@@ -204,6 +204,14 @@ export async function load_cat_edit(
             new_subcat_list.appendChild(li);
         }
 
+        if (subcategories.length === 0) {
+            let li = document.createElement('li');
+            let span = document.createElement('span');
+            span.innerText = "< no subcategories here >";
+            li.appendChild(span);
+            new_subcat_list.appendChild(li);
+        }
+
         document.getElementById('cat_subcats').replaceWith(new_subcat_list);
     }
 
