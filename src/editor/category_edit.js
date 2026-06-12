@@ -22,8 +22,8 @@ export async function load_cat_edit(
     let cat_new = document.getElementById('cat_new');
     let cat_delete = document.getElementById('cat_delete');
 
-    // let cat_dup_button = document.getElementById('cat_dup_button');
-    //     let sym_dup_button = document.getElementById('sym_dup_button');
+    let cat_dup_button = document.getElementById('cat_dup_button');
+    let cat_move_button = document.getElementById('cat_move_button');
 
     let new_suppress_cw_select;
     let this_cat_info;
@@ -413,7 +413,8 @@ export async function load_cat_edit(
         }
 
         // No loop --> add the link
-        database.exec(`insert into subcategories(parent_id, child_id) values (?, ?)`, {
+        database.exec(`insert into subcategories(parent_id, child_id) values (?, ?)
+            on conflict do nothing`, {
             bind: [cat_id, link_target]
         });
 
@@ -425,32 +426,34 @@ export async function load_cat_edit(
         download_changes_elem.style.visibility = '';
     }
 
-    //     sym_dup_button.onclick = () => {
-    //         let to_cat = BigInt(document.getElementById('category_move_select').value);
-    //         if (!to_cat) {
-    //             cat_status.className = "status_error";
-    //             cat_status.innerText = "No category selected";
-    //             return;
-    //         }
+    cat_move_button.onclick = () => {
+        let link_target = BigInt(document.getElementById('category_move_select').value);
 
-    //         let selected_syms = Array.from(new_subcat_list.querySelectorAll('[data-selected]'));
-    //         selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
+        // If we can reach the target already, then linking would create a loop
+        if (check_for_loops(cat_id, link_target, [parent_cat_id, cat_id])) {
+            cat_status.className = "status_error";
+            cat_status.innerText = `Not allowed, would create a loop`;
+            return;
+        }
 
-    //         for (let sym_id of selected_syms) {
-    //             database.transaction((txn) => {
-    //                 txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
-    //                     bind: [to_cat, sym_id]
-    //                 });
-    //             });
-    //         }
+        // No loop --> add the link
+        database.transaction((txn) => {
+            txn.exec(`delete from subcategories where parent_id = ? and child_id = ?`, {
+                bind: [parent_cat_id, cat_id]
+            });
+            txn.exec(`insert into subcategories(parent_id, child_id) values (?, ?)
+                on conflict do nothing`, {
+                bind: [link_target, cat_id]
+            });
+        });
 
-    //         // Ok
-    //         reset_ui();
+        // Ok
+        remake_ui_for_categories_ui();
 
-    //         cat_status.className = "status_ok";
-    //         cat_status.innerText = `OK! Made copies of ${selected_syms.length} items.`;
-    //         download_changes_elem.style.visibility = '';
-    //     }
+        cat_status.className = "status_ok";
+        cat_status.innerText = `OK! Category moved.`;
+        download_changes_elem.style.visibility = '';
+    }
 
     // Set up the UI the first time
     reset_ui();
