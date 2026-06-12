@@ -105,8 +105,12 @@ export async function load_syms(database, download_changes_elem, category_text_m
             });
         }
         for (let sym of all_syms) {
-            if (sym.override_caption !== null)
+            if (sym.override_caption !== null) {
+                sym.orig_caption = sym.caption;
                 sym.caption = sym.override_caption;
+            } else {
+                sym.orig_caption = sym.caption;
+            }
         }
         all_syms.sort(sorting.sort_syms);
 
@@ -148,19 +152,25 @@ export async function load_syms(database, download_changes_elem, category_text_m
 
                     // Look up where _else_ this symbol is used
                     let used_elsewhere_cats = []
-                    database.exec(`select cat_id from cat_syms where img_id = ? and cat_id != ?`, {
+                    database.exec(`
+                        select cat_id, override_caption from cat_syms
+                        where img_id = ? and cat_id != ?`, {
                         bind: [selected_syms[0].id, cat_id],
+                        rowMode: 'object',
                         resultRows: used_elsewhere_cats,
                     });
                     if (used_elsewhere_cats.length > 0) {
-                        used_elsewhere_cats = used_elsewhere_cats.map((x) => category_text_map.get(x[0]));
-
                         let new_also_found = document.createElement('ul');
                         new_also_found.id = sym_also_found.id;
 
-                        for (let cat_desc of used_elsewhere_cats) {
+                        for (let used_elsewhere of used_elsewhere_cats) {
                             let li = document.createElement('li');
-                            li.innerText = cat_desc;
+
+                            let alt_caption = used_elsewhere.override_caption;
+                            if (alt_caption === null)
+                                alt_caption = selected_syms[0].orig_caption;
+                            li.innerText = `${category_text_map.get(used_elsewhere.cat_id)} as ${alt_caption}`;
+
                             new_also_found.appendChild(li);
                         }
 
