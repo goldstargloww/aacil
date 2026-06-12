@@ -151,7 +151,7 @@ class AACILCustomPlugin {
                                     bind: [sym.cw_id],
                                     resultRows: cw_text,
                                 });
-                                cw_text = cw_text[0]
+                                cw_text = cw_text[0][0];
 
                                 let cw_suppress = []
                                 database.exec(`select * from cw_suppressions where cat_id=? and cw_id=?`, {
