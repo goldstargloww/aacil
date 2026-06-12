@@ -1,3 +1,4 @@
+import { Snowflake } from "@theinternetfolks/snowflake";
 import * as sorting from '../sorting.js';
 
 export async function load_cat_edit(
@@ -25,6 +26,7 @@ export async function load_cat_edit(
     //     let sym_dup_button = document.getElementById('sym_dup_button');
 
     let new_suppress_cw_select;
+    let this_cat_info;
 
     function delete_category(parent_id, this_id, num_parents) {
         if (num_parents > 1) {
@@ -70,7 +72,7 @@ export async function load_cat_edit(
         all_cws.sort(sorting.sort_sym_cw);
 
         // Load information about this category
-        let this_cat_info = [];
+        let this_cat_info_arr = [];
         database.exec(`
             select categories.*,
                 count(cat_syms.img_id) as num_symbols,
@@ -84,9 +86,9 @@ export async function load_cat_edit(
             group by categories.id`, {
             bind: [cat_id],
             rowMode: 'object',
-            resultRows: this_cat_info,
+            resultRows: this_cat_info_arr,
         });
-        this_cat_info = this_cat_info[0];
+        this_cat_info = this_cat_info_arr[0];
         console.log(this_cat_info);
 
         // Load the subcategories linked from here
@@ -133,33 +135,6 @@ export async function load_cat_edit(
         }
 
         document.getElementById('cat_suppress_cw').replaceWith(new_suppress_cw_select);
-
-        //         // Load all the existing symbols
-        //         let all_syms = [];
-        //         if (cat_id === 0) {
-        //             database.exec(`select *, null as override_caption from images`, {
-        //                 rowMode: 'object',
-        //                 resultRows: all_syms,
-        //             });
-        //         } else {
-        //             database.exec(`
-        //                 select images.*, cat_syms.override_caption
-        //                     from images join cat_syms on images.id = cat_syms.img_id
-        //                     where cat_syms.cat_id = ?`, {
-        //                 bind: [cat_id],
-        //                 rowMode: 'object',
-        //                 resultRows: all_syms,
-        //             });
-        //         }
-        //         for (let sym of all_syms) {
-        //             if (sym.override_caption !== null) {
-        //                 sym.orig_caption = sym.caption;
-        //                 sym.caption = sym.override_caption;
-        //             } else {
-        //                 sym.orig_caption = sym.caption;
-        //             }
-        //         }
-        //         all_syms.sort(sorting.sort_syms);
 
         // Reset all the relevant UI
         cat_status.innerHTML = '&nbsp;';
@@ -358,215 +333,152 @@ export async function load_cat_edit(
 
         //         document.getElementById('sym_list').replaceWith(new_subcat_list);
         //     }
-
-        //     // The buttons to actually do things
-        //     function perform_input_validation(read_id) {
-        //         let new_url = cat_url.value;
-        //         if (!new_url) {
-        //             cat_url.focus();
-        //             cat_status.className = "status_error";
-        //             cat_status.innerText = "Must have a URL";
-        //             return;
-        //         }
-
-        //         let new_caption = cat_desc.value;
-        //         if (!new_caption) {
-        //             cat_desc.focus();
-        //             cat_status.className = "status_error";
-        //             cat_status.innerText = "Must have a caption";
-        //             return;
-        //         }
-
-        //         let new_alt_text = sym_alt_text.value;
-        //         if (!new_alt_text) {
-        //             sym_alt_text.focus();
-        //             cat_status.className = "status_error";
-        //             cat_status.innerText = "Must have alt text";
-        //             return;
-        //         }
-
-        //         let new_cw = new_suppress_cw_select.value;
-        //         if (new_cw)
-        //             new_cw = BigInt(new_cw);
-        //         else
-        //             new_cw = null;
-
-        //         let new_artists = new Set();
-        //         for (let option of new_artists_select.selectedOptions) {
-        //             if (option.value)
-        //                 new_artists.add(BigInt(option.value));
-        //         }
-        //         if (new_artists.size === 0) {
-        //             new_artists_select.focus();
-        //             cat_status.className = "status_error";
-        //             cat_status.innerText = "Please select an artist";
-        //             return;
-        //         }
-
-        //         let new_adapted_from = new Set();
-        //         for (let option of new_artists_adapted.selectedOptions) {
-        //             if (option.value)
-        //                 new_adapted_from.add(BigInt(option.value));
-        //         }
-
-        //         let ret = {
-        //             url: new_url,
-        //             caption: new_caption,
-        //             alt_text: new_alt_text,
-        //             cw: new_cw,
-        //             artists: new_artists,
-        //             adapted_from: new_adapted_from,
-        //         };
-
-        //         if (read_id) {
-        //             let selected_syms = Array.from(new_subcat_list.querySelectorAll('[data-selected]'));
-        //             selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
-
-        //             if (selected_syms.length !== 1) {
-        //                 cat_status.className = "status_error";
-        //                 cat_status.innerText = "Please select a symbol to change";
-        //                 return;
-        //             }
-
-        //             ret.id = selected_syms[0];
-        //         }
-
-        //         return ret;
     }
 
-    //     cat_change.onclick = () => {
-    //         let changed_sym = perform_input_validation(true);
-    //         if (changed_sym === undefined) return;
+    // The buttons to actually do things
+    function perform_input_validation() {
+        let new_desc = cat_desc.value;
+        if (!new_desc) {
+            cat_desc.focus();
+            cat_status.className = "status_error";
+            cat_status.innerText = "Must have a description";
+            return;
+        }
 
-    //         // How many places is this used?
-    //         let num_uses = [];
-    //         database.exec(`select count(*) from cat_syms where img_id = ?`, {
-    //             bind: [changed_sym.id],
-    //             resultRows: num_uses,
-    //         });
-    //         num_uses = num_uses[0][0];
+        let new_url = cat_url.value;
+        if (!new_url) {
+            cat_url.focus();
+            cat_status.className = "status_error";
+            cat_status.innerText = "Must have a URL";
+            return;
+        }
 
-    //         database.transaction((txn) => {
-    //             // Delete old artist credits
-    //             txn.exec(`delete from sym_artists where img_id = ?`, {
-    //                 bind: [changed_sym.id],
-    //             });
-    //             txn.exec(`delete from sym_derived_from where img_id = ?`, {
-    //                 bind: [changed_sym.id],
-    //             });
+        let new_icon_id = null;
+        if (cat_icon_id.value) {
+            try {
+                new_icon_id = BigInt(cat_icon_id.value);
+            } catch (e) {
+                cat_icon_id.focus();
+                cat_status.className = "status_error";
+                cat_status.innerText = "Icon ID must be a number or nothing";
+                return;
+            }
+        }
 
-    //             // Figure out _where_ to put the caption
-    //             let use_override_caption = false;
-    //             if (num_uses <= 1) {
-    //                 // If this is only used in one place, do not use override.
-    //                 // Also make sure there aren't any lingering overrides either
-    //                 txn.exec(`update cat_syms set override_caption = null where cat_id = ? and img_id = ?`, {
-    //                     bind: [cat_id, changed_sym.id],
-    //                 });
-    //             } else if (cat_id !== 0) {
-    //                 // If we are editing from the root, always update the "true" caption
+        let new_cw = null;
+        if (cat_cw.value)
+            new_cw = cat_cw.value;
 
-    //                 // Otherwise, this is used in two or more places, so use local override
-    //                 use_override_caption = true;
-    //             }
+        let new_show_icons = cat_show_icons.checked;
 
-    //             // Update the image
-    //             if (!use_override_caption) {
-    //                 txn.exec(`update images set
-    //                     filename = ?,
-    //                     caption = ?,
-    //                     alt_text = ?,
-    //                     cw_id = ?
-    //                     where id = ?`, {
-    //                     bind: [
-    //                         changed_sym.url,
-    //                         changed_sym.caption,
-    //                         changed_sym.alt_text,
-    //                         changed_sym.cw,
-    //                         changed_sym.id
-    //                     ],
-    //                 });
-    //             } else {
-    //                 txn.exec(`update cat_syms set override_caption = ? where cat_id = ? and img_id = ?`, {
-    //                     bind: [changed_sym.caption, cat_id, changed_sym.id],
-    //                 });
-    //                 txn.exec(`update images set
-    //                     filename = ?,
-    //                     alt_text = ?,
-    //                     cw_id = ?
-    //                     where id = ?`, {
-    //                     bind: [
-    //                         changed_sym.url,
-    //                         changed_sym.alt_text,
-    //                         changed_sym.cw,
-    //                         changed_sym.id
-    //                     ],
-    //                 });
-    //             }
-    //             // Put the artist credits back
-    //             for (let artist of changed_sym.artists) {
-    //                 txn.exec(`insert into sym_artists(img_id, artist_id) values (?, ?)`, {
-    //                     bind: [changed_sym.id, artist]
-    //                 });
-    //             }
-    //             for (let artist of changed_sym.adapted_from) {
-    //                 txn.exec(`insert into sym_derived_from(img_id, artist_id) values (?, ?)`, {
-    //                     bind: [changed_sym.id, artist]
-    //                 });
-    //             }
-    //         });
+        let new_suppress_cw = new Set();
+        for (let option of new_suppress_cw_select.selectedOptions) {
+            if (option.value)
+                new_suppress_cw.add(BigInt(option.value));
+        }
 
-    //         // Ok
-    //         reset_ui();
+        let ret = {
+            desc: new_desc,
+            url: new_url,
+            icon_id: new_icon_id,
+            cw: new_cw,
+            cw_suppressions: new_suppress_cw,
+            show_icons: new_show_icons,
+        };
 
-    //         cat_status.className = "status_ok";
-    //         cat_status.innerText = "OK!";
-    //         download_changes_elem.style.visibility = '';
-    //     };
-    //     cat_new.onclick = () => {
-    //         let new_sym = perform_input_validation(false);
-    //         if (new_sym === undefined) return;
+        return ret;
+    }
 
-    //         let new_id = Snowflake.generate();
+    cat_change.onclick = () => {
+        // Cannot change the root
+        if (cat_id === 0) {
+            cat_status.className = "status_error";
+            cat_status.innerText = "Cannot modify root category";
+            return;
+        }
 
-    //         database.transaction((txn) => {
-    //             // Create the image
-    //             txn.exec(`insert into images(id, filename, caption, alt_text, cw_id) values (?, ?, ?, ?, ?)`, {
-    //                 bind: [
-    //                     new_id,
-    //                     new_sym.url,
-    //                     new_sym.caption,
-    //                     new_sym.alt_text,
-    //                     new_sym.cw,
-    //                 ],
-    //             });
-    //             // Put the artist credits
-    //             for (let artist of new_sym.artists) {
-    //                 txn.exec(`insert into sym_artists(img_id, artist_id) values (?, ?)`, {
-    //                     bind: [new_id, artist]
-    //                 });
-    //             }
-    //             for (let artist of new_sym.adapted_from) {
-    //                 txn.exec(`insert into sym_derived_from(img_id, artist_id) values (?, ?)`, {
-    //                     bind: [new_id, artist]
-    //                 });
-    //             }
-    //             if (cat_id !== 0) {
-    //                 // Insert it into the current category
-    //                 // (Root cannot actually have symbols show up)
-    //                 txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
-    //                     bind: [cat_id, new_id]
-    //                 });
-    //             }
-    //         });
+        let changed_cat = perform_input_validation();
+        if (changed_cat === undefined) return;
+        console.log(changed_cat);
 
-    //         // Ok
-    //         reset_ui();
+        database.transaction((txn) => {
+            // Delete old CW suppressions
+            txn.exec(`delete from cw_suppressions where cat_id = ?`, {
+                bind: [cat_id],
+            });
+            // Update the category
+            txn.exec(`update categories set
+                    desc = ?,
+                    url_path = ?,
+                    icon_id = ?,
+                    cw = ?,
+                    have_subcat_icons = ?
+                    where id = ?`, {
+                bind: [
+                    changed_cat.desc,
+                    changed_cat.url,
+                    changed_cat.icon_id,
+                    changed_cat.cw,
+                    changed_cat.show_icons,
+                    cat_id,
+                ],
+            });
+            // Put the CW suppressions back
+            for (let cw of changed_cat.cw_suppressions) {
+                txn.exec(`insert into cw_suppressions(cat_id, cw_id) values (?, ?)`, {
+                    bind: [cat_id, cw]
+                });
+            }
+        });
 
-    //         cat_status.className = "status_ok";
-    //         cat_status.innerText = `OK, new id ${new_id}!`;
-    //         download_changes_elem.style.visibility = '';
-    //     };
+        // Ok! If we didn't change the name, we don't have to rebuild the _whole_ UI
+        if (this_cat_info.desc === changed_cat.desc)
+            reset_ui();
+        else
+            remake_ui_for_categories_ui();
+
+        cat_status.className = "status_ok";
+        cat_status.innerText = "OK!";
+        download_changes_elem.style.visibility = '';
+    };
+    cat_new.onclick = () => {
+        let new_cat = perform_input_validation(false);
+        if (new_cat === undefined) return;
+
+        let new_id = Snowflake.generate();
+
+        database.transaction((txn) => {
+            // Create the category
+            txn.exec(`insert into categories(id, desc, url_path, icon_id, cw, have_subcat_icons) values (?, ?, ?, ?, ?, ?)`, {
+                bind: [
+                    new_id,
+                    new_cat.desc,
+                    new_cat.url,
+                    new_cat.icon_id,
+                    new_cat.cw,
+                    new_cat.show_icons,
+                ],
+            });
+            // Put the CW suppressions
+            for (let cw of new_cat.cw_suppressions) {
+                txn.exec(`insert into cw_suppressions(cat_id, cw_id) values (?, ?)`, {
+                    bind: [cat_id, cw]
+                });
+            }
+            // Insert it as a subcategory of the current category
+            // (Root cannot actually have symbols show up)
+            txn.exec(`insert into subcategories(parent_id, child_id) values (?, ?)`, {
+                bind: [cat_id, new_id]
+            });
+        });
+
+        // Ok
+        remake_ui_for_categories_ui();
+
+        cat_status.className = "status_ok";
+        cat_status.innerText = `OK, new id ${new_id}!`;
+        download_changes_elem.style.visibility = '';
+    };
     //     sym_delete.onclick = () => {
     //         let selected_syms = new_subcat_list.querySelectorAll('[data-selected]');
 
