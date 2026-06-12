@@ -160,8 +160,7 @@ function make_cat_tree_ui(cat_tree, cb) {
     let li = make_recurse(cat_tree);
     new_cat_tree.appendChild(li);
 
-    let old_cat_tree = document.getElementById('cat_tree');
-    old_cat_tree.parentNode.replaceChild(new_cat_tree, old_cat_tree);
+    document.getElementById('cat_tree').replaceWith(new_cat_tree);
 
     with_cat_tree.style.display = '';
 }
@@ -199,8 +198,7 @@ window.onload = async () => {
         new_category_move_select.appendChild(option);
     }
 
-    let old_category_move_select = document.getElementById('category_move_select');
-    old_category_move_select.parentNode.replaceChild(new_category_move_select, old_category_move_select);
+    document.getElementById('category_move_select').replaceWith(new_category_move_select);
 
     on_select_tab('tab_symbols', symbols_ui, async () => {
         let sym_move_label = document.getElementById('sym_move_label');

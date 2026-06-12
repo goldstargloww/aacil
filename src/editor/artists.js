@@ -99,11 +99,8 @@ export async function load_artist_info(database, download_changes_elem) {
             }
         });
 
-        let old_artists_select = document.getElementById('artists_select');
-        old_artists_select.parentNode.replaceChild(new_artists_select, old_artists_select);
-
-        let old_artists_merge_select = document.getElementById('artists_merge_select');
-        old_artists_merge_select.parentNode.replaceChild(new_artists_merge_select, old_artists_merge_select);
+        document.getElementById('artists_select').replaceWith(new_artists_select);
+        document.getElementById('artists_merge_select').replaceWith(new_artists_merge_select);
     }
 
     // The buttons to actually do things

@@ -75,8 +75,7 @@ export async function load_sym_cw_info(database, download_changes_elem) {
             }
         });
 
-        let old_sym_cw_select = document.getElementById('sym_cw_select');
-        old_sym_cw_select.parentNode.replaceChild(new_sym_cw_select, old_sym_cw_select);
+        document.getElementById('sym_cw_select').replaceWith(new_sym_cw_select);
     }
 
     // The buttons to actually do things

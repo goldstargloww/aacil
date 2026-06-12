@@ -48,8 +48,7 @@ export async function load_syms(database, download_changes_elem, category_text_m
             new_sym_cw_select.appendChild(option);
         }
 
-        let old_sym_cw_select = document.getElementById('sym_on_page_cw');
-        old_sym_cw_select.parentNode.replaceChild(new_sym_cw_select, old_sym_cw_select);
+        document.getElementById('sym_on_page_cw').replaceWith(new_sym_cw_select);
 
         // Load all the existing artists
         let all_artists = [];
@@ -82,10 +81,8 @@ export async function load_syms(database, download_changes_elem, category_text_m
 
         }
 
-        let old_artists_select = document.getElementById('sym_artists');
-        old_artists_select.parentNode.replaceChild(new_artists_select, old_artists_select);
-        let old_artists_adapted = document.getElementById('sym_adapted_from');
-        old_artists_adapted.parentNode.replaceChild(new_artists_adapted, old_artists_adapted);
+        document.getElementById('sym_artists').replaceWith(new_artists_select);
+        document.getElementById('sym_adapted_from').replaceWith(new_artists_adapted);
 
         // Load all the existing symbols
         let all_syms = [];
@@ -317,8 +314,7 @@ export async function load_syms(database, download_changes_elem, category_text_m
             });
         }
 
-        let old_sym_list = document.getElementById('sym_list');
-        old_sym_list.parentNode.replaceChild(new_sym_list, old_sym_list);
+        document.getElementById('sym_list').replaceWith(new_sym_list);
     }
 
     // The buttons to actually do things
