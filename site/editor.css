@@ -71,6 +71,11 @@ li[data-selected] > div > span {
     background-color: green;
 }
 
+/* These symbols don't belong to any categories */
+[data-is_lost] figcaption {
+    background-color: red;
+}
+
 /* Used for editing symbols */
 #sym_list {
   display: grid;

@@ -87,7 +87,10 @@ export async function load_syms(database, download_changes_elem, category_text_m
         // Load all the existing symbols
         let all_syms = [];
         if (cat_id === 0) {
-            database.exec(`select *, null as override_caption from images`, {
+            database.exec(`
+                select images.*, null as override_caption, count(cat_syms.cat_id) as num_categories
+                    from images left join cat_syms on images.id = cat_syms.img_id
+                    group by images.id`, {
                 rowMode: 'object',
                 resultRows: all_syms,
             });
@@ -260,6 +263,11 @@ export async function load_syms(database, download_changes_elem, category_text_m
             } else {
                 // Loading all the 10k+ images on a page will make it lag too much, so don't
                 imgcontain.innerText = sym.filename;
+
+                // But *do* flag images which aren't referenced anywhere
+                if (sym.num_categories < 1) {
+                    figure.dataset.is_lost = true;
+                }
             }
             figure.appendChild(imgcontain);
 
