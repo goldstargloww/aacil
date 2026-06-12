@@ -38,7 +38,7 @@ export async function load_cat_edit(
             // This is the only reference to the category, so we're _really_ deleting it
             database.transaction((txn) => {
                 // Move any of our subcategories to the root
-                txn.exec(`update or ignore subcategories set parent_id = 0 where parent_id = ?`, {
+                txn.exec(`update or replace subcategories set parent_id = 0 where parent_id = ?`, {
                     bind: [this_id],
                 });
                 // Remove us from subcategory lists
