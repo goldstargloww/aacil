@@ -22,7 +22,7 @@ export async function load_cat_edit(
     let cat_new = document.getElementById('cat_new');
     let cat_delete = document.getElementById('cat_delete');
 
-    //     let sym_move_button = document.getElementById('sym_move_button');
+    // let cat_dup_button = document.getElementById('cat_dup_button');
     //     let sym_dup_button = document.getElementById('sym_dup_button');
 
     let new_suppress_cw_select;
@@ -368,35 +368,62 @@ export async function load_cat_edit(
         download_changes_elem.style.visibility = '';
     }
 
-    //     sym_move_button.onclick = () => {
-    //         let to_cat = BigInt(document.getElementById('category_move_select').value);
-    //         if (!to_cat) {
-    //             cat_status.className = "status_error";
-    //             cat_status.innerText = "No category selected";
-    //             return;
-    //         }
+    // When rearranging categories, we need to prevent infinite loops
+    // Since the structure is _already_ acyclic, we can use DFS to check
+    // if the edge we are proposing to add will create a cycle or not
+    function check_for_loops(start_cat_id, bad_cat_id, ignore_edge) {
+        // Check for a trivial loop
+        if (start_cat_id == bad_cat_id) return true;
 
-    //         let selected_syms = Array.from(new_subcat_list.querySelectorAll('[data-selected]'));
-    //         selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
+        let subcategories = [];
+        database.exec(`select child_id from subcategories where parent_id = ?`, {
+            bind: [start_cat_id],
+            resultRows: subcategories,
+        });
 
-    //         for (let sym_id of selected_syms) {
-    //             database.transaction((txn) => {
-    //                 txn.exec(`delete from cat_syms where cat_id = ? and img_id = ?`, {
-    //                     bind: [cat_id, sym_id]
-    //                 });
-    //                 txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
-    //                     bind: [to_cat, sym_id]
-    //                 });
-    //             });
-    //         }
+        for (let subcat of subcategories) {
+            subcat = subcat[0];
 
-    //         // Ok
-    //         reset_ui();
+            // When moving, we ignore the will-be-deleted edge
+            if (ignore_edge) {
+                if (ignore_edge[0] == start_cat_id && ignore_edge[1] == subcat) {
+                    continue;
+                }
+            }
 
-    //         cat_status.className = "status_ok";
-    //         cat_status.innerText = `OK! Moved ${selected_syms.length} items.`;
-    //         download_changes_elem.style.visibility = '';
-    //     }
+            // Otherwise check and recurse
+            if (subcat == bad_cat_id)
+                return true;
+
+            if (check_for_loops(subcat, bad_cat_id, ignore_edge))
+                return true;
+        }
+
+        return false;
+    }
+
+    cat_dup_button.onclick = () => {
+        let link_target = BigInt(document.getElementById('category_move_select').value);
+
+        // If the target can reach us already, then linking back to it would create a loop
+        if (check_for_loops(link_target, cat_id)) {
+            cat_status.className = "status_error";
+            cat_status.innerText = `Not allowed, would create a loop`;
+            return;
+        }
+
+        // No loop --> add the link
+        database.exec(`insert into subcategories(parent_id, child_id) values (?, ?)`, {
+            bind: [cat_id, link_target]
+        });
+
+        // Ok
+        remake_ui_for_categories_ui();
+
+        cat_status.className = "status_ok";
+        cat_status.innerText = `OK! New link added.`;
+        download_changes_elem.style.visibility = '';
+    }
 
     //     sym_dup_button.onclick = () => {
     //         let to_cat = BigInt(document.getElementById('category_move_select').value);
