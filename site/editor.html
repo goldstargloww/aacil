@@ -21,6 +21,9 @@
             <input type="radio" id="tab_symbols" name="main_tabs">
             <label for="tab_symbols">Symbols</label>
 
+            <input type="radio" id="tab_cats" name="main_tabs">
+            <label for="tab_cats">Categories</label>
+
             <input type="radio" id="tab_artists" name="main_tabs">
             <label for="tab_artists">Artists</label>
 
@@ -76,6 +79,16 @@
                 <h2 id="sym_move_label">Move or duplicate selected symbols</h2>
                 <button id="sym_move_button">Move symbols</button>
                 <button id="sym_dup_button">Duplicate symbols</button>
+            </div>
+
+            <div id="cats_ui" style="display: none">
+                <h2>⇦ Select a category to edit it</h2>
+
+                <div id="cat_non_root" style="display: none">
+                    <h2 id="cat_move_label">Move or duplicate selected category</h2>
+                    <button id="cat_move_button">Move category</button>
+                    <button id="cat_dup_button">Duplicate category to</button>
+                </div>
             </div>
         </div>
 

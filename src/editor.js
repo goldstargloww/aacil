@@ -13,6 +13,7 @@ let download_changes_elem;
 
 let with_cat_tree;
 let symbols_ui;
+let cats_ui;
 let artists_ui;
 let sym_cw_ui;
 
@@ -36,6 +37,7 @@ async function download_changes_fn() {
 function deselect_all_tabs() {
     with_cat_tree.style.display = 'none';
     symbols_ui.style.display = 'none';
+    cats_ui.style.display = 'none';
     artists_ui.style.display = 'none';
     sym_cw_ui.style.display = 'none';
 }
@@ -137,7 +139,10 @@ function make_cat_tree_ui(cat_tree, cb) {
             }
 
             li.dataset.selected = true;
-            await cb(node.id);
+            let parent_id = null;
+            if (node.$parent)
+                parent_id = node.$parent.id
+            await cb(node.id, parent_id);
             e.stopPropagation();
         });
 
@@ -166,6 +171,7 @@ window.onload = async () => {
     download_changes_elem = document.getElementById('download_changes');
     with_cat_tree = document.getElementById('with_cat_tree');
     symbols_ui = document.getElementById('symbols_ui');
+    cats_ui = document.getElementById('cats_ui');
     artists_ui = document.getElementById('artists_ui');
     sym_cw_ui = document.getElementById('sym_cw_ui');
 
@@ -204,6 +210,17 @@ window.onload = async () => {
 
         make_cat_tree_ui(category_tree, async (cat_id) => {
             await load_syms(database, download_changes_elem, category_text_map, cat_id);
+        });
+    });
+    on_select_tab('tab_cats', cats_ui, async () => {
+        let cat_move_label = document.getElementById('cat_move_label');
+        let category_move_select = document.getElementById('category_move_select');
+        category_move_select.remove();
+        cat_move_label.after(category_move_select);
+
+        make_cat_tree_ui(category_tree, async (cat_id, from_cat) => {
+            console.log(cat_id, from_cat);
+            // await load_syms(database, download_changes_elem, category_text_map, cat_id);
         });
     });
     on_select_tab('tab_artists', artists_ui, load_artist_info);
