@@ -89,7 +89,6 @@ export async function load_cat_edit(
             resultRows: this_cat_info_arr,
         });
         this_cat_info = this_cat_info_arr[0];
-        console.log(this_cat_info);
 
         // Load the subcategories linked from here
         let subcategories = [];
@@ -106,7 +105,6 @@ export async function load_cat_edit(
             resultRows: subcategories,
         });
         subcategories.sort(sorting.sort_categories);
-        console.log(subcategories);
 
         // Load information about CW suppressions
         let cw_suppressions = [];
@@ -118,7 +116,6 @@ export async function load_cat_edit(
         for (let cw of cw_suppressions) {
             cw_suppressions_set.add(cw[0]);
         }
-        console.log(cw_suppressions_set);
 
         // Make list of CWs
         new_suppress_cw_select = document.createElement('select');
@@ -274,7 +271,6 @@ export async function load_cat_edit(
 
         let changed_cat = perform_input_validation();
         if (changed_cat === undefined) return;
-        console.log(changed_cat);
 
         database.transaction((txn) => {
             // Delete old CW suppressions
