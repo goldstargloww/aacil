@@ -1,7 +1,7 @@
 import { Snowflake } from "@theinternetfolks/snowflake";
 import * as sorting from '../sorting.js';
 
-export async function load_syms(database, download_changes_elem, cat_id) {
+export async function load_syms(database, download_changes_elem, category_text_map, cat_id) {
     let dummy_element_parking_lot = document.getElementById('dummy_element_parking_lot');
 
     let sym_cur_id = document.getElementById('sym_cur_id');
@@ -10,6 +10,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
     let sym_url = document.getElementById('sym_url');
     let sym_caption = document.getElementById('sym_caption');
     let sym_alt_text = document.getElementById('sym_alt_text');
+    let sym_also_found = document.getElementById('sym_also_found');
     let sym_change = document.getElementById('sym_change');
     let sym_new = document.getElementById('sym_new');
     let sym_delete = document.getElementById('sym_delete');
@@ -89,7 +90,7 @@ export async function load_syms(database, download_changes_elem, cat_id) {
         // Load all the existing symbols
         let all_syms = [];
         if (cat_id === 0) {
-            database.exec(`select images.*, null as override_caption`, {
+            database.exec(`select *, null as override_caption from images`, {
                 rowMode: 'object',
                 resultRows: all_syms,
             });
@@ -144,6 +145,34 @@ export async function load_syms(database, download_changes_elem, cat_id) {
                     sym_caption.value = selected_syms[0].caption;
                     sym_alt_text.value = selected_syms[0].alt_text;
                     new_sym_cw_select.value = selected_syms[0].cw_id;
+
+                    // Look up where _else_ this symbol is used
+                    let used_elsewhere_cats = []
+                    database.exec(`select cat_id from cat_syms where img_id = ? and cat_id != ?`, {
+                        bind: [selected_syms[0].id, cat_id],
+                        resultRows: used_elsewhere_cats,
+                    });
+                    if (used_elsewhere_cats.length > 0) {
+                        used_elsewhere_cats = used_elsewhere_cats.map((x) => category_text_map.get(x[0]));
+
+                        let new_also_found = document.createElement('ul');
+                        new_also_found.id = sym_also_found.id;
+
+                        for (let cat_desc of used_elsewhere_cats) {
+                            let li = document.createElement('li');
+                            li.innerText = cat_desc;
+                            new_also_found.appendChild(li);
+                        }
+
+                        sym_also_found.replaceWith(new_also_found);
+                        sym_also_found = new_also_found;
+                    } else {
+                        let new_also_found = document.createElement('div');
+                        new_also_found.id = sym_also_found.id;
+                        new_also_found.innerText = "< none, only here >";
+                        sym_also_found.replaceWith(new_also_found);
+                        sym_also_found = new_also_found;
+                    }
 
                     // Look up all artists (and adapted from) for this symbol
                     new_artists_select.selectedIndex = -1;

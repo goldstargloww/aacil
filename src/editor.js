@@ -177,6 +177,10 @@ window.onload = async () => {
     // Load information about categories out of DB into memory
     let category_tree = get_category_tree(0);
     let category_list = flatten_category_tree(category_tree);
+    let category_text_map = new Map();
+    for (let cat of category_list) {
+        category_text_map.set(cat.id, cat.desc_path);
+    }
 
     // Populate the selection for moving symbols to different categories
     let new_category_move_select = document.createElement('select');
@@ -199,7 +203,7 @@ window.onload = async () => {
         sym_move_label.after(category_move_select);
 
         make_cat_tree_ui(category_tree, async (cat_id) => {
-            await load_syms(database, download_changes_elem, cat_id);
+            await load_syms(database, download_changes_elem, category_text_map, cat_id);
         });
     });
     on_select_tab('tab_artists', artists_ui, load_artist_info);

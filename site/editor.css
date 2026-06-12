@@ -84,3 +84,8 @@ figure[data-selected] {
 #sym_list img {
     pointer-events: none;
 }
+
+#sym_also_found {
+    margin: 0;
+    padding-left: 1em;
+}
