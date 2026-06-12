@@ -66,6 +66,8 @@ window.onload = async () => {
 
     const sqlite3 = await window.sqlite3InitModule();
     database = await make_databases(sqlite3, load_csv);
+    // This hack allows developers to run arbitrary JS from the browser console to do bulk operations
+    window.__database = database;
 
     on_select_tab('tab_symbols', symbols_ui, async () => {
         let category_text_map = new Map();
