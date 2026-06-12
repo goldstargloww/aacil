@@ -92,3 +92,19 @@ figure[data-selected] {
     margin: 0;
     padding-left: 1em;
 }
+
+/* Used for editing subcategories */
+#cat_subcats {
+    list-style: none;
+    padding: 0;
+    column-gap: 16px;
+    row-gap: 8px;
+    display: inline-grid;
+    grid-template-columns: 1fr auto;
+}
+#cat_subcats > li {
+    display: contents;
+}
+#cat_subcats > li > span {
+    justify-self: end;
+}

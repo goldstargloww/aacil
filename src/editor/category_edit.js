@@ -11,6 +11,7 @@ export async function load_cat_edit(
     let cat_status = document.getElementById('cat_status');
     let cat_cur_id = document.getElementById('cat_cur_id');
     let cat_icon = document.getElementById('cat_icon');
+    let cat_subcats = document.getElementById('cat_subcats');
     let cat_desc = document.getElementById('cat_desc');
     let cat_url = document.getElementById('cat_url');
     let cat_icon_id = document.getElementById('cat_icon_id');
@@ -23,11 +24,39 @@ export async function load_cat_edit(
     //     let sym_move_button = document.getElementById('sym_move_button');
     //     let sym_dup_button = document.getElementById('sym_dup_button');
 
-    //     let new_sym_list;
-
     let new_suppress_cw_select;
-    //     let new_artists_select;
-    //     let new_artists_adapted;
+
+    function delete_category(parent_id, this_id, num_parents) {
+        if (num_parents > 1) {
+            // This exists in multiple places, so sever only a single link
+            database.exec(`delete from subcategories where parent_id = ? and child_id = ?`, {
+                bind: [parent_id, this_id],
+            });
+        } else {
+            // This is the only reference to the category, so we're _really_ deleting it
+            database.transaction((txn) => {
+                // Move any of our subcategories to the root
+                txn.exec(`update or ignore subcategories set parent_id = 0 where parent_id = ?`, {
+                    bind: [this_id],
+                });
+                // Remove us from subcategory lists
+                txn.exec(`delete from subcategories where child_id = ?`, {
+                    bind: [this_id],
+                });
+                // Delete symbols and suppressions
+                txn.exec(`delete from cw_suppressions where cat_id = ?`, {
+                    bind: [this_id],
+                });
+                txn.exec(`delete from cat_syms where cat_id = ?`, {
+                    bind: [this_id],
+                });
+                // Finally delete self
+                txn.exec(`delete from categories where id = ?`, {
+                    bind: [this_id],
+                });
+            });
+        }
+    }
 
     function reset_ui() {
         //         let all_syms_map = new Map();
@@ -43,11 +72,16 @@ export async function load_cat_edit(
         // Load information about this category
         let this_cat_info = [];
         database.exec(`
-            select categories.*, count(cat_syms.img_id) as num_symbols, images.filename as icon_url, images.alt_text as icon_alt
-            from categories left join cat_syms on categories.id = cat_syms.cat_id
-            left join images on images.id = categories.icon_id
+            select categories.*,
+                count(cat_syms.img_id) as num_symbols,
+                count(distinct subcategories.parent_id) as num_parents,
+                images.filename as icon_url, images.alt_text as icon_alt
+            from categories
+                left join subcategories on subcategories.child_id = categories.id
+                left join images on images.id = categories.icon_id
+                left join cat_syms on categories.id = cat_syms.cat_id
             where categories.id = ?
-            group by cat_syms.cat_id`, {
+            group by categories.id`, {
             bind: [cat_id],
             rowMode: 'object',
             resultRows: this_cat_info,
@@ -58,9 +92,11 @@ export async function load_cat_edit(
         // Load the subcategories linked from here
         let subcategories = [];
         database.exec(`
-            select categories.id, categories.desc, count(subcat2.parent_id) as num_parents
-            from subcategories join categories on subcategories.child_id = categories.id
-            left join subcategories as subcat2 on subcategories.child_id = subcat2.child_id
+            select categories.id, categories.desc,
+                count(subcat2.parent_id) as num_parents
+            from subcategories
+                join categories on subcategories.child_id = categories.id
+                left join subcategories as subcat2 on subcategories.child_id = subcat2.child_id
             where subcategories.parent_id = ?
             group by subcat2.child_id`, {
             bind: [cat_id],
@@ -167,16 +203,40 @@ export async function load_cat_edit(
             dummy_element_parking_lot.appendChild(cat_change);
         }
 
-        //         // Make entirely new list of CWs
-        //         new_sym_list = document.createElement('div');
-        //         new_sym_list.id = 'sym_list'
+        // Make entirely new list of subcategories
+        let new_subcat_list = document.createElement('ol');
+        new_subcat_list.id = 'cat_subcats'
+
+        for (let subcat of subcategories) {
+            let li = document.createElement('li');
+
+            let span = document.createElement('span');
+            span.innerText = subcat.desc;
+            li.appendChild(span);
+
+            let button = document.createElement('button');
+            button.innerText = "Delete this subcategory";
+            li.appendChild(button);
+            button.addEventListener('click', () => {
+                delete_category(cat_id, subcat.id, subcat.num_parents);
+                remake_ui_for_categories_ui();
+                cat_status.className = "status_ok";
+                cat_status.innerText = `OK! Deleted ${subcat.desc}`;
+                download_changes_elem.style.visibility = '';
+            });
+
+            new_subcat_list.appendChild(li);
+        }
+
+        document.getElementById('cat_subcats').replaceWith(new_subcat_list);
+
 
         //         let last_selected_i = 0;
         //         let last_selected_was_already_marked = false;
         //         sym_delete.disabled = true;
 
         //         function update_sym_form() {
-        //             let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
+        //             let selected_syms = Array.from(new_subcat_list.querySelectorAll('[data-selected]'));
         //             selected_syms = selected_syms.map((x) => all_syms_map.get(BigInt(x.dataset.id)));
 
         //             let selected_sym_str = selected_syms.map((x) => x.id).join(', ');
@@ -236,9 +296,9 @@ export async function load_cat_edit(
         //             }
         //         }
 
-        //         new_sym_list.addEventListener('click', () => {
+        //         new_subcat_list.addEventListener('click', () => {
         //             // Clicked on a blank spot
-        //             for (let elem of new_sym_list.querySelectorAll('[data-selected]')) {
+        //             for (let elem of new_subcat_list.querySelectorAll('[data-selected]')) {
         //                 delete elem.dataset.selected;
         //             }
 
@@ -249,28 +309,6 @@ export async function load_cat_edit(
 
         //         let all_figures = [];
         //         for (let [sym_i, sym] of all_syms.entries()) {
-        //             let figure = document.createElement('figure');
-        //             figure.dataset.id = sym.id;
-        //             all_figures.push(figure);
-
-        //             let imgcontain = document.createElement('div');
-        //             imgcontain.className = 'imgcontain';
-        //             if (cat_id !== 0) {
-        //                 let img = document.createElement('img');
-        //                 img.src = sym.filename;
-        //                 img.alt = sym.alt_text;
-        //                 imgcontain.appendChild(img);
-        //             } else {
-        //                 // Loading all the 10k+ images on a page will make it lag too much, so don't
-        //                 imgcontain.innerText = sym.filename;
-        //             }
-        //             figure.appendChild(imgcontain);
-
-        //             let figcaption = document.createElement('figcaption');
-        //             figcaption.innerText = sym.caption;
-        //             figure.appendChild(figcaption);
-
-        //             new_sym_list.appendChild(figure);
 
         //             all_syms_map.set(sym.id, sym);
 
@@ -281,7 +319,7 @@ export async function load_cat_edit(
 
         //                 // If the control key isn't held, clear all existing selections
         //                 if (!ctrl) {
-        //                     for (let elem of new_sym_list.querySelectorAll('[data-selected]')) {
+        //                     for (let elem of new_subcat_list.querySelectorAll('[data-selected]')) {
         //                         delete elem.dataset.selected;
         //                     }
         //                 }
@@ -318,7 +356,7 @@ export async function load_cat_edit(
         //             });
         //         }
 
-        //         document.getElementById('sym_list').replaceWith(new_sym_list);
+        //         document.getElementById('sym_list').replaceWith(new_subcat_list);
         //     }
 
         //     // The buttons to actually do things
@@ -381,7 +419,7 @@ export async function load_cat_edit(
         //         };
 
         //         if (read_id) {
-        //             let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
+        //             let selected_syms = Array.from(new_subcat_list.querySelectorAll('[data-selected]'));
         //             selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
 
         //             if (selected_syms.length !== 1) {
@@ -530,7 +568,7 @@ export async function load_cat_edit(
     //         download_changes_elem.style.visibility = '';
     //     };
     //     sym_delete.onclick = () => {
-    //         let selected_syms = new_sym_list.querySelectorAll('[data-selected]');
+    //         let selected_syms = new_subcat_list.querySelectorAll('[data-selected]');
 
     //         for (let sym of selected_syms) {
     //             let sym_id = BigInt(sym.dataset.id);
@@ -585,7 +623,7 @@ export async function load_cat_edit(
     //             return;
     //         }
 
-    //         let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
+    //         let selected_syms = Array.from(new_subcat_list.querySelectorAll('[data-selected]'));
     //         selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
 
     //         for (let sym_id of selected_syms) {
@@ -615,7 +653,7 @@ export async function load_cat_edit(
     //             return;
     //         }
 
-    //         let selected_syms = Array.from(new_sym_list.querySelectorAll('[data-selected]'));
+    //         let selected_syms = Array.from(new_subcat_list.querySelectorAll('[data-selected]'));
     //         selected_syms = selected_syms.map((x) => BigInt(x.dataset.id));
 
     //         for (let sym_id of selected_syms) {
