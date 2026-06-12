@@ -22,7 +22,13 @@ export async function load_artist_info(database, download_changes_elem) {
     function reset_ui() {
         // Load all the existing artists
         let all_artists = [];
-        database.exec(`select * from artists`, {
+        database.exec(`
+            select artists.*, count(sym_derived_from.img_id) as num_derived_credits
+            from (select artists.*, count(sym_artists.img_id) as num_direct_credits
+                from artists left join sym_artists on sym_artists.artist_id = artists.id
+                group by artists.id) as artists
+            left join sym_derived_from on sym_derived_from.artist_id = artists.id
+            group by artists.id`, {
             rowMode: 'object',
             resultRows: all_artists,
         });
@@ -67,10 +73,10 @@ export async function load_artist_info(database, download_changes_elem) {
         new_artists_select.addEventListener('change', () => {
             let selected_artist_id = new_artists_select.value;
             if (selected_artist_id) {
-                artists_cur_id.innerText = `Selected artist ID: ${selected_artist_id}`;
                 selected_artist_id = BigInt(selected_artist_id);
-
                 let artist = all_artists_map.get(selected_artist_id);
+
+                artists_cur_id.innerText = `Selected artist ID: ${selected_artist_id}, ${artist.num_direct_credits} symbols, adapted by ${artist.num_derived_credits} symbols`;
                 artist_display.value = artist.display;
                 artist_parens.value = artist.front_page_parens;
                 artist_footnote.value = artist.front_page_footnote;
