@@ -29,6 +29,9 @@
 
             <input type="radio" id="tab_cws" name="main_tabs">
             <label for="tab_cws">Symbol content warnings</label>
+
+            <input type="radio" id="tab_devtools" name="main_tabs">
+            <label for="tab_devtools">💻 Developer tools 💻</label>
         </div>
 
         <div id="with_cat_tree" style="display: none">
@@ -172,6 +175,13 @@
                 <button id="sym_cw_new">Make NEW CW</button>
                 <button id="sym_cw_delete">Delete CW</button>
             </form>
+        </div>
+
+        <div id="devtools_ui" style="display: none">
+            <h2>Run SQL query</h2>
+            <div style="display: flex"><textarea style="flex: 1" rows="4" id="dev_sql"></textarea></div>
+            <div><button id="dev_sql_run">Run</button></div>
+            <table id="dev_sql_table"></table>
         </div>
 
         <div id="dummy_element_parking_lot" style="display: none"></div>

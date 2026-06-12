@@ -16,6 +16,7 @@ let symbols_ui;
 let cats_ui;
 let artists_ui;
 let sym_cw_ui;
+let devtools_ui;
 
 async function download_changes_fn() {
     let zip_blob = await export_databases(database);
@@ -40,6 +41,7 @@ function deselect_all_tabs() {
     cats_ui.style.display = 'none';
     artists_ui.style.display = 'none';
     sym_cw_ui.style.display = 'none';
+    devtools_ui.style.display = 'none';
 }
 function on_select_tab(tab_id, ui_element, cb) {
     let tab_element = document.getElementById(tab_id);
@@ -58,6 +60,7 @@ window.onload = async () => {
     cats_ui = document.getElementById('cats_ui');
     artists_ui = document.getElementById('artists_ui');
     sym_cw_ui = document.getElementById('sym_cw_ui');
+    devtools_ui = document.getElementById('devtools_ui');
 
     download_changes_elem.addEventListener('click', download_changes_fn);
 
@@ -116,6 +119,48 @@ window.onload = async () => {
     });
     on_select_tab('tab_artists', artists_ui, load_artist_info);
     on_select_tab('tab_cws', sym_cw_ui, load_sym_cw_info);
+    on_select_tab('tab_devtools', devtools_ui, async () => {
+        let dev_sql = document.getElementById('dev_sql');
+        let dev_sql_table = document.getElementById('dev_sql_table');
+        let dev_sql_run = document.getElementById('dev_sql_run');
+        dev_sql_table.innerHTML = '';
+
+        dev_sql_run.addEventListener('click', () => {
+            let sql = dev_sql.value;
+
+            dev_sql_table.innerHTML = '';
+            let thead;
+            let tbody = document.createElement('tbody');
+
+            database.exec(sql, {
+                callback: (row, stmt) => {
+                    if (!thead) {
+                        thead = document.createElement('thead');
+                        let tr = document.createElement('tr');
+                        for (let ent of stmt.getColumnNames()) {
+                            let th = document.createElement('th');
+                            th.innerText = ent;
+                            tr.appendChild(th);
+                        }
+                        thead.appendChild(tr);
+                    }
+                    let tr = document.createElement('tr');
+                    for (let ent of row) {
+                        let td = document.createElement('td');
+                        td.innerText = ent;
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                },
+            });
+
+            dev_sql_table.appendChild(thead);
+            dev_sql_table.appendChild(tbody);
+            console.log(tbody);
+
+            download_changes_elem.style.visibility = '';
+        })
+    });
 
     // Loading complete!
     main_status.innerText = "What would you like to work on?";

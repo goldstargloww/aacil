@@ -108,3 +108,16 @@ figure[data-selected] {
 #cat_subcats > li > span {
     justify-self: end;
 }
+
+/* For dev tool SQL function */
+thead {
+    background-color: cadetblue;
+}
+tbody > tr:nth-of-type(even) {
+    background-color: #ccc;
+}
+[data-theme="dark"] {
+    tbody > tr:nth-of-type(even) {
+        background-color: #444;
+    }
+}
