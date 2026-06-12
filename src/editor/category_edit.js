@@ -61,8 +61,6 @@ export async function load_cat_edit(
     }
 
     function reset_ui() {
-        //         let all_syms_map = new Map();
-
         // Load all the existing CW information
         let all_cws = [];
         database.exec(`select * from page_cw`, {

@@ -598,7 +598,7 @@ export async function load_syms(database, download_changes_elem, category_text_m
                 txn.exec(`delete from cat_syms where cat_id = ? and img_id = ?`, {
                     bind: [cat_id, sym_id]
                 });
-                txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
+                txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?) on conflict do nothing`, {
                     bind: [to_cat, sym_id]
                 });
             });
@@ -625,7 +625,7 @@ export async function load_syms(database, download_changes_elem, category_text_m
 
         for (let sym_id of selected_syms) {
             database.transaction((txn) => {
-                txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
+                txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?) on conflict do nothing`, {
                     bind: [to_cat, sym_id]
                 });
             });
