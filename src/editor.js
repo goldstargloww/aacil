@@ -18,7 +18,9 @@ let bulk_add_ui;
 let artists_ui;
 let sym_cw_ui;
 let devtools_ui;
+
 let bulk_category_label;
+let bulk_drop;
 
 async function download_changes_fn() {
     let zip_blob = await export_databases(database);
@@ -67,6 +69,7 @@ window.onload = async () => {
     sym_cw_ui = document.getElementById('sym_cw_ui');
     devtools_ui = document.getElementById('devtools_ui');
     bulk_category_label = document.getElementById('bulk_category_label');
+    bulk_drop = document.getElementById('bulk_drop');
 
     download_changes_elem.addEventListener('click', download_changes_fn);
 
@@ -227,6 +230,31 @@ window.onload = async () => {
         });
     });
 
+    // Drag-and-drop logic
+    bulk_drop.addEventListener("dragover", (e) => {
+        const fileItems = [...e.dataTransfer.items].filter(
+            (item) => item.kind === "file",
+        );
+        if (fileItems.length > 0) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "copy";
+        }
+    });
+
+    bulk_drop.addEventListener('drop', (ev) => {
+        ev.preventDefault();
+        const files = [...ev.dataTransfer.items]
+            .map((item) => item.getAsFile())
+            .filter((file) => file);
+        console.log(files);
+    })
+
+    // File selector
+    // document.getElementById("file-input");
+    document.getElementById('bulk_file').addEventListener("change", (e) => {
+        console.log(e.target.files);
+    });
+
     // Loading complete!
     main_status.innerText = "What would you like to work on?";
 };
@@ -238,4 +266,23 @@ window.addEventListener('error', (e) => {
 window.addEventListener('unhandledrejection', (e) => {
     console.log(e);
     alert(`Error: something broke!\n\nCheck the browser console for more details.\n\n${e.reason}`)
+});
+
+// Logic needed for file drag-and-drop
+window.addEventListener("drop", (e) => {
+    if ([...e.dataTransfer.items].some((item) => item.kind === "file")) {
+        e.preventDefault();
+    }
+});
+
+window.addEventListener("dragover", (e) => {
+    const fileItems = [...e.dataTransfer.items].filter(
+        (item) => item.kind === "file",
+    );
+    if (fileItems.length > 0) {
+        e.preventDefault();
+        if (!bulk_drop.contains(e.target)) {
+            e.dataTransfer.dropEffect = "none";
+        }
+    }
 });
