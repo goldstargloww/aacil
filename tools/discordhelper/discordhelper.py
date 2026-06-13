@@ -2,12 +2,15 @@
 
 from SECRETS import BOT_TOKEN
 from PIL import Image, ImageOps
+import csv
 import discord
 import io
 import logging
 import subprocess
 
 logger = logging.getLogger(__name__)
+csv_fp = open('messages.csv', 'w', encoding='utf-8')
+csv_w = csv.writer(csv_fp)
 
 
 def deal_with_image(data):
@@ -15,14 +18,14 @@ def deal_with_image(data):
     # Crop to content
     bbox = im.getbbox()
     im = im.crop(bbox)
-    print(im)
+    # print(im)
     # Limit size
     im.thumbnail((600, 600))
-    print(im)
+    # print(im)
     # Make it square again
     largest_dim = max(im.width, im.height)
     im = ImageOps.pad(im, (largest_dim, largest_dim), color=(0, 0, 0, 0))
-    print(im)
+    # print(im)
     return im
 
 
@@ -33,9 +36,7 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         if len(message.message_snapshots) == 1:
             orig_msg = message.message_snapshots[0]
-            print(orig_msg)
-            print(orig_msg.content)
-            print(orig_msg.attachments)
+            # print(orig_msg.content)
             downloaded_attachments = []
             for x in orig_msg.attachments:
                 downloaded_attachments.append(await x.read())
@@ -47,10 +48,14 @@ class MyClient(discord.Client):
 
             for (i, im) in enumerate(processed_imgs):
                 attach_id = orig_msg.attachments[i].id
-                print(attach_id)
                 with open(f"{attach_id}.png", 'wb') as f:
                     im.save(f)
-                subprocess.run(['pngcrush', '-q', '-ow', f"{attach_id}.png", f"{attach_id}.tmp"])
+                subprocess.run(['pngcrush', '-q', '-ow',
+                                f"{attach_id}.png", f"{attach_id}.tmp"])
+                print(attach_id)
+
+                csv_w.writerow([attach_id, orig_msg.content])
+                csv_fp.flush()
 
 
 intents = discord.Intents.default()
