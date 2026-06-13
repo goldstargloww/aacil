@@ -2,3 +2,7 @@ desktop.ini
 .DS_Store
 
 node_modules/
+__pycache__
+
+# Don't accidentally commit this
+tools/discordhelper/SECRETS.py
