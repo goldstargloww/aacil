@@ -6,6 +6,7 @@ import { load_syms } from "./editor/symbols.js";
 import { load_cat_edit } from "./editor/category_edit.js";
 import { load_artist_info } from "./editor/artists.js";
 import { load_sym_cw_info } from "./editor/symbol_cws.js";
+import { bulk_sym_setup, bulk_preview_images } from "./editor/bulk_symbols.js";
 
 let database;
 
@@ -128,12 +129,12 @@ window.onload = async () => {
         await remake_ui_for_categories_ui();
     });
     on_select_tab('tab_bulk_add', bulk_add_ui, async () => {
-        console.log("bulk");
-
         let new_category_choice = make_category_dropdown(database, true);
         new_category_choice.remove();
         bulk_category_label.after(new_category_choice);
         bulk_category_label.setAttribute('for', new_category_choice.id);
+
+        bulk_sym_setup(database);
     });
     on_select_tab('tab_artists', artists_ui, load_artist_info);
     on_select_tab('tab_cws', sym_cw_ui, load_sym_cw_info);
@@ -246,13 +247,12 @@ window.onload = async () => {
         const files = [...ev.dataTransfer.items]
             .map((item) => item.getAsFile())
             .filter((file) => file);
-        console.log(files);
+        bulk_preview_images(files);
     })
 
     // File selector
-    // document.getElementById("file-input");
     document.getElementById('bulk_file').addEventListener("change", (e) => {
-        console.log(e.target.files);
+        bulk_preview_images(e.target.files);
     });
 
     // Loading complete!

@@ -78,9 +78,9 @@ li[data-selected] > div > span {
 
 /* Used for editing symbols */
 #sym_list {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  padding-bottom: 100px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    padding-bottom: 100px;
 }
 figure {
     max-height: 200px;
@@ -96,6 +96,19 @@ figure[data-selected] {
 #sym_also_found {
     margin: 0;
     padding-left: 1em;
+}
+
+/* Symbol bulk editing */
+#bulk_list {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    padding-bottom: 2em;
+}
+#bulk_list > {
+    max-height: 200px;
+}
+#bulk_list > [data-selected] {
+    background-color: green;
 }
 
 /* Used for editing subcategories */

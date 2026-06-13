@@ -78,7 +78,6 @@ export async function load_syms(database, download_changes_elem, category_text_m
             option.value = artist.id;
             option.innerText = artist.display;
             new_artists_adapted.appendChild(option);
-
         }
 
         document.getElementById('sym_artists').replaceWith(new_artists_select);
