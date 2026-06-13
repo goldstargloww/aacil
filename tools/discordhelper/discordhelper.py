@@ -1,7 +1,29 @@
 # This example requires the 'message_content' intent.
 
 from SECRETS import BOT_TOKEN
+from PIL import Image, ImageOps
 import discord
+import io
+import logging
+import subprocess
+
+logger = logging.getLogger(__name__)
+
+
+def deal_with_image(data):
+    im = Image.open(io.BytesIO(data))
+    # Crop to content
+    bbox = im.getbbox()
+    im = im.crop(bbox)
+    print(im)
+    # Limit size
+    im.thumbnail((600, 600))
+    print(im)
+    # Make it square again
+    largest_dim = max(im.width, im.height)
+    im = ImageOps.pad(im, (largest_dim, largest_dim), color=(0, 0, 0, 0))
+    print(im)
+    return im
 
 
 class MyClient(discord.Client):
@@ -17,7 +39,18 @@ class MyClient(discord.Client):
             downloaded_attachments = []
             for x in orig_msg.attachments:
                 downloaded_attachments.append(await x.read())
-            print(downloaded_attachments)
+            try:
+                processed_imgs = [deal_with_image(x)
+                                  for x in downloaded_attachments]
+            except Exception as e:
+                logger.error(e)
+
+            for (i, im) in enumerate(processed_imgs):
+                attach_id = orig_msg.attachments[i].id
+                print(attach_id)
+                with open(f"{attach_id}.png", 'wb') as f:
+                    im.save(f)
+                subprocess.run(['pngcrush', '-q', '-ow', f"{attach_id}.png", f"{attach_id}.tmp"])
 
 
 intents = discord.Intents.default()
