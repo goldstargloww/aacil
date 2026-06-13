@@ -129,12 +129,12 @@ window.onload = async () => {
         await remake_ui_for_categories_ui();
     });
     on_select_tab('tab_bulk_add', bulk_add_ui, async () => {
-        let new_category_choice = make_category_dropdown(database, true);
+        let new_category_choice = make_category_dropdown(database, false);
         new_category_choice.remove();
         bulk_category_label.after(new_category_choice);
         bulk_category_label.setAttribute('for', new_category_choice.id);
 
-        bulk_sym_setup(database);
+        bulk_sym_setup(database, new_category_choice);
     });
     on_select_tab('tab_artists', artists_ui, load_artist_info);
     on_select_tab('tab_cws', sym_cw_ui, load_sym_cw_info);

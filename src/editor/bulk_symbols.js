@@ -1,11 +1,14 @@
+import { Snowflake } from "@theinternetfolks/snowflake";
+import { export_databases } from '../database.js';
 import * as sorting from '../sorting.js';
 
 let global_files;
+let file_names;
 let selected_index;
 let img_elems;
 
 // TODO FIXME this code is duplicated
-export function bulk_sym_setup(database) {
+export function bulk_sym_setup(database, new_category_choice) {
     let bulk_caption = document.getElementById('bulk_caption');
     let bulk_alt_text = document.getElementById('bulk_alt_text');
 
@@ -65,7 +68,7 @@ export function bulk_sym_setup(database) {
     document.getElementById('bulk_artists').replaceWith(new_artists_select);
     document.getElementById('bulk_adapted_from').replaceWith(new_artists_adapted);
 
-    document.getElementById('bulk_next').addEventListener('click', () => {
+    document.getElementById('bulk_next').addEventListener('click', async () => {
         if (global_files === undefined || selected_index >= global_files.length)
             return;
 
@@ -103,10 +106,76 @@ export function bulk_sym_setup(database) {
                 new_adapted_from.add(BigInt(option.value));
         }
 
-        console.log("do file");
+        let new_cat_id = BigInt(new_category_choice.value);
 
+        let new_id = Snowflake.generate();
+        let urlified_name = new_caption.replace(/[^0-9a-zA-Z ]/g, '').trim() + ` ${new_id}.png`;
+
+        database.transaction((txn) => {
+            // Create the image
+            txn.exec(`insert into images(id, filename, caption, alt_text, cw_id) values (?, ?, ?, ?, ?)`, {
+                bind: [
+                    new_id,
+                    '/imgs/' + urlified_name,
+                    new_caption,
+                    new_alt_text,
+                    new_cw,
+                ],
+            });
+            // Put the artist credits
+            for (let artist of new_artists) {
+                txn.exec(`insert into sym_artists(img_id, artist_id) values (?, ?)`, {
+                    bind: [new_id, artist]
+                });
+            }
+            for (let artist of new_adapted_from) {
+                txn.exec(`insert into sym_derived_from(img_id, artist_id) values (?, ?)`, {
+                    bind: [new_id, artist]
+                });
+            }
+            // Insert it into the chosen category
+            txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
+                bind: [new_cat_id, new_id]
+            });
+        });
+
+        file_names.push(urlified_name);
         img_elems[selected_index].dataset.selected = true;
         selected_index++;
+
+        if (selected_index === global_files.length) {
+            let zip_file = await export_databases(database, false);
+
+            let imgs_folder = zip_file.folder('imgs');
+            for (let i = 0; i < global_files.length; i++) {
+                imgs_folder.file(file_names[i], global_files[i], { binary: true });
+            }
+
+            let zip_blob = await zip_file.generateAsync({ type: 'blob' });
+
+            // Download the blob now
+            let url = window.URL.createObjectURL(zip_blob);
+
+            // Create a new invisible link, click on it, and then clean up
+            let a = document.createElement('a');
+            a.style = "display: none";
+            a.href = url;
+            a.download = "AACIL Database (bulk).zip";
+
+            document.body.appendChild(a);
+            a.click();
+
+            window.URL.revokeObjectURL(url);
+            a.remove();
+
+            // Reset state
+            let bulk_list = document.getElementById('bulk_list');
+            bulk_list.innerHTML = '';
+            global_files = undefined;
+            file_names = [];
+            selected_index = 0;
+            img_elems = [];
+        }
     })
 }
 
@@ -115,6 +184,7 @@ export function bulk_preview_images(files) {
     bulk_list.innerHTML = '';
 
     global_files = files;
+    file_names = [];
     selected_index = 0;
     img_elems = [];
 
