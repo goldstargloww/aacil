@@ -146,7 +146,7 @@ function export_one_db(db, query) {
     });
 }
 
-export async function export_databases(db) {
+export async function export_databases(db, finalize = true) {
     let zip = new JSZip();
     zip.file("page_cw.csv", export_one_db(db, "select * from page_cw order by id"));
     zip.file("images.csv", export_one_db(db, "select * from images order by id"));
@@ -158,5 +158,8 @@ export async function export_databases(db) {
     zip.file("cat_syms.csv", export_one_db(db, "select * from cat_syms order by cat_id, img_id"));
     zip.file("cw_suppressions.csv", export_one_db(db, "select * from cw_suppressions order by cat_id, cw_id"));
 
-    return await zip.generateAsync({ type: 'blob' });
+    if (finalize)
+        return await zip.generateAsync({ type: 'blob' });
+    else
+        return zip;
 }

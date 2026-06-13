@@ -6,6 +6,9 @@ let img_elems;
 
 // TODO FIXME this code is duplicated
 export function bulk_sym_setup(database) {
+    let bulk_caption = document.getElementById('bulk_caption');
+    let bulk_alt_text = document.getElementById('bulk_alt_text');
+
     // Load all the existing CW information
     let all_cws = [];
     database.exec(`select * from page_cw`, {
@@ -65,6 +68,40 @@ export function bulk_sym_setup(database) {
     document.getElementById('bulk_next').addEventListener('click', () => {
         if (global_files === undefined || selected_index >= global_files.length)
             return;
+
+        let new_caption = bulk_caption.value;
+        if (!new_caption) {
+            bulk_caption.focus();
+            return;
+        }
+
+        let new_alt_text = bulk_alt_text.value;
+        if (!new_alt_text) {
+            bulk_alt_text.focus();
+            return;
+        }
+
+        let new_cw = new_cw_select.value;
+        if (new_cw)
+            new_cw = BigInt(new_cw);
+        else
+            new_cw = null;
+
+        let new_artists = new Set();
+        for (let option of new_artists_select.selectedOptions) {
+            if (option.value)
+                new_artists.add(BigInt(option.value));
+        }
+        if (new_artists.size === 0) {
+            new_artists_select.focus();
+            return;
+        }
+
+        let new_adapted_from = new Set();
+        for (let option of new_artists_adapted.selectedOptions) {
+            if (option.value)
+                new_adapted_from.add(BigInt(option.value));
+        }
 
         console.log("do file");
 
