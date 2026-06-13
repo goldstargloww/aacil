@@ -214,7 +214,6 @@ export async function bulk_preview_images(files) {
             for (let ent of csv_parsed) {
                 csv_map.set(`${ent[0]}.png`, ent[1]);
             }
-            console.log(csv_map);
 
             continue;
         }
