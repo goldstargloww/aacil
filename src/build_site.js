@@ -9,7 +9,11 @@ import { make_databases } from './database.js';
 import { lookup_artist_credits } from "./artist_credit.js";
 import * as sorting from './sorting.js';
 
-const __dirname = new URL("..", import.meta.url).pathname;
+import Os from 'os'
+let __dirname = new URL("..", import.meta.url).pathname;
+if (Os.platform() === 'win32' && __dirname.startsWith('/')) {
+    __dirname = __dirname.slice(1);
+}
 
 class AACILCustomPlugin {
     apply(compiler) {

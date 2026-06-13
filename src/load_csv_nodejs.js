@@ -1,7 +1,11 @@
 import fs from "node:fs";
 import { parse as csv_parse } from 'csv-parse';
 
-const __site = new URL("../site", import.meta.url).pathname;
+import Os from 'os'
+let __site = new URL("../site", import.meta.url).pathname;
+if (Os.platform() === 'win32' && __site.startsWith('/')) {
+    __site = __site.slice(1);
+}
 
 async function load_csv(path) {
     const parser = fs.createReadStream(`${__site}${path}`).pipe(
