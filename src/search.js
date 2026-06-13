@@ -10,16 +10,16 @@ let database;
 let main_status;
 
 window.onload = async () => {
-    main_status = document.getElementById('main_status');
-    search_query = document.getElementById('search_query');
-    search_advanced = document.getElementById('search_advanced');
-    search_caption = document.getElementById('search_caption');
-    search_alt_text = document.getElementById('search_alt_text');
-    search_button = document.getElementById('search_button');
-    search_results_summary = document.getElementById('search_results_summary');
-    selected_sym_alt_text = document.getElementById('selected_sym_alt_text');
-    selected_sym_information = document.getElementById('selected_sym_information');
-    search_results = document.getElementById('search_results');
+    let main_status = document.getElementById('main_status');
+    let search_query = document.getElementById('search_query');
+    let search_advanced = document.getElementById('search_advanced');
+    let search_caption = document.getElementById('search_caption');
+    let search_alt_text = document.getElementById('search_alt_text');
+    let search_button = document.getElementById('search_button');
+    let search_results_summary = document.getElementById('search_results_summary');
+    let selected_sym_alt_text = document.getElementById('selected_sym_alt_text');
+    let selected_sym_information = document.getElementById('selected_sym_information');
+    let search_results = document.getElementById('search_results');
 
     const sqlite3 = await window.sqlite3InitModule();
     database = await make_databases(sqlite3, load_csv);
