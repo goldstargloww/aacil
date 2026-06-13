@@ -1,7 +1,7 @@
 import { Snowflake } from "@theinternetfolks/snowflake";
 import load_csv from './load_csv_web.js';
 import { make_databases, export_databases } from './database.js';
-import { remake_category_ui } from "./editor/category_tree.js";
+import { remake_category_ui, make_category_dropdown } from "./editor/category_tree.js";
 import { load_syms } from "./editor/symbols.js";
 import { load_cat_edit } from "./editor/category_edit.js";
 import { load_artist_info } from "./editor/artists.js";
@@ -14,9 +14,11 @@ let download_changes_elem;
 
 let symbols_ui;
 let cats_ui;
+let bulk_add_ui;
 let artists_ui;
 let sym_cw_ui;
 let devtools_ui;
+let bulk_category_label;
 
 async function download_changes_fn() {
     let zip_blob = await export_databases(database);
@@ -39,9 +41,11 @@ function deselect_all_tabs() {
     document.getElementById('with_cat_tree').style.display = 'none';
     symbols_ui.style.display = 'none';
     cats_ui.style.display = 'none';
+    bulk_add_ui.style.display = 'none';
     artists_ui.style.display = 'none';
     sym_cw_ui.style.display = 'none';
     devtools_ui.style.display = 'none';
+    bulk_category_label.removeAttribute('for');
 }
 function on_select_tab(tab_id, ui_element, cb) {
     let tab_element = document.getElementById(tab_id);
@@ -58,9 +62,11 @@ window.onload = async () => {
     download_changes_elem = document.getElementById('download_changes');
     symbols_ui = document.getElementById('symbols_ui');
     cats_ui = document.getElementById('cats_ui');
+    bulk_add_ui = document.getElementById('bulk_add_ui');
     artists_ui = document.getElementById('artists_ui');
     sym_cw_ui = document.getElementById('sym_cw_ui');
     devtools_ui = document.getElementById('devtools_ui');
+    bulk_category_label = document.getElementById('bulk_category_label');
 
     download_changes_elem.addEventListener('click', download_changes_fn);
 
@@ -84,9 +90,8 @@ window.onload = async () => {
                 category_text_map.set(cat.id, cat.desc_path);
         }
 
-        let sym_move_label = document.getElementById('sym_move_label');
         category_move_select.remove();
-        sym_move_label.after(category_move_select);
+        document.getElementById('sym_move_label').after(category_move_select);
 
         // Force deselect
         await load_syms(database, download_changes_elem, category_text_map, -1);
@@ -106,9 +111,8 @@ window.onload = async () => {
                 true,
             );
 
-            let cat_move_label = document.getElementById('cat_move_label');
             category_move_select.remove();
-            cat_move_label.after(category_move_select);
+            document.getElementById('cat_move_label').after(category_move_select);
 
             // Force load the root category on startup
             await load_cat_edit(
@@ -119,6 +123,14 @@ window.onload = async () => {
             );
         }
         await remake_ui_for_categories_ui();
+    });
+    on_select_tab('tab_bulk_add', bulk_add_ui, async () => {
+        console.log("bulk");
+
+        let new_category_choice = make_category_dropdown(database, true);
+        new_category_choice.remove();
+        bulk_category_label.after(new_category_choice);
+        bulk_category_label.setAttribute('for', new_category_choice.id);
     });
     on_select_tab('tab_artists', artists_ui, load_artist_info);
     on_select_tab('tab_cws', sym_cw_ui, load_sym_cw_info);

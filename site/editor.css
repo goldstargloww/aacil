@@ -126,3 +126,16 @@ tbody > tr:nth-of-type(even) {
         background-color: #444;
     }
 }
+
+#bulk_drop {
+    border: 1px dotted black;
+    border-radius: 4px;
+
+    display: block;
+    padding: 4em;
+    margin-bottom: 1em;
+}
+
+#bulk_file {
+    display: none;
+}

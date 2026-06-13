@@ -7,7 +7,7 @@
 
         <link rel="icon" type="image/png" href="/favicon.png">
         <link href="/style.css?v3" rel="stylesheet" type="text/css" media="all">
-        <link href="/editor.css?v3" rel="stylesheet" type="text/css" media="all">
+        <link href="/editor.css?v4" rel="stylesheet" type="text/css" media="all">
         <script src="/frontend.js"></script>
         <script type="module" src="/sqlite/index.mjs"></script>
         <script src="/editor.js"></script>
@@ -20,6 +20,9 @@
         <div class="tabs_header">
             <input type="radio" id="tab_symbols" name="main_tabs">
             <label for="tab_symbols">Symbols</label>
+
+            <input type="radio" id="tab_bulk_add" name="main_tabs">
+            <label for="tab_bulk_add">Bulk add symbols</label>
 
             <input type="radio" id="tab_cats" name="main_tabs">
             <label for="tab_cats">Categories</label>
@@ -128,6 +131,42 @@
                 <p><button id="cat_dup_button">Make a copy of the selected category HERE</button></p>
                 <p><button id="cat_move_button">Move this category TO selected</button></p>
             </div>
+        </div>
+
+        <div id="bulk_add_ui" style="display: none">
+            <h2>Bulk add symbol tool</h2>
+
+            <label id="bulk_drop">
+                Drop images here, or click to upload.
+                <input type="file" id="bulk_file" multiple />
+            </label>
+            <div></div>
+
+            <form action="javascript:void(0)">
+                <div>
+                    <label for="bulk_caption">Caption:</label>
+                    <input type="text" id="bulk_caption" required>
+                </div>
+                <div>
+                    <label for="bulk_alt_text">Description (alt text):</label>
+                    <textarea rows="4" id="bulk_alt_text" required></textarea>
+                </div>
+                <div>
+                    <label for="bulk_artists">Artist(s):</label>
+                    <select id="bulk_artists" multiple><!-- This will be ignored! --></select>
+                </div>
+                <div>
+                    <label for="bulk_adapted_from">Adapted from artist(s):</label>
+                    <select id="bulk_adapted_from" multiple><!-- This will be ignored! --></select>
+                </div>
+                <div>
+                    <label for="bulk_on_page_cw">Content warning:</label>
+                    <select id="bulk_on_page_cw"><!-- This will be ignored! --></select>
+                </div>
+                <div>
+                    <label id="bulk_category_label">Category:</label>
+                </div>
+            </form>
         </div>
 
         <div id="artists_ui" style="display: none">

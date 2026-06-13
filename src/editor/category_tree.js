@@ -154,3 +154,30 @@ export function remake_category_ui(database, cb, dropdown_allow_root = false) {
 
     return { category_list, category_move_select: new_category_move_select };
 }
+
+export function make_category_dropdown(database, dropdown_allow_root = false) {
+    // Load information about categories out of DB into memory
+    let category_tree = get_category_tree(database, 0);
+    let category_list = flatten_category_tree(category_tree);
+
+    // Populate the selection dropdown for moving stuff between categories
+    let new_category_move_select = document.createElement('select');
+    new_category_move_select.id = 'category_move_select';
+
+    if (dropdown_allow_root) {
+        let option = document.createElement('option');
+        option.value = 0;
+        option.innerText = "<root>";
+        new_category_move_select.appendChild(option);
+    }
+
+    for (let category of category_list) {
+        let option = document.createElement('option');
+        option.value = category.id;
+        option.innerText = category.desc_path;
+        new_category_move_select.appendChild(option);
+    }
+
+    document.getElementById('category_move_select').replaceWith(new_category_move_select);
+    return new_category_move_select;
+}
