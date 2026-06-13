@@ -14,6 +14,10 @@ class MyClient(discord.Client):
             print(orig_msg)
             print(orig_msg.content)
             print(orig_msg.attachments)
+            downloaded_attachments = []
+            for x in orig_msg.attachments:
+                downloaded_attachments.append(await x.read())
+            print(downloaded_attachments)
 
 
 intents = discord.Intents.default()
