@@ -9,8 +9,11 @@ class MyClient(discord.Client):
         print(f'Logged on as {self.user}!')
 
     async def on_message(self, message):
-        print(f'Message from {message.author}: {message.content}')
-        print(message)
+        if len(message.message_snapshots) == 1:
+            orig_msg = message.message_snapshots[0]
+            print(orig_msg)
+            print(orig_msg.content)
+            print(orig_msg.attachments)
 
 
 intents = discord.Intents.default()
