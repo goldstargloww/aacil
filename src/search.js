@@ -69,16 +69,17 @@ window.onload = async () => {
     document.getElementById('search_artist').replaceWith(new_artists_select);
 
     search_button.addEventListener('click', () => {
+        let use_captions = search_caption.checked;
+        let use_alt = search_alt_text.checked;
+
         let query = search_query.value;
-        if (!query) {
+        if ((use_captions || use_alt) && !query) {
             search_query.focus();
             search_results_summary.innerText = "Please enter something to search for.";
             return;
         }
 
         let use_fts = search_advanced.checked;
-        let use_captions = search_caption.checked;
-        let use_alt = search_alt_text.checked;
 
         let artist = new_artists_select.value;
         if (!artist)
@@ -237,6 +238,23 @@ window.onload = async () => {
         selected_sym_alt_text.innerHTML = '&nbsp;'
         selected_sym_information.innerHTML = '&nbsp;'
     })
+
+    // Toggle states as needed
+    function update_ui_state() {
+        let use_captions = search_caption.checked;
+        let use_alt = search_alt_text.checked;
+
+        if (use_captions || use_alt) {
+            search_query.required = true;
+            search_query.disabled = false;
+        } else {
+            search_query.required = false;
+            search_query.disabled = true;
+        }
+    }
+    search_caption.addEventListener('change', update_ui_state);
+    search_alt_text.addEventListener('change', update_ui_state);
+    update_ui_state();
 
     // Loading complete!
     main_status.innerText = "AACIL search";
