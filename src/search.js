@@ -17,6 +17,7 @@ window.onload = async () => {
     search_alt_text = document.getElementById('search_alt_text');
     search_button = document.getElementById('search_button');
     search_results_summary = document.getElementById('search_results_summary');
+    selected_sym_alt_text = document.getElementById('selected_sym_alt_text');
     selected_sym_information = document.getElementById('selected_sym_information');
     search_results = document.getElementById('search_results');
 
@@ -41,7 +42,6 @@ window.onload = async () => {
         if (!category_text_map.has(cat.id))
             category_text_map.set(cat.id, cat.desc_path);
     }
-    console.log(category_text_map);
 
     // Set up the list of artists
     let all_artists = [];
@@ -81,17 +81,25 @@ window.onload = async () => {
         let use_alt = search_alt_text.checked;
 
         let artist = new_artists_select.value;
-        console.log(artist);
         if (!artist)
             artist = null;
         else
             artist = BigInt(artist);
 
+        if (!use_captions && !use_alt && artist === null) {
+            search_results_summary.innerText =
+                "This will return all symbols, which will lag your computer / phone. " +
+                "Please select at least one filter (caption, description, or artist).";
+            return;
+        }
+
+        let query_obj = {};
         let sql;
         if (use_fts) {
             sql = `select * from images `;
             if (use_captions || use_alt) {
                 sql += `where `;
+                query_obj.$query = query;
             }
             if (use_captions) {
                 sql += `id in (select rowid from fts where caption match $query)`
@@ -108,6 +116,7 @@ window.onload = async () => {
             sql = `select * from images `;
             if (use_captions || use_alt) {
                 sql += `where `;
+                query_obj.$query = query;
             }
             if (use_captions) {
                 sql += `caption like $query`
@@ -120,7 +129,6 @@ window.onload = async () => {
             }
         }
 
-        let query_obj = { $query: query };
         if (artist !== null) {
             sql = `select intermed.* from (${sql}) as intermed
                 join sym_artists on intermed.id = sym_artists.img_id
@@ -147,8 +155,6 @@ window.onload = async () => {
         syms.sort(sorting.sort_syms);
 
         // Generate output
-
-        console.log(syms);
         search_results_summary.innerText = `Found ${syms.length} results.`
         search_results.innerHTML = '';
 
@@ -179,8 +185,50 @@ window.onload = async () => {
             figure.appendChild(figcaption);
 
             search_results.appendChild(figure);
+
+            // Handle clicking on the figure
+            figure.addEventListener('click', (e) => {
+                // Deselect everything
+                for (let elem of search_results.querySelectorAll('[data-selected]')) {
+                    delete elem.dataset.selected;
+                }
+
+                // Mark this one thing as selected
+                figure.dataset.selected = true;
+
+                // Look up its categories
+                let img_id = BigInt(figure.dataset.id);
+
+                let used_in_cats = [];
+                database.exec(`select cat_id, override_caption from cat_syms where img_id = ?`, {
+                    bind: [img_id],
+                    rowMode: 'object',
+                    resultRows: used_in_cats,
+                });
+
+                used_in_cats = used_in_cats.map((x) => {
+                    let caption = sym.caption;
+                    if (x.override_caption !== null)
+                        caption = x.override_caption;
+
+                    return `"${category_text_map.get(x.cat_id)}" as "${caption}"`;
+                });
+                selected_sym_alt_text.innerText = sym.alt_text;
+                selected_sym_information.innerText = `Found in category ${used_in_cats.join(", ")}`;
+
+                e.stopPropagation();
+            });
         }
     });
+
+    document.addEventListener('click', () => {
+        // Clicking outside a figure --> deselect everything
+        for (let elem of search_results.querySelectorAll('[data-selected]')) {
+            delete elem.dataset.selected;
+        }
+        selected_sym_alt_text.innerHTML = '&nbsp;'
+        selected_sym_information.innerHTML = '&nbsp;'
+    })
 
     // Loading complete!
     main_status.innerText = "AACIL search";

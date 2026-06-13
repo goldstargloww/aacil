@@ -20,3 +20,7 @@ form input[type='checkbox'] {
 form button {
     grid-column: 1;
 }
+
+figure[data-selected] {
+    background-color: green;
+}
