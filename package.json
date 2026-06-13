@@ -1,0 +1,28 @@
+{
+  "name": "aacil",
+  "version": "0.0.0",
+  "description": "AAC Image Library website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "webpack --mode=production --config-node-env=production",
+    "build:dev": "webpack --mode=development",
+    "serve": "webpack serve"
+  },
+  "author": "",
+  "license": "CC-BY-NC-4.0",
+  "dependencies": {
+    "@sqlite.org/sqlite-wasm": "^3.53.0-build1",
+    "@theinternetfolks/snowflake": "^1.3.0",
+    "csv": "^6.5.1",
+    "jszip": "^3.10.1",
+    "nunjucks": "^3.2.4",
+    "unicode-segmenter": "^0.16.0"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^14.0.0",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3",
+    "webpack-dev-server": "^5.2.4"
+  }
+}

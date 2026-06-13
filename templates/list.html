@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AACIL symbol list</title>
+
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+        <script src="/frontend.js"></script>
+    </head>
+    <body>
+        <p><a href="..">click here to go back.</a></p>
+
+        <h1 class="center">symbol list</h1>
+        <p>This is a list of all symbols on AACIL. You can search this page with a search tool or pressing CTRL+F on your keyboard. The list is made up of links that will take you to the symbol.</p>
+        <p>Please note that symbols about <b>adult topics</b> and symbols that might be <b>upsetting</b> are included in this list.</p>
+        <p>When there is more than one link with the same name, that is because there is more than one symbol with the name.</p>
+
+        {% for sym_letter in sym_first_letters %}
+        <h2 class="center">{{ sym_letter }}</h2>
+
+        <ol style="list-style: none; padding: 0;">
+            {% for sym in map_get(syms_by_letter, sym_letter) %}
+            <li><a href="{{ sym.filename }}">{{ sym.caption }}</a></li>
+            {% endfor %}
+        </ol>
+
+        {% endfor %}
+
+        <p class="center"><a href="..">click here to go back.</a></p>
+
+        <script src="https://website-widgets.pages.dev/dist/sienna.min.js" defer></script>
+    </body>
+</html>

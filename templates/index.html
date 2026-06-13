@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AAC Image Library</title>
+
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+        <script src="/frontend.js"></script>
+        <script>addEventListener("load", on_main_page_load)</script>
+    </head>
+    <body>
+        <div class="center">
+            <h1>AAC Image Library</h1>
+            <img src="/AAC/aacil.png" height="100" alt="A drawing of a simplified person wearing a harness that has a talker on it. The talker is turned on with various multicoloured buttons. on one side black letters say 'AAC'. on the other black letters say 'IL'">
+            <h2><i>by us, for us</i></h2>
+            <h3>
+                <a href="https://globalsymbols.com/symbolsets/aac-image-library?locale=en">search AACIL symbols</a>
+                | <a href="/map.html">symbol pages map</a>
+                | <a href="/more.html">about AACIL</a>
+                | <a href="/aboutaac_images.html">What is AAC?</a>
+                | <a href="/otherresources.html">other resources</a>
+                | <a href="/copyright.html">copyright information & disclaimer</a>
+                | <a href="/faq.html">frequently asked questions</a>
+            </h3>
+            <p>11,100+ symbols and counting. 1.7 million+ pageviews and counting. 95+ Disabled artists and counting.</p>
+            <!-- inc. stellar: 145+-->
+
+            <h2 class="space_above">Topics:</h2>
+
+            <ul class="figlist">
+            {% for item in subcats %}
+                <li><a href="{{ item.url_path }}">{{ item.desc }}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+
+        <p>Theme:
+            <input type="radio" id="light_theme" name="theme"><label for="light_theme">Light</label>
+            <input type="radio" id="dark_theme" name="theme"><label for="dark_theme">Dark</label>
+        </p>
+
+        <div class="center">
+            <p class="space_above" xmlns:cc="http://creativecommons.org/ns#">The works on this website are licensed under <a href="http://creativecommons.org/licenses/by-nc/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC 4.0. <img src="https://aacil.neocities.org/cc%20by%20nc.png" height=30px></a></p>
+
+            <p class="space_above">
+                <small>
+                    <b>Image artists:</b> {{ artists | join("; ") }}
+                    <b>Almost all of us are AAC users as well as artists, and all of us are Disabled</b>.
+                    If you want to contribute AAC symbols or otherwise contact us, email: <u>aacschar@gmail.com</u>. Website founded and managed by M Scharnke.
+                </small>
+            </p>
+        </div>
+
+        <div class="space_above"></div>
+        {% for item in artist_footnotes %}
+        <p>{{ item }}</p>
+        {% endfor %}
+
+        <script src="https://website-widgets.pages.dev/dist/sienna.min.js" defer></script>
+    </body>
+</html>

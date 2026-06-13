@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AAC Image Library</title>
+
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+        <link href="/editor.css" rel="stylesheet" type="text/css" media="all">
+        <script src="/frontend.js"></script>
+        <script type="module" src="/sqlite/index.mjs"></script>
+        <script src="/editor.js"></script>
+        <!-- Work-in-progress friendly editor -->
+    </head>
+    <body>
+        <h1 id="main_status">Loading, please wait…</h1>
+        <a id="download_changes" href="#" style="visibility: hidden">You have made changes. Click here to download them.</a>
+
+        <div class="tabs_header">
+            <input type="radio" id="tab_symbols" name="main_tabs">
+            <label for="tab_symbols">Symbols</label>
+
+            <input type="radio" id="tab_cats" name="main_tabs">
+            <label for="tab_cats">Categories</label>
+
+            <input type="radio" id="tab_artists" name="main_tabs">
+            <label for="tab_artists">Artists</label>
+
+            <input type="radio" id="tab_cws" name="main_tabs">
+            <label for="tab_cws">Symbol content warnings</label>
+
+            <input type="radio" id="tab_devtools" name="main_tabs">
+            <label for="tab_devtools">💻 Developer tools 💻</label>
+        </div>
+
+        <div id="with_cat_tree" style="display: none">
+            <ol id="cat_tree"><!-- This will be ignored! --></ol>
+            <select id="category_move_select" style="display: none;"><!-- This will be ignored! --></select>
+            <div id="symbols_ui" style="display: none">
+                <h2>Click a symbol to edit it, or add a new one below</h2>
+                <p id="sym_status">&nbsp;</p>
+                <div id="sym_list"><!-- This will be ignored! --></div>
+                <p><small id="sym_cur_id">&nbsp;</small></p>
+                <div id="one_sym_actions">
+                    <form action="javascript:void(0)">
+                        <div>
+                            <label for="sym_url">URL ( /Where​/the​/image​/is.png ):</label>
+                            <input type="text" id="sym_url" required>
+                        </div>
+                        <div>
+                            <label for="sym_caption">Caption:</label>
+                            <input type="text" id="sym_caption" required>
+                        </div>
+                        <div>
+                            <label for="sym_alt_text">Description (alt text):</label>
+                            <textarea rows="4" id="sym_alt_text" required></textarea>
+                        </div>
+                        <div>
+                            <label for="sym_artists">Artist(s):</label>
+                            <select id="sym_artists" multiple><!-- This will be ignored! --></select>
+                        </div>
+                        <div>
+                            <label for="sym_adapted_from">Adapted from artist(s):</label>
+                            <select id="sym_adapted_from" multiple><!-- This will be ignored! --></select>
+                        </div>
+                        <div>
+                            <label for="sym_on_page_cw">Content warning:</label>
+                            <select id="sym_on_page_cw"><!-- This will be ignored! --></select>
+                        </div>
+                        <div>
+                            <label for="sym_also_found">Also found in categories:</label>
+                            <div id="sym_also_found"><!-- This will be ignored! --></div>
+                        </div>
+                        <button id="sym_change">Change symbol</button>
+                        <button id="sym_new">Make NEW symbol</button>
+                    </form>
+                </div>
+
+                <button id="sym_delete" disabled>Delete selected symbols</button>
+
+                <h2 id="sym_move_label">Move or duplicate selected symbols</h2>
+                <button id="sym_move_button">Move symbols</button>
+                <button id="sym_dup_button">Duplicate symbols</button>
+            </div>
+
+            <div id="cats_ui" style="display: none">
+                <h2>⇦ Select a category to edit it</h2>
+                <p id="cat_status">&nbsp;</p>
+                <p><small id="cat_cur_id">&nbsp;</small></p>
+                <p><img id="cat_icon", src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" height="80px"></p>
+
+                <h2>This category contains:</h2>
+                <ol id="cat_subcats"></ol>
+
+                <form action="javascript:void(0)">
+                    <div>
+                        <label for="cat_desc">Description (for humans):</label>
+                        <input type="text" id="cat_desc" required>
+                    </div>
+                    <div>
+                        <label for="cat_url">URL (for computers):</label>
+                        <input type="text" id="cat_url" required>
+                    </div>
+                    <div>
+                        <label for="cat_icon_id">Icon ID (a big number):</label>
+                        <input type="text" id="cat_icon_id">
+                    </div>
+                    <div>
+                        <label for="cat_cw">Category Content Warning:</label>
+                        <textarea rows="4" id="cat_cw"></textarea>
+                    </div>
+                    <div>
+                        <label for="cat_show_icons">Have icons for subcategories:</label>
+                        <input type="checkbox" id="cat_show_icons">
+                    </div>
+                    <div>
+                        <label for="cat_suppress_cw">Don't show these symbol CWs:</label>
+                        <select id="cat_suppress_cw" multiple><!-- This will be ignored! --></select>
+                    </div>
+                    <button id="cat_change">Change category</button>
+                    <button id="cat_new">Make NEW category HERE</button>
+                    <button id="cat_delete">Delete this category</button>
+                </form>
+
+                <h2 id="cat_move_label">Rearrange categories</h2>
+                <p>This is confusing, I'm sorry :/</p>
+                <p><button id="cat_dup_button">Make a copy of the selected category HERE</button></p>
+                <p><button id="cat_move_button">Move this category TO selected</button></p>
+            </div>
+        </div>
+
+        <div id="artists_ui" style="display: none">
+            <h2>Add or change artists</h2>
+            <select id="artists_select"><!-- This will be ignored! --></select>
+            <p><small id="artists_cur_id">&nbsp;</small></p>
+            <p id="artists_status">&nbsp;</p>
+            <form action="javascript:void(0)">
+                <div>
+                    <label for="artist_display">Artist name:</label>
+                    <input type="text" id="artist_display" required>
+                </div>
+                <div>
+                    <label for="artist_parens">Artist extra ( OnlineName (Real Name) ):</label>
+                    <input type="text" id="artist_parens">
+                </div>
+                <div>
+                    <label for="artist_footnote">Artist footnote:</label>
+                    <input type="text" id="artist_footnote">
+                </div>
+                <button id="artist_change">Change artist</button>
+                <button id="artist_new">Make NEW artist</button>
+            </form>
+
+            <details id="artist_merge_details">
+                <summary><h2>⚠️ Careful: Merge two artists (click to toggle) ⚠️</h2></summary>
+                <p>It is hard to un-merge artists. Only use if you are sure.</p>
+                <select id="artists_merge_select"><!-- This will be ignored! --></select>
+                <p><small id="artists_merge_victim_id">&nbsp;</small></p>
+                <button id="artist_merge_button">Merge artists</button>
+            </details>
+        </div>
+
+        <div id="sym_cw_ui" style="display: none">
+            <h2>Change symbol CWs (content warnings)</h2>
+            <select id="sym_cw_select"><!-- This will be ignored! --></select>
+            <p><small id="sym_cw_cur_id">&nbsp;</small></p>
+            <p id="sym_cw_status">&nbsp;</p>
+            <form action="javascript:void(0)">
+                <div>
+                    <label for="sym_cw_text">CW text:</label>
+                    <input type="text" id="sym_cw_text" required>
+                </div>
+                <button id="sym_cw_change">Change CW</button>
+                <button id="sym_cw_new">Make NEW CW</button>
+                <button id="sym_cw_delete">Delete CW</button>
+            </form>
+        </div>
+
+        <div id="devtools_ui" style="display: none">
+            <h2>Run SQL query</h2>
+            <div style="display: flex"><textarea style="flex: 1" rows="4" id="dev_sql"></textarea></div>
+            <div><button id="dev_sql_run">Run</button></div>
+            <table id="dev_sql_table"></table>
+
+            <h2>Look up snowflake ID</h2>
+            <input type="text" id="dev_snowflake" required>
+            <button id="dev_snowflake_find">Find</button>
+            <div id="dev_snowflake_output"></div>
+        </div>
+
+        <div id="dummy_element_parking_lot" style="display: none"></div>
+    </body>
+</html>

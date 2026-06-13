@@ -1,0 +1,26 @@
+form {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    padding-bottom: 16px;
+    margin: 0 4em;
+}
+form > div {
+    display: contents;
+}
+form label {
+    text-align: right;
+}
+form .form_label {
+    text-align: right;
+}
+form input[type='checkbox'] {
+    justify-self: start;
+}
+form button {
+    grid-column: 1;
+}
+
+figure[data-selected] {
+    background-color: green;
+}

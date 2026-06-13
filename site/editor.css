@@ -1,0 +1,128 @@
+body {
+    margin: 16px;
+}
+
+.status_error {
+    color: red;
+}
+.status_ok {
+    color: green;
+}
+
+.tabs_header {
+    padding-top: 1lh;
+    display: flex;
+}
+.tabs_header input {
+    display: none;
+}
+.tabs_header label {
+    flex: 1;
+    text-align: center;
+}
+.tabs_header input:checked + label {
+    background-color: red;
+}
+
+/* Used for labeled fields in forms */
+form {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    padding-bottom: 16px;
+}
+form label {
+    text-align: right;
+}
+form div {
+    display: contents;
+}
+form input[type='checkbox'] {
+    justify-self: start;
+}
+form button {
+    grid-column: 1;
+}
+
+#artist_merge_details > summary::marker {
+    content: '';
+}
+
+/* Editing symbols or categories requires a tree to show up on the left */
+#with_cat_tree {
+    display: flex;
+    flex-direction: row;
+}
+#with_cat_tree > :not(:first-child) {
+    flex: 1;
+}
+#cat_tree {
+    list-style: '▼ ';
+    padding-left: 1.5em;
+    padding-right: 16px;
+}
+#cat_tree ol {
+    list-style: '▼ ';
+    padding-left: 1.5em;
+}
+
+/* Whenever we clicky something, it highlights */
+li[data-selected] > div > span {
+    background-color: green;
+}
+
+/* These symbols don't belong to any categories */
+[data-is_lost] figcaption {
+    background-color: red;
+}
+
+/* Used for editing symbols */
+#sym_list {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  padding-bottom: 100px;
+}
+figure {
+    max-height: 200px;
+    user-select: none;
+}
+figure[data-selected] {
+    background-color: green;
+}
+#sym_list img {
+    pointer-events: none;
+}
+
+#sym_also_found {
+    margin: 0;
+    padding-left: 1em;
+}
+
+/* Used for editing subcategories */
+#cat_subcats {
+    list-style: none;
+    padding: 0;
+    column-gap: 16px;
+    row-gap: 8px;
+    display: inline-grid;
+    grid-template-columns: 1fr auto;
+}
+#cat_subcats > li {
+    display: contents;
+}
+#cat_subcats > li > span {
+    justify-self: end;
+}
+
+/* For dev tool SQL function */
+thead {
+    background-color: cadetblue;
+}
+tbody > tr:nth-of-type(even) {
+    background-color: #ccc;
+}
+[data-theme="dark"] {
+    tbody > tr:nth-of-type(even) {
+        background-color: #444;
+    }
+}

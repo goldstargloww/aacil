@@ -8,32 +8,59 @@ body {
   font-family: Verdana;
 }
 
-.box{
-width: 500px;
-border: 1px solid grey;
-} 
-
-   
- /* Responsive layout - when the screen is less than 600px wide, make the three columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 600px) {
-  .column {
-    width: 100%;
-  }
-} 
-    
-    .row {
-  display: flex;
+.space_above {
+  margin-top: 2lh;
 }
 
-.column {
-  flex: 33%;
+.cw {
+  margin: 2lh;
+  text-align: center;
 }
 
+.center {
+  text-align: center;
+}
+
+.figlist {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* This is specifically used on the main page */
+ul.figlist {
+  list-style: none;
+  padding: 0;
+}
+ul.figlist li {
+  margin: 1lh 0;
+}
 
 figure {
   border: 1px #cccccc solid;
   padding: 4px;
-  margin: auto;
+  margin: 0;
+
+  box-sizing: border-box;
+  max-height: 300px;
+  /* Force contents to shrink on tiny screens */
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+figure .imgcontain {
+  flex: 1;
+  /* Override the minimum size, so that the size which is _left over_ is stretched by flexbox. */
+  min-height: 0;
+}
+
+/* Make the image shrink down and not overlap or push other things out */
+img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 figcaption {
@@ -41,5 +68,41 @@ figcaption {
   color: white;
   padding: 2px;
   text-align: center;
+  width: 100%;
 }
 
+/* Automatic dark theme */
+[data-theme="dark"] {
+  body {
+    background-color: #111;
+    color: white;
+  }
+  figcaption {
+    background-color: white;
+    color: black;
+  }
+
+  a:link {
+    color: rgb(60, 139, 165);
+  }
+  a:visited {
+    color: mediumpurple;
+  }
+  a:active {
+    color: #f33;
+  }
+}
+
+/* Responsive layout - on larger screens, use 4 or 5 columns */
+@media screen and (min-width: 769px) {
+  .figlist {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media screen and (min-width: 1280px) {
+  .figlist {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

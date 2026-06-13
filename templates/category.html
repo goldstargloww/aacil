@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AAC Image Library</title>
+
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+        <script src="/frontend.js"></script>
+    </head>
+    <body>
+        <p><a href="..">click here to go back.</a></p>
+
+        {% if subcats|length %}
+        <ul>
+            {% for subcat in subcats %}
+            <li><a href="{{ subcat.url_path }}">{{ subcat.desc }}{% if subcat.icon_url %} <img src="{{ subcat.icon_url }}" height="50">{% endif %}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="figlist">
+        {% for sym in main_syms %}
+            <figure>
+                <div class="imgcontain"><img src="{{ sym.filename }}" alt="{{ sym.alt_text }}"></div>
+                <figcaption>
+                    <span class="caption">{{ sym.caption }}</span>
+                    <span class="credit"> | By {{ sym.credit }}.</span>
+                </figcaption>
+            </figure>
+        {% endfor %}
+        </div>
+
+        {% for cw_sym_set in cw_syms %}
+        <h2 class="cw">{{ cw_sym_set.cw }}</h2>
+
+        <div class="figlist">
+        {% for sym in cw_sym_set.syms %}
+            <figure>
+                <div class="imgcontain"><img src="{{ sym.filename }}" alt="{{ sym.alt_text }}"></div>
+                <figcaption>
+                    <span class="caption">{{ sym.caption }}</span>
+                    <span class="credit"> | By {{ sym.credit }}.</span>
+                </figcaption>
+            </figure>
+        {% endfor %}
+        </div>
+        {% endfor %}
+
+        <p class="center"><a href="..">click here to go back.</a></p>
+
+        <script src="https://website-widgets.pages.dev/dist/sienna.min.js" defer></script>
+    </body>
+</html>
