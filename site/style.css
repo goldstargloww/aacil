@@ -72,6 +72,8 @@ figcaption {
 }
 
 /* Automatic dark theme */
+/***** DARK THEME AND MORE COLUMNS CURRENTLY DISABLED UNTIL FURTHER NOTICE *****/
+/*
 [data-theme="dark"] {
   body {
     background-color: #111;
@@ -92,8 +94,10 @@ figcaption {
     color: #f33;
   }
 }
+*/
 
 /* Responsive layout - on larger screens, use 4 or 5 columns */
+/*
 @media screen and (min-width: 769px) {
   .figlist {
     display: grid;
@@ -106,3 +110,4 @@ figcaption {
     grid-template-columns: repeat(5, 1fr);
   }
 }
+*/
