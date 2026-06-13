@@ -1,16 +1,22 @@
+import { parse as csv_parse } from 'csv-parse/browser/esm/sync';
 import { Snowflake } from "@theinternetfolks/snowflake";
 import { export_databases } from '../database.js';
 import * as sorting from '../sorting.js';
+
+let csv_map;
+let use_discord_bot_mode;
 
 let global_files;
 let file_names;
 let selected_index;
 let img_elems;
 
+let bulk_alt_text;
+
 // TODO FIXME this code is duplicated
 export function bulk_sym_setup(database, new_category_choice) {
     let bulk_caption = document.getElementById('bulk_caption');
-    let bulk_alt_text = document.getElementById('bulk_alt_text');
+    bulk_alt_text = document.getElementById('bulk_alt_text');
 
     // Load all the existing CW information
     let all_cws = [];
@@ -143,6 +149,10 @@ export function bulk_sym_setup(database, new_category_choice) {
         img_elems[selected_index].dataset.selected = true;
         selected_index++;
 
+        if (use_discord_bot_mode && selected_index !== global_files.length) {
+            bulk_alt_text.value = csv_map.get(global_files[selected_index].name);
+        }
+
         if (selected_index === global_files.length) {
             let zip_file = await export_databases(database, false);
 
@@ -179,19 +189,49 @@ export function bulk_sym_setup(database, new_category_choice) {
     })
 }
 
-export function bulk_preview_images(files) {
+export async function bulk_preview_images(files) {
     let bulk_list = document.getElementById('bulk_list');
     bulk_list.innerHTML = '';
 
-    global_files = files;
+    use_discord_bot_mode = false;
+
+    global_files = [];
     file_names = [];
     selected_index = 0;
     img_elems = [];
 
+    let first_file = undefined;
     for (let file of files) {
+        if (file.name === "messages.csv") {
+            console.log("Hi R~!");
+            use_discord_bot_mode = true;
+
+            let csv_parsed = csv_parse(await file.text(), {
+                columns: false,
+            });
+
+            csv_map = new Map();
+            for (let ent of csv_parsed) {
+                csv_map.set(`${ent[0]}.png`, ent[1]);
+            }
+            console.log(csv_map);
+
+            continue;
+        }
+
+        global_files.push(file);
+
         let img_elem = document.createElement("img");
         img_elem.src = URL.createObjectURL(file);
         bulk_list.appendChild(img_elem);
         img_elems.push(img_elem);
+
+        if (first_file === undefined) {
+            first_file = file;
+        }
+    }
+
+    if (use_discord_bot_mode && first_file !== undefined) {
+        bulk_alt_text.value = csv_map.get(first_file.name);
     }
 }

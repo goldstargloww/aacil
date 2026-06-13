@@ -242,17 +242,17 @@ window.onload = async () => {
         }
     });
 
-    bulk_drop.addEventListener('drop', (ev) => {
+    bulk_drop.addEventListener('drop', async (ev) => {
         ev.preventDefault();
         const files = [...ev.dataTransfer.items]
             .map((item) => item.getAsFile())
             .filter((file) => file);
-        bulk_preview_images(files);
+        await bulk_preview_images(files);
     })
 
     // File selector
-    document.getElementById('bulk_file').addEventListener("change", (e) => {
-        bulk_preview_images(e.target.files);
+    document.getElementById('bulk_file').addEventListener("change", async (e) => {
+        await bulk_preview_images(e.target.files);
     });
 
     // Loading complete!
