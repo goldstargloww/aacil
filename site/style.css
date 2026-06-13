@@ -54,6 +54,9 @@ figure .imgcontain {
   flex: 1;
   /* Override the minimum size, so that the size which is _left over_ is stretched by flexbox. */
   min-height: 0;
+
+  /* This is needed to make Safari work properly */
+  display: flex;
 }
 
 /* Make the image shrink down and not overlap or push other things out */
