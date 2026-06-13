@@ -136,15 +136,23 @@ window.onload = async () => {
             query_obj.$artist = artist;
         }
 
-        console.log(query_obj, sql);
-
         // Look up all the symbols that belong on this page
         let syms = [];
-        database.exec(sql, {
-            bind: query_obj,
-            rowMode: 'object',
-            resultRows: syms,
-        });
+        try {
+            database.exec(sql, {
+                bind: query_obj,
+                rowMode: 'object',
+                resultRows: syms,
+            });
+        } catch (e) {
+            if (use_fts) {
+                search_results_summary.innerText = `ERROR: ${e.message}`;
+                search_results.innerHTML = '';
+                return;
+            } else {
+                throw e;
+            }
+        }
 
         // Look up the artist credits for symbols
         for (let sym of syms) {
