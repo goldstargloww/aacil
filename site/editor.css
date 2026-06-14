@@ -106,6 +106,15 @@ figure[data-selected] {
 }
 #bulk_list > * {
     max-height: 200px;
+    text-align: center;
+    position: relative;
+}
+#bulk_list > [data-completed]::after {
+    content: '✅';
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 2em;
 }
 #bulk_list > [data-selected] {
     background-color: green;

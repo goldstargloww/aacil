@@ -9,7 +9,7 @@ let use_discord_bot_mode;
 let global_files;
 let file_names;
 let selected_index;
-let img_elems;
+let img_list_elems;     // Actually a list of <div>s
 
 let bulk_alt_text;
 
@@ -146,7 +146,7 @@ export function bulk_sym_setup(database, new_category_choice) {
         });
 
         file_names.push(urlified_name);
-        img_elems[selected_index].dataset.selected = true;
+        img_list_elems[selected_index].dataset.completed = true;
         selected_index++;
 
         if (use_discord_bot_mode && selected_index !== global_files.length) {
@@ -184,7 +184,7 @@ export function bulk_sym_setup(database, new_category_choice) {
             global_files = undefined;
             file_names = [];
             selected_index = 0;
-            img_elems = [];
+            img_list_elems = [];
         }
     })
 }
@@ -198,7 +198,7 @@ export async function bulk_preview_images(files) {
     global_files = [];
     file_names = [];
     selected_index = 0;
-    img_elems = [];
+    img_list_elems = [];
 
     let first_file = undefined;
     for (let file of files) {
@@ -220,10 +220,12 @@ export async function bulk_preview_images(files) {
 
         global_files.push(file);
 
-        let img_elem = document.createElement("img");
+        let img_elem = document.createElement('img');
         img_elem.src = URL.createObjectURL(file);
-        bulk_list.appendChild(img_elem);
-        img_elems.push(img_elem);
+        let img_wrap = document.createElement('div');
+        img_wrap.appendChild(img_elem);
+        bulk_list.appendChild(img_wrap);
+        img_list_elems.push(img_wrap);
 
         if (first_file === undefined) {
             first_file = file;
