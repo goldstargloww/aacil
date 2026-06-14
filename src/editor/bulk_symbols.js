@@ -3,20 +3,54 @@ import { Snowflake } from "@theinternetfolks/snowflake";
 import { export_databases } from '../database.js';
 import * as sorting from '../sorting.js';
 
-let csv_map;
-let use_discord_bot_mode;
-
-let global_files;
-let file_names;
+let global_files;       // list of File objects
+let symbol_metadata;    // list of objects containing metadata
 let selected_index;
 let img_list_elems;     // Actually a list of <div>s
 
+let bulk_caption;
 let bulk_alt_text;
+let new_cw_select;
+let new_artists_select;
+let new_artists_adapted;
+let category_select;
+
+function load_selected_item_state() {
+    if (selected_index >= symbol_metadata.length) return;
+
+    let meta = symbol_metadata[selected_index];
+    console.log(meta);
+
+    // If there is data here, load it. Otherwise, leave current form untouched.
+    // If using Discord mode, some data is preloaded.
+    // If not using Discord mode, untouched ==> blank to start
+    if (meta.caption)
+        bulk_caption.value = meta.caption;
+    if (meta.alt_text)
+        bulk_alt_text.value = meta.alt_text;
+
+    if (meta.manually_touched) {
+        // If manually touched, load all of this state (overwriting the form)
+        new_cw_select.value = meta.cw;
+
+        for (let opt of new_artists_select.options) {
+            opt.selected = meta.artist.has(BigInt(opt.value));
+        }
+        for (let opt of new_artists_adapted.options) {
+            opt.selected = meta.adapted_from.has(BigInt(opt.value));
+        }
+
+        if (meta.category)
+            category_select.value = meta.category;
+    }
+}
 
 // TODO FIXME this code is duplicated
 export function bulk_sym_setup(database, new_category_choice) {
-    let bulk_caption = document.getElementById('bulk_caption');
+    let bulk_list = document.getElementById('bulk_list');
+    bulk_caption = document.getElementById('bulk_caption');
     bulk_alt_text = document.getElementById('bulk_alt_text');
+    category_select = new_category_choice;
 
     // Load all the existing CW information
     let all_cws = [];
@@ -27,7 +61,7 @@ export function bulk_sym_setup(database, new_category_choice) {
     all_cws.sort(sorting.sort_sym_cw);
 
     // Make list of CWs
-    let new_cw_select = document.createElement('select');
+    new_cw_select = document.createElement('select');
     new_cw_select.id = 'bulk_on_page_cw'
     // Add an empty option
     new_cw_select.appendChild(document.createElement('option'));
@@ -50,10 +84,10 @@ export function bulk_sym_setup(database, new_category_choice) {
     all_artists.sort(sorting.sort_artists);
 
     // Make list of artists (twice)
-    let new_artists_select = document.createElement('select');
+    new_artists_select = document.createElement('select');
     new_artists_select.id = 'bulk_artists'
     new_artists_select.multiple = true;
-    let new_artists_adapted = document.createElement('select');
+    new_artists_adapted = document.createElement('select');
     new_artists_adapted.id = 'bulk_adapted_from'
     new_artists_adapted.multiple = true;
     // Add an empty option
@@ -149,8 +183,14 @@ export function bulk_sym_setup(database, new_category_choice) {
         img_list_elems[selected_index].dataset.completed = true;
         selected_index++;
 
-        if (use_discord_bot_mode && selected_index !== global_files.length) {
-            bulk_alt_text.value = csv_map.get(global_files[selected_index].name);
+        // Unmark the previous selection and choose this one next
+        for (let elem of bulk_list.querySelectorAll('[data-selected]')) {
+            delete elem.dataset.selected;
+        }
+        if (selected_index !== global_files.length) {
+            img_list_elems[selected_index].dataset.selected = true;
+
+            load_selected_item_state();
         }
 
         if (selected_index === global_files.length) {
@@ -179,10 +219,9 @@ export function bulk_sym_setup(database, new_category_choice) {
             a.remove();
 
             // Reset state
-            let bulk_list = document.getElementById('bulk_list');
             bulk_list.innerHTML = '';
             global_files = undefined;
-            file_names = [];
+            symbol_metadata = [];
             selected_index = 0;
             img_list_elems = [];
         }
@@ -193,14 +232,16 @@ export async function bulk_preview_images(files) {
     let bulk_list = document.getElementById('bulk_list');
     bulk_list.innerHTML = '';
 
-    use_discord_bot_mode = false;
+    let csv_map = new Map();
+    let use_discord_bot_mode = false;
 
     global_files = [];
-    file_names = [];
+    symbol_metadata = [];
     selected_index = 0;
     img_list_elems = [];
 
     let first_file = undefined;
+    let i = 0;
     for (let file of files) {
         if (file.name === "messages.csv") {
             console.log("Hi R~!");
@@ -210,7 +251,6 @@ export async function bulk_preview_images(files) {
                 columns: false,
             });
 
-            csv_map = new Map();
             for (let ent of csv_parsed) {
                 csv_map.set(`${ent[0]}.png`, ent[1]);
             }
@@ -219,20 +259,50 @@ export async function bulk_preview_images(files) {
         }
 
         global_files.push(file);
+        symbol_metadata.push({
+            caption: '',
+            alt_text: '',
+            cw: '',
+            artist: new Set(),
+            adapted_from: new Set(),
+            category: BigInt(0),
+
+            manually_touched: false,
+        })
 
         let img_elem = document.createElement('img');
         img_elem.src = URL.createObjectURL(file);
         let img_wrap = document.createElement('div');
         img_wrap.appendChild(img_elem);
+
+        // Capture this variable for the closure
+        let i_copy = i;
+        img_wrap.addEventListener('click', () => {
+            selected_index = i_copy;
+            for (let elem of bulk_list.querySelectorAll('[data-selected]')) {
+                delete elem.dataset.selected;
+            }
+            img_wrap.dataset.selected = true;
+
+            load_selected_item_state();
+        })
+
         bulk_list.appendChild(img_wrap);
         img_list_elems.push(img_wrap);
 
         if (first_file === undefined) {
             first_file = file;
+            img_wrap.dataset.selected = true;
         }
+
+        i++;
     }
 
-    if (use_discord_bot_mode && first_file !== undefined) {
-        bulk_alt_text.value = csv_map.get(first_file.name);
+    if (use_discord_bot_mode) {
+        for (let [i, file] of global_files.entries()) {
+            symbol_metadata[i].alt_text = csv_map.get(file.name);
+        }
+
+        load_selected_item_state();
     }
 }
