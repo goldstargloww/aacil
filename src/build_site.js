@@ -191,6 +191,12 @@ class AACILCustomPlugin {
                         // Main page
                         new_url_path_components.push('');
 
+                        // Count the total number of symbols
+                        let num_total_syms = [];
+                        database.exec(`select count(*) from images`, {
+                            resultRows: num_total_syms,
+                        });
+
                         // Deal with artist names
                         let all_artists = [];
                         database.exec(`select display, front_page_footnote, front_page_parens from artists`, {
@@ -226,6 +232,8 @@ class AACILCustomPlugin {
                                 subcats: subcats_for_page,
                                 artists: all_artists,
                                 artist_footnotes,
+                                num_symbols: num_total_syms[0][0].toLocaleString('en-US'),
+                                num_artists: all_artists.length.toLocaleString('en-US'),
                             })
                         ));
                     }
