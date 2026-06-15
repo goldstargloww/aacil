@@ -125,10 +125,6 @@ export function bulk_sym_setup(database, new_category_choice) {
         }
 
         let new_cw = new_cw_select.value;
-        if (new_cw)
-            new_cw = BigInt(new_cw);
-        else
-            new_cw = null;
 
         let new_artists = new Set();
         for (let option of new_artists_select.selectedOptions) {
@@ -148,57 +144,85 @@ export function bulk_sym_setup(database, new_category_choice) {
 
         let new_cat_id = BigInt(new_category_choice.value);
 
-        let new_id = Snowflake.generate();
-        let urlified_name = new_caption.replace(/[^0-9a-zA-Z ]/g, '').trim() + ` ${new_id}.png`;
+        // At this point, the data is valid enough to insert,
+        // so we store it in the global state.
+        symbol_metadata[selected_index].caption = new_caption;
+        symbol_metadata[selected_index].alt_text = new_alt_text;
+        symbol_metadata[selected_index].cw = new_cw;
+        symbol_metadata[selected_index].artist = new_artists;
+        symbol_metadata[selected_index].adapted_from = new_adapted_from;
+        symbol_metadata[selected_index].category = new_cat_id;
+        symbol_metadata[selected_index].manually_touched = true;
 
-        database.transaction((txn) => {
-            // Create the image
-            txn.exec(`insert into images(id, filename, caption, alt_text, cw_id) values (?, ?, ?, ?, ?)`, {
-                bind: [
-                    new_id,
-                    '/imgs/' + urlified_name,
-                    new_caption,
-                    new_alt_text,
-                    new_cw,
-                ],
-            });
-            // Put the artist credits
-            for (let artist of new_artists) {
-                txn.exec(`insert into sym_artists(img_id, artist_id) values (?, ?)`, {
-                    bind: [new_id, artist]
-                });
-            }
-            for (let artist of new_adapted_from) {
-                txn.exec(`insert into sym_derived_from(img_id, artist_id) values (?, ?)`, {
-                    bind: [new_id, artist]
-                });
-            }
-            // Insert it into the chosen category
-            txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
-                bind: [new_cat_id, new_id]
-            });
-        });
-
-        file_names.push(urlified_name);
         img_list_elems[selected_index].dataset.completed = true;
-        selected_index++;
 
-        // Unmark the previous selection and choose this one next
-        for (let elem of bulk_list.querySelectorAll('[data-selected]')) {
-            delete elem.dataset.selected;
+        // Pick the next item to edit, wrapping around if necessary
+        let all_done = true;
+        let new_idx;
+        for (let i = 0; i < global_files.length; i++) {
+            new_idx = (selected_index + 1 + i) % global_files.length;
+            if (!symbol_metadata[new_idx].manually_touched) {
+                all_done = false;
+                break;
+            }
         }
-        if (selected_index !== global_files.length) {
+
+        if (!all_done) {
+            // Unmark the previous selection and choose this one next
+            for (let elem of bulk_list.querySelectorAll('[data-selected]')) {
+                delete elem.dataset.selected;
+            }
+            selected_index = new_idx;
             img_list_elems[selected_index].dataset.selected = true;
-
             load_selected_item_state();
-        }
+        } else {
+            // When done, we have to process everything, generate the new DB, etc
+            database.transaction((txn) => {
+                for (let i = 0; i < global_files.length; i++) {
+                    let meta = symbol_metadata[i];
 
-        if (selected_index === global_files.length) {
+                    let new_id = Snowflake.generate();
+                    let urlified_name = meta.caption.replace(/[^0-9a-zA-Z ]/g, '').trim() + ` ${new_id}.png`;
+                    meta.urlified_name = urlified_name;
+
+                    let new_cw = null;
+                    if (meta.cw)
+                        new_cw = BigInt(meta.cw);
+
+                    // Create the image
+                    txn.exec(`insert into images(id, filename, caption, alt_text, cw_id) values (?, ?, ?, ?, ?)`, {
+                        bind: [
+                            new_id,
+                            '/imgs/' + urlified_name,
+                            meta.caption,
+                            meta.alt_text,
+                            new_cw,
+                        ],
+                    });
+                    // Put the artist credits
+                    for (let artist of meta.artist) {
+                        txn.exec(`insert into sym_artists(img_id, artist_id) values (?, ?)`, {
+                            bind: [new_id, artist]
+                        });
+                    }
+                    for (let artist of meta.adapted_from) {
+                        txn.exec(`insert into sym_derived_from(img_id, artist_id) values (?, ?)`, {
+                            bind: [new_id, artist]
+                        });
+                    }
+                    // Insert it into the chosen category
+                    txn.exec(`insert into cat_syms(cat_id, img_id) values (?, ?)`, {
+                        bind: [meta.category, new_id]
+                    });
+                }
+            });
+
+            // And then also generate a zip file with renamed image files
             let zip_file = await export_databases(database, false);
 
             let imgs_folder = zip_file.folder('imgs');
             for (let i = 0; i < global_files.length; i++) {
-                imgs_folder.file(file_names[i], global_files[i], { binary: true });
+                imgs_folder.file(symbol_metadata[i].urlified_name, global_files[i], { binary: true });
             }
 
             let zip_blob = await zip_file.generateAsync({ type: 'blob' });
@@ -268,6 +292,7 @@ export async function bulk_preview_images(files) {
             category: BigInt(0),
 
             manually_touched: false,
+            urlified_name: null,
         })
 
         let img_elem = document.createElement('img');
