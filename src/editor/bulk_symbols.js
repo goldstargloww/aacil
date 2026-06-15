@@ -18,8 +18,14 @@ let category_select;
 function load_selected_item_state() {
     if (selected_index >= symbol_metadata.length) return;
 
+    let bulk_cur_img = document.getElementById('bulk_cur_img');
+    let img_url = img_list_elems[selected_index].querySelectorAll('img')[0].src;
+    bulk_cur_img.innerHTML = '';
+    let one_img = document.createElement('img');
+    one_img.src = img_url;
+    bulk_cur_img.appendChild(one_img);
+
     let meta = symbol_metadata[selected_index];
-    console.log(meta);
 
     // If there is data here, load it. Otherwise, leave current form untouched.
     // If using Discord mode, some data is preloaded.
@@ -48,6 +54,7 @@ function load_selected_item_state() {
 // TODO FIXME this code is duplicated
 export function bulk_sym_setup(database, new_category_choice) {
     let bulk_list = document.getElementById('bulk_list');
+    let bulk_cur_img = document.getElementById('bulk_cur_img');
     bulk_caption = document.getElementById('bulk_caption');
     bulk_alt_text = document.getElementById('bulk_alt_text');
     category_select = new_category_choice;
@@ -108,7 +115,7 @@ export function bulk_sym_setup(database, new_category_choice) {
     document.getElementById('bulk_artists').replaceWith(new_artists_select);
     document.getElementById('bulk_adapted_from').replaceWith(new_artists_adapted);
 
-    document.getElementById('bulk_next').addEventListener('click', async () => {
+    document.getElementById('bulk_next').onclick = async () => {
         if (global_files === undefined || selected_index >= global_files.length)
             return;
 
@@ -244,17 +251,19 @@ export function bulk_sym_setup(database, new_category_choice) {
 
             // Reset state
             bulk_list.innerHTML = '';
+            bulk_cur_img.innerHTML = '';
             global_files = undefined;
             symbol_metadata = [];
             selected_index = 0;
             img_list_elems = [];
         }
-    })
+    };
 }
 
 export async function bulk_preview_images(files) {
     let bulk_list = document.getElementById('bulk_list');
     bulk_list.innerHTML = '';
+    document.getElementById('bulk_cur_img').innerHTML = '';
 
     let csv_map = new Map();
     let use_discord_bot_mode = false;
@@ -327,7 +336,7 @@ export async function bulk_preview_images(files) {
         for (let [i, file] of global_files.entries()) {
             symbol_metadata[i].alt_text = csv_map.get(file.name);
         }
-
-        load_selected_item_state();
     }
+
+    load_selected_item_state();
 }

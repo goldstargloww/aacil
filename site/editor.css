@@ -102,7 +102,7 @@ figure[data-selected] {
 #bulk_list {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    padding-bottom: 2em;
+    padding-bottom: 1em;
 }
 #bulk_list > * {
     max-height: 200px;
@@ -118,6 +118,10 @@ figure[data-selected] {
 }
 #bulk_list > [data-selected] {
     background-color: green;
+}
+
+#bulk_cur_img {
+    height: 200px;
 }
 
 /* Used for editing subcategories */
