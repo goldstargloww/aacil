@@ -18,6 +18,9 @@ def deal_with_image(data):
     # Crop to content
     bbox = im.getbbox()
     im = im.crop(bbox)
+    # Make sure it supports alpha
+    if im.mode != 'RGBA':
+        im = im.convert('RGBA')
     # print(im)
     # Limit size
     im.thumbnail((600, 600))
