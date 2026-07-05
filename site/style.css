@@ -11,6 +11,9 @@ body {
 .space_above {
   margin-top: 2lh;
 }
+.space_footer {
+  margin-top: 5lh;
+}
 
 .cw {
   margin: 2lh;
