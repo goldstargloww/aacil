@@ -2,9 +2,50 @@
    HTML content. To learn how to do something, just try searching Google for questions like
    "how to change link color." */
 
+:root {
+  /* Default light theme */
+  --theme-page-bg: white;
+  --theme-page-text: black;
+  --theme-caption-bg: black;
+  --theme-caption-text: white;
+  --theme-fig-border: #cccccc;
+  /* HTML5 link default colors */
+  --theme-link-unvisited: #0000EE;
+  --theme-link-visited: #551A8B;
+  --theme-link-active: #EE0000;
+}
+
+/* Cream color theme */
+:root[data-theme="cream"] {
+  --theme-page-bg: beige;
+}
+
+/* Dark color theme */
+:root[data-theme="dark"] {
+  --theme-page-bg: #111;
+  --theme-page-text: white;
+  --theme-caption-bg: white;
+  --theme-caption-text: black;
+
+  --theme-link-unvisited: rgb(60, 139, 165);
+  --theme-link-visited: mediumpurple;
+  --theme-link-active: #f33;
+}
+
+/* Apply theme colors to links */
+a:link {
+  color: var(--theme-link-unvisited);
+}
+a:visited {
+  color: var(--theme-link-visited);
+}
+a:active {
+  color: var(--theme-link-active);
+}
+
 body {
-  background-color: white;
-  color: black;
+  background-color: var(--theme-page-bg);
+  color: var(--theme-page-text);
   font-family: Verdana;
 }
 
@@ -39,7 +80,7 @@ ul.figlist li {
 }
 
 figure {
-  border: 1px #cccccc solid;
+  border: 1px var(--theme-fig-border) solid;
   padding: 4px;
   margin: 0;
 
@@ -70,37 +111,12 @@ img {
 }
 
 figcaption {
-  background-color: black;
-  color: white;
+  background-color: var(--theme-caption-bg);
+  color: var(--theme-caption-text);
   padding: 2px;
   text-align: center;
   width: 100%;
 }
-
-/* Automatic dark theme */
-/***** DARK THEME AND MORE COLUMNS CURRENTLY DISABLED UNTIL FURTHER NOTICE *****/
-/*
-[data-theme="dark"] {
-  body {
-    background-color: #111;
-    color: white;
-  }
-  figcaption {
-    background-color: white;
-    color: black;
-  }
-
-  a:link {
-    color: rgb(60, 139, 165);
-  }
-  a:visited {
-    color: mediumpurple;
-  }
-  a:active {
-    color: #f33;
-  }
-}
-*/
 
 /* Responsive layout - on larger screens, use 4 or 5 columns */
 /*
