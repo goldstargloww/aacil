@@ -1,13 +1,10 @@
 import nunjucks from 'nunjucks';
 import { splitGraphemes } from 'unicode-segmenter/grapheme';
 
-import { make_databases } from './database.js';
 import { lookup_artist_credits } from "./artist_credit.js";
 import * as sorting from './sorting.js';
 
-export async function build_site(sqlite3, load_csv, emit_page) {
-    let database = await make_databases(sqlite3, load_csv);
-
+export function build_site(database, emit_page) {
     // Generate all category pages and the main page.
     // Also collect the information needed to build the map page (TODO)
     function make_category_page(cat_id, children_out, url_path_components = []) {

@@ -1,4 +1,6 @@
 import { Snowflake } from "@theinternetfolks/snowflake";
+import nunjucks from 'nunjucks';
+
 import load_csv from './load_csv_web.js';
 import { make_databases, export_databases } from './database.js';
 import { remake_category_ui, make_category_dropdown } from "./editor/category_tree.js";
@@ -7,6 +9,8 @@ import { load_cat_edit } from "./editor/category_edit.js";
 import { load_artist_info } from "./editor/artists.js";
 import { load_sym_cw_info } from "./editor/symbol_cws.js";
 import { bulk_sym_setup, bulk_preview_images } from "./editor/bulk_symbols.js";
+
+nunjucks.configure('/templates');
 
 let database;
 

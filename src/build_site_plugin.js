@@ -4,6 +4,7 @@ import { splitGraphemes } from 'unicode-segmenter/grapheme';
 import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
 const sqlite3 = await sqlite3InitModule();
 
+import { make_databases } from './database.js';
 import load_csv from './load_csv_nodejs.js';
 import { build_site } from './build_site.js';
 
@@ -31,7 +32,8 @@ class AACILCustomPlugin {
                 name: pluginName,
                 stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
             }, async (_assets) => {
-                await build_site(sqlite3, load_csv, (page_path, page_contents) => {
+                let database = await make_databases(sqlite3, load_csv);
+                build_site(database, (page_path, page_contents) => {
                     compilation.emitAsset(page_path, new RawSource(page_contents));
                 })
             });
