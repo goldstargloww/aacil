@@ -13,7 +13,7 @@ if (Os.platform() === 'win32' && __dirname.startsWith('/')) {
     __dirname = __dirname.slice(1);
 }
 
-nunjucks.configure(path.resolve(__dirname, 'templates'));
+nunjucks.configure(path.resolve(__dirname, 'site/templates'));
 
 class AACILCustomPlugin {
     apply(compiler) {
@@ -25,7 +25,7 @@ class AACILCustomPlugin {
 
         compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
             compilation.contextDependencies.add(path.resolve(__dirname, "site/database"));
-            compilation.contextDependencies.add(path.resolve(__dirname, "templates"));
+            compilation.contextDependencies.add(path.resolve(__dirname, "site/templates"));
 
             compilation.hooks.processAssets.tapPromise({
                 name: pluginName,
