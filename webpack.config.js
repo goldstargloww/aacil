@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import AACILCustomPlugin from "./src/build_site.js";
+import AACILCustomPlugin from "./src/build_site_plugin.js";
 import CopyPlugin from 'copy-webpack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
