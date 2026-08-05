@@ -161,13 +161,15 @@ export async function export_databases(db, finalize = true) {
     zip.file("database/cat_syms.csv", export_one_db(db, "select * from cat_syms order by cat_id, img_id"));
     zip.file("database/cw_suppressions.csv", export_one_db(db, "select * from cw_suppressions order by cat_id, cw_id"));
 
-    // Rebuild the site!
-    build_site(db, (page_path, page_contents) => {
-        if (page_path.startsWith("/")) {
-            page_path = page_path.slice(1);
-        }
-        zip.file(page_path, page_contents);
-    });
+    if (document.getElementById('do_site_rebuild').checked) {
+        // Rebuild the site!
+        build_site(db, (page_path, page_contents) => {
+            if (page_path.startsWith("/")) {
+                page_path = page_path.slice(1);
+            }
+            zip.file(page_path, page_contents);
+        });
+    }
 
     if (finalize)
         return await zip.generateAsync({ type: 'blob' });
