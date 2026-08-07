@@ -101,6 +101,7 @@ figure .imgcontain {
 
   /* This is needed to make Safari work properly */
   display: flex;
+  justify-content: center;
 }
 
 /* Make the image shrink down and not overlap or push other things out */
